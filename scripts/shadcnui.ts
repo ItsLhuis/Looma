@@ -123,7 +123,7 @@ function camelCaseRenamer(name: string) {
   return pascal.charAt(0).toLowerCase() + pascal.slice(1)
 }
 
-async function updateImports(paths: string[]) {
+/* async function updateImports(paths: string[]) {
   for (const basePath of paths) {
     if (!fs.existsSync(basePath)) continue
 
@@ -156,7 +156,7 @@ async function updateImports(paths: string[]) {
       }
     }
   }
-}
+} */
 
 async function updateIndexFile(componentsBase: string, indexFilePath: string) {
   const files = await fs.promises.readdir(componentsBase)
