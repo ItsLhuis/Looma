@@ -111,10 +111,9 @@ function HeroSection() {
                 <Icon name="Brain" className="text-primary h-6 w-6" />
                 <Typography
                   affects="small"
-                  className="text-muted-foreground flex items-center gap-3 font-medium"
+                  className="text-muted-foreground flex items-center gap-3 text-center font-medium"
                 >
-                  <Typography variant="h1">∞</Typography>
-                  hours saved daily
+                  Infinite hours saved daily
                 </Typography>
               </div>
             </div>

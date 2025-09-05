@@ -61,7 +61,7 @@ function FinalCtaSection() {
             >
               Your Organized Life
               <br />
-              <AuroraText>Awaits</AuroraText>
+              <AuroraText className="mt-4 text-4xl md:text-6xl lg:text-7xl">Awaits</AuroraText>
             </Typography>
           </InView>
           <InView direction="up" delay={0.2}>

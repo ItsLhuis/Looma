@@ -113,10 +113,10 @@ function ProblemSolutionSection() {
                 Real improvements that transform how you work and live
               </Typography>
             </div>
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
               {stats.map((stat, index) => (
                 <InView key={index} direction="up" delay={1.0 + 0.1 * index}>
-                  <div className="bg-card text-card-foreground border-border hover:border-primary/20 flex flex-col items-center justify-center rounded-2xl border p-10 text-center transition-colors duration-300">
+                  <div className="bg-card text-card-foreground border-border hover:border-primary/20 flex flex-col items-center justify-center rounded-2xl border p-10 text-center">
                     <Typography className="text-primary mb-4 text-5xl font-bold md:text-6xl">
                       {stat.metric}
                     </Typography>

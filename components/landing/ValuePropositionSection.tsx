@@ -66,7 +66,7 @@ function ValuePropositionSection() {
           <InView direction="up" delay={0}>
             <Typography
               variant="h1"
-              className="text-muted-foreground mb-12 text-3xl font-bold text-balance md:text-5xl lg:text-6xl"
+              className="mb-12 text-3xl font-bold text-balance md:text-5xl lg:text-6xl"
             >
               Why Looma Changes
               <br />

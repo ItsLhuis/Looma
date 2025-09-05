@@ -240,7 +240,7 @@ function InteractiveDemoSection() {
                   <TabsTrigger
                     key={demo.key}
                     value={demo.key}
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex flex-col items-center gap-4 p-8 transition-all"
+                    className="flex flex-col items-center gap-4 p-8"
                   >
                     <div className="bg-card border-border flex h-16 w-16 items-center justify-center rounded-2xl border">
                       {demo.icon}
