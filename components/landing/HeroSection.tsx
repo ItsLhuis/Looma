@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-import { AuroraText, Button, Icon, InView, LightRays, Typography } from "@/components/ui"
+import { AuroraText, Button, Icon, InView, LiquidEther, Typography } from "@/components/ui"
 
 function HeroSection() {
   return (
@@ -9,17 +9,7 @@ function HeroSection() {
       className="relative flex min-h-screen items-center justify-center overflow-hidden border-b"
     >
       <div className="absolute inset-0 z-0">
-        <LightRays
-          raysOrigin="top-center"
-          raysColor="#7E48FF"
-          raysSpeed={1.5}
-          lightSpread={1.2}
-          rayLength={1.2}
-          followMouse={true}
-          mouseInfluence={0.1}
-          noiseAmount={0.1}
-          distortion={0.05}
-        />
+        <LiquidEther colors={["#C6AEFF", "#B899FF", "#C6AEFF"]} />
       </div>
       <div className="relative z-10 container mx-auto px-6 py-24">
         <div className="mx-auto max-w-6xl space-y-16">

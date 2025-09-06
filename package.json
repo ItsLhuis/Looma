@@ -12,7 +12,8 @@
     "db:push": "drizzle-kit push",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -32,6 +33,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.3.1",
+    "three": "^0.180.0",
     "vaul": "^1.1.2",
     "zod": "^4.1.5",
     "zustand": "^5.0.8"
@@ -43,6 +45,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.180.0",
     "chalk": "^5.6.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9",

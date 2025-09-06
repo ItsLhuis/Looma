@@ -1,22 +1,27 @@
+import { getSessionCookie } from "better-auth/cookies"
 import { NextResponse, type NextRequest } from "next/server"
 
-import { getSessionCookie } from "better-auth/cookies"
+const publicRoutes = ["/", "/login"]
 
 export async function middleware(request: NextRequest) {
-  const session = getSessionCookie(request)
-  const apiAuthPrefix = "/api/auth"
+  const { pathname } = request.nextUrl
 
-  if (request.nextUrl.pathname.startsWith(apiAuthPrefix)) {
+  const sessionCookie = getSessionCookie(request)
+
+  if (publicRoutes.some((route) => pathname.startsWith(route))) {
+    if (sessionCookie && (pathname.startsWith("/login") || pathname.startsWith("/register"))) {
+      return NextResponse.redirect(new URL("/dashboard", request.url))
+    }
     return NextResponse.next()
   }
 
-  if (request.nextUrl.pathname === "/login" && session) {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/login", request.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/api/auth/:path*", "/login"]
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)"]
 }

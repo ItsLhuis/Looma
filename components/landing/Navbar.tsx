@@ -63,7 +63,7 @@ const Navbar = () => {
           <ul className="flex items-center space-x-6">
             {navbarConfig.links.map((link, index) => (
               <li key={index}>
-                <Button asChild variant="link">
+                <Button asChild variant="ghost">
                   <Link href={link.href}>{link.label}</Link>
                 </Button>
               </li>
