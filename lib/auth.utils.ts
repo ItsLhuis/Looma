@@ -1,13 +1,11 @@
 import { redirect } from "next/navigation"
 
-import { verifySession } from "./dal"
+import { isAuthenticated } from "./dal"
 
-export async function requireAuth() {
-  const session = await verifySession()
+export async function ensureAuth() {
+  const authenticated = await isAuthenticated()
 
-  if (!session) {
-    redirect("/login")
+  if (!authenticated) {
+    redirect("/sign-in")
   }
-
-  return session
 }

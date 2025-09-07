@@ -110,7 +110,7 @@ function FinalCtaSection() {
           className="mb-8 flex flex-col items-center justify-center gap-6 sm:flex-row"
         >
           <Button size="lg" asChild>
-            <Link href="/login">
+            <Link href="/sign-in">
               <Icon name="Sparkles" />
               Start Organizing Now
               <Icon name="ArrowRight" />

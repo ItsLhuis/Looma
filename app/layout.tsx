@@ -61,19 +61,19 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} scroll-smooth`}
     >
       <body className={`${plusJakartaSans.className} antialiased`}>
-        <Button
-          asChild
-          className="focus:bg-primary sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:px-4 focus:py-2"
-        >
-          <a href="#home">Skip to main content</a>
-        </Button>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main>{children}</main>
+          <Button
+            asChild
+            className="focus:bg-primary sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:px-4 focus:py-2"
+          >
+            <a href="#main">Skip to main content</a>
+          </Button>
+          <main id="main">{children}</main>
         </ThemeProvider>
       </body>
     </html>

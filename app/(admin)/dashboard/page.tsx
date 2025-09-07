@@ -1,10 +1,6 @@
-import { requireAuth } from "@/lib/auth.utils"
-
 import { LogoutButton } from "@/components/ui"
 
 export default async function DashboardPage() {
-  await requireAuth()
-
   return (
     <div className="bg-background min-h-screen pt-8">
       <div className="mx-auto max-w-4xl">

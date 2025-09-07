@@ -35,7 +35,7 @@ const navbarConfig: {
     { href: "#cta", label: "Get Started" }
   ],
   cta: {
-    href: "/login",
+    href: "/sign-in",
     label: "Get Started",
     icon: ArrowRight
   }

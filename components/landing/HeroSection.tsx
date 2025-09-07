@@ -88,7 +88,7 @@ function HeroSection() {
           <InView direction="up" delay={1.0}>
             <div className="flex justify-center">
               <Button size="lg" asChild>
-                <Link href="/login">
+                <Link href="/sign-in">
                   Start Organizing Instantly
                   <Icon name="ArrowRight" />
                 </Link>
