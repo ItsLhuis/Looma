@@ -1,7 +1,6 @@
 export * from "./AuroraText"
 export * from "./Avatar"
 export * from "./Badge"
-export * from "./Breadcrumb"
 export * from "./Button"
 export * from "./Calendar"
 export * from "./Card"

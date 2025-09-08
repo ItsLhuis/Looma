@@ -16,7 +16,7 @@ import {
 
 import { UserMenu } from "@/features/user/components"
 
-import { AppBreadcrumb, AppSidebar } from "@/components/layout"
+import { AppSidebar } from "@/components/layout"
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const user = await getUser()
@@ -50,7 +50,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           <header className="bg-sidebar sticky top-0 z-20 flex h-12 items-center justify-between border-b px-3">
             <div className="flex items-center justify-center gap-3">
               <SidebarTrigger />
-              <AppBreadcrumb />
             </div>
             <UserMenu
               variant="mini"
