@@ -61,7 +61,7 @@ export function UserMenu({ user, variant = "default" }: UserMenuProps) {
       } else {
         return (
           <Button variant="ghost" size="sm">
-            <Avatar className="size-7">
+            <Avatar className="size-5">
               <AvatarImage src={user?.image || undefined} alt={user?.name || ""} />
               <AvatarFallback className="text-xs">
                 {user?.name ? getInitials(user.name) : "U"}
