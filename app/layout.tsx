@@ -58,9 +58,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} scroll-smooth`}
+      className={`${plusJakartaSans.variable} h-full scroll-smooth`}
     >
-      <body className={`${plusJakartaSans.className} antialiased`}>
+      <body className={`${plusJakartaSans.className} h-full antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -73,7 +73,9 @@ export default function RootLayout({
           >
             <a href="#main">Skip to main content</a>
           </Button>
-          <main id="main">{children}</main>
+          <main id="main" className="flex h-full flex-col">
+            {children}
+          </main>
           <Toaster />
         </ThemeProvider>
       </body>

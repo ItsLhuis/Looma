@@ -1,9 +1,14 @@
-import { Typography } from "@/components/ui"
+import { Fragment } from "react"
+
+import { Container, Navbar } from "@/components/layout"
 
 export default async function CategoriesPage() {
   return (
-    <div className="container p-6">
-      <Typography variant="h1">Categories</Typography>
-    </div>
+    <Fragment>
+      <Navbar title="Categories" />
+      <Container>
+        <p>Content to render</p>
+      </Container>
+    </Fragment>
   )
 }

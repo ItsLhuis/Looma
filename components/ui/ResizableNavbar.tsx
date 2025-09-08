@@ -22,7 +22,7 @@ const ResizableNavbar = ({ children, className }: ResizableNavbarProps) => {
     offset: ["start start", "end start"]
   })
 
-  const [isScrolled, setIsScrolled] = useState<boolean>(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 50) {

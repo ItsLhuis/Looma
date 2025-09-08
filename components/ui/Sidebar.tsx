@@ -1,12 +1,20 @@
 "use client"
 
-import { Slot } from "@radix-ui/react-slot"
-import { cva, VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
 import * as React from "react"
+
+import { useIsMobile } from "@/hooks/useIsMobile"
+
+import { cva, VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+import { Slot } from "@radix-ui/react-slot"
+
+import { ChevronLeft, ChevronRight, Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
+import { ScrollArea } from "@/components/ui/ScrollArea"
 import { Separator } from "@/components/ui/Separator"
 import {
   Sheet,
@@ -17,16 +25,14 @@ import {
 } from "@/components/ui/Sheet"
 import { Skeleton } from "@/components/ui/Skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/Tooltip"
-import { useIsMobile } from "@/hooks/useIsMobile"
-import { cn } from "@/lib/utils"
-import { ScrollAreaProps } from "@radix-ui/react-scroll-area"
-import { ScrollArea } from "./ScrollArea"
+
+import { type ScrollAreaProps } from "@radix-ui/react-scroll-area"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
+const SIDEBAR_WIDTH_ICON = "3.5rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {
@@ -248,7 +254,7 @@ function Sidebar({
 }
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, state, isMobile, openMobile } = useSidebar()
 
   return (
     <Button
@@ -263,7 +269,18 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      {isMobile ? (
+        openMobile ? (
+          <X />
+        ) : (
+          <Menu />
+        )
+      ) : state === "expanded" ? (
+        <ChevronLeft />
+      ) : (
+        <ChevronRight />
+      )}
+
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

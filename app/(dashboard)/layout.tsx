@@ -4,19 +4,9 @@ import { getUser } from "@/lib/dal"
 
 import { redirect } from "next/navigation"
 
-import {
-  Fade,
-  FadeLayout,
-  IconProps,
-  Sidebar,
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger
-} from "@/components/ui"
+import { Fade, FadeLayout, Sidebar, SidebarInset, SidebarProvider } from "@/components/ui"
 
-import { UserMenu } from "@/features/user/components"
-
-import { AppSidebar } from "@/components/layout"
+import { Sidebar as AppSidebar } from "@/components/layout"
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const user = await getUser()
@@ -25,20 +15,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     redirect("/sign-in")
   }
 
-  const navigationItems: { href: string; icon: IconProps["name"]; label: string }[] = [
-    { href: "/home", icon: "Home", label: "Home" },
-    { href: "/notes", icon: "Notebook", label: "Notes" },
-    { href: "/tasks", icon: "CheckSquare", label: "Tasks" },
-    { href: "/calendar", icon: "Calendar", label: "Calendar" },
-    { href: "/categories", icon: "Tag", label: "Categories" }
-  ]
-
   return (
     <SidebarProvider>
-      <Fade className="flex flex-1">
-        <Sidebar>
+      <Fade className="flex h-full flex-1">
+        <Sidebar collapsible="icon">
           <AppSidebar
-            items={navigationItems}
             user={{
               name: user?.name ?? null,
               email: user?.email ?? null,
@@ -46,21 +27,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             }}
           />
         </Sidebar>
-        <SidebarInset>
-          <header className="bg-sidebar sticky top-0 z-20 flex h-12 items-center justify-between border-b px-3">
-            <div className="flex items-center justify-center gap-3">
-              <SidebarTrigger />
-            </div>
-            <UserMenu
-              variant="mini"
-              user={{
-                name: user?.name ?? null,
-                email: user?.email ?? null,
-                image: user?.image ?? null
-              }}
-            />
-          </header>
-          <FadeLayout as="main" className="flex flex-1">
+        <SidebarInset className="min-h-0 flex-1">
+          <FadeLayout as="main" className="flex min-h-0 flex-1 flex-col">
             {children}
           </FadeLayout>
         </SidebarInset>
