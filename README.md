@@ -72,7 +72,7 @@ Looma uses advanced AI to understand and organize any type of input you throw at
 - **🚀 Instant Organization**: From any type of input to organized life in seconds
 - **🧠 AI That Learns**: Adapts to your preferences, patterns, and unique working style
 - **🔒 Privacy-First**: Complete offline operation with enterprise-grade security for personal use
-- **🔄 Seamless Integration**: Works with existing tools like Google Calendar and note apps
+- **🔄 Seamless Integration**: Works with existing tools like Google Calendar
 - **⚡ Proactive Assistance**: Anticipates your needs and provides contextual recommendations
 - **🎯 Ultimate Flexibility**: Adapts to any lifestyle, from busy professionals to creative minds
 

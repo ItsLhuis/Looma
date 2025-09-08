@@ -5,7 +5,7 @@ import { Plus_Jakarta_Sans } from "next/font/google"
 
 import { ThemeProvider } from "@/contexts/ThemeContext"
 
-import { Button } from "@/components/ui"
+import { Button, Toaster } from "@/components/ui"
 
 import "./globals.css"
 
@@ -74,6 +74,7 @@ export default function RootLayout({
             <a href="#main">Skip to main content</a>
           </Button>
           <main id="main">{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

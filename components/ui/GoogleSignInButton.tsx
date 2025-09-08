@@ -10,7 +10,7 @@ import { Typography } from "@/components/ui/Typography"
 
 function GoogleSignInButton() {
   const handleSignIn = async () => {
-    await signIn.social({ provider: "google", callbackURL: "/dashboard" })
+    await signIn.social({ provider: "google", callbackURL: "/home" })
   }
 
   return (
