@@ -8,6 +8,7 @@ import { Slot } from "@radix-ui/react-slot"
 
 import { Fade } from "@/components/ui/Fade"
 import { Spinner } from "@/components/ui/Spinner"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/Tooltip"
 
 const buttonVariants = cva(
   "cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -42,6 +43,7 @@ type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
     isLoading?: boolean
+    tooltip?: string | React.ComponentProps<typeof TooltipContent>
   }
 
 function Button({
@@ -51,13 +53,14 @@ function Button({
   asChild = false,
   isLoading = false,
   disabled,
+  tooltip,
   children,
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot : "button"
 
   const content = (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex w-full items-center justify-center">
       <Fade show={isLoading} className="absolute" initial={false} unmountOnExit={false}>
         <Spinner className="text-inherit" />
       </Fade>
@@ -65,14 +68,14 @@ function Button({
         show={!isLoading}
         initial={false}
         unmountOnExit={false}
-        className="relative flex items-center justify-center gap-3"
+        className="relative flex w-full items-center justify-center gap-3"
       >
         {children}
       </Fade>
     </div>
   )
 
-  return (
+  const button = (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
@@ -81,6 +84,25 @@ function Button({
     >
       {asChild ? children : content}
     </Comp>
+  )
+
+  if (!tooltip) {
+    return button
+  }
+
+  if (typeof tooltip === "string") {
+    tooltip = {
+      children: tooltip
+    }
+  }
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent {...tooltip} />
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 

@@ -226,7 +226,7 @@ export type SpinnerProps = LucideProps & {
 }
 
 const Spinner = ({ variant, className, ...props }: SpinnerProps) => {
-  const mergedClassName = cn("text-primary", className)
+  const mergedClassName = cn("text-inherit", className)
 
   const commonProps = { className: mergedClassName, ...props }
 

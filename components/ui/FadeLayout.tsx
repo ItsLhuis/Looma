@@ -6,10 +6,14 @@ import { Fade, FadeProps } from "@/components/ui/Fade"
 
 export type FadeLayoutProps = FadeProps
 
-function FadeLayout({ children }: FadeLayoutProps) {
+function FadeLayout({ children, ...props }: FadeLayoutProps) {
   const pathname = usePathname()
 
-  return <Fade key={pathname}>{children}</Fade>
+  return (
+    <Fade key={pathname} {...props}>
+      {children}
+    </Fade>
+  )
 }
 
 export { FadeLayout }
