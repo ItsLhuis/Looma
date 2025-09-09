@@ -3,8 +3,9 @@ import { type ReactNode } from "react"
 import { type Metadata } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
 
-import { ThemeProvider } from "@/contexts/ThemeContext"
 import { QueryProvider } from "@/contexts/QueryClientProvider"
+import { ThemeProvider } from "@/contexts/ThemeContext"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 import { Button, Toaster } from "@/components/ui"
 
@@ -59,9 +60,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} h-full scroll-smooth`}
+      className={`${plusJakartaSans.variable} h-screen scroll-smooth`}
     >
-      <body className={`${plusJakartaSans.className} h-full antialiased`}>
+      <body className={`${plusJakartaSans.className} h-full overflow-hidden antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -75,9 +76,11 @@ export default function RootLayout({
             <a href="#main">Skip to main content</a>
           </Button>
           <QueryProvider>
-            <main id="main" className="flex h-full flex-col">
-              {children}
-            </main>
+            <NuqsAdapter>
+              <main id="main" className="flex h-full flex-col">
+                {children}
+              </main>
+            </NuqsAdapter>
           </QueryProvider>
           <Toaster />
         </ThemeProvider>

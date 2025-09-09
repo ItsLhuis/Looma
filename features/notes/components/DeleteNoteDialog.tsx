@@ -20,7 +20,7 @@ type DeleteNoteDialogProps = {
   onDeleted?: () => void
 }
 
-export function DeleteNoteDialog({ noteId, trigger, onDeleted }: DeleteNoteDialogProps) {
+function DeleteNoteDialog({ noteId, trigger, onDeleted }: DeleteNoteDialogProps) {
   const [open, setOpen] = useState(false)
 
   const deleteMutation = useDeleteNote(noteId)
@@ -36,7 +36,7 @@ export function DeleteNoteDialog({ noteId, trigger, onDeleted }: DeleteNoteDialo
       <div onClick={() => setOpen(true)}>{trigger}</div>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Delete note</DialogTitle>
+          <DialogTitle>Delete Note</DialogTitle>
           <DialogDescription>This action cannot be undone</DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
@@ -63,3 +63,5 @@ export function DeleteNoteDialog({ noteId, trigger, onDeleted }: DeleteNoteDialo
     </Dialog>
   )
 }
+
+export { DeleteNoteDialog }

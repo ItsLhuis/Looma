@@ -11,4 +11,19 @@ export type Note = typeof schema.notes.$inferSelect
 export type InsertNote = typeof schema.notes.$inferInsert
 export type UpdateNote = Partial<InsertNote>
 
-export type QueryNotesParams = QueryParams<NoteColumns>
+export type OrderableNoteColumns =
+  | "createdAt"
+  | "updatedAt"
+  | "title"
+  | "priority"
+  | "isFavorite"
+  | "isArchived"
+
+export type NoteFilters = {
+  search?: string
+  priority?: NotePriority
+  isFavorite?: boolean
+  isArchived?: boolean
+}
+
+export type QueryNotesParams = QueryParams<OrderableNoteColumns, NoteFilters>

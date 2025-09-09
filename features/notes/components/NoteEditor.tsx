@@ -24,6 +24,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -31,7 +32,8 @@ import {
   SelectValue,
   Skeleton,
   Switch,
-  Textarea
+  Textarea,
+  Typography
 } from "@/components/ui"
 
 import { useCreateNote, useGetNote, useUpdateNote } from "@/features/notes/api"
@@ -51,7 +53,7 @@ const priorityOptions: ReadonlyArray<{ value: NotePriority; label: string }> = [
   { value: "urgent", label: "Urgent" }
 ]
 
-const NoteEditor = ({ noteId, mode = "insert" }: NoteEditorProps) => {
+function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
   const router = useRouter()
 
   const createMutation = useCreateNote()
@@ -110,20 +112,20 @@ const NoteEditor = ({ noteId, mode = "insert" }: NoteEditorProps) => {
 
   if (mode === "update" && fullNoteQuery?.isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-6 w-40" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-6 w-32" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-6 w-28" />
-        <Skeleton className="h-40 w-full" />
+      <div className="flex h-full flex-1 flex-col space-y-4">
+        <Skeleton className="h-3 w-40" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-3 w-32" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-3 w-28" />
+        <Skeleton className="min-h-[400px] w-full" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
         </div>
         <div className="flex items-center justify-end gap-2">
-          <Skeleton className="h-10 w-20" />
+          <Skeleton className="h-9 w-20" />
         </div>
       </div>
     )
@@ -135,43 +137,48 @@ const NoteEditor = ({ noteId, mode = "insert" }: NoteEditorProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Note title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="summary"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Summary</FormLabel>
-              <FormControl>
-                <Input placeholder="Brief summary" {...field} value={field.value ?? ""} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="flex h-full flex-col space-y-6"
+      >
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="Note title" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="summary"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Summary</FormLabel>
+                <FormControl>
+                  <Input placeholder="Brief summary" {...field} value={field.value ?? ""} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="content"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-1 flex-col">
               <FormLabel>Content</FormLabel>
               <FormControl>
                 <Textarea
-                  rows={8}
-                  placeholder="Write your note…"
+                  className="min-h-[400px]"
+                  placeholder="Write your note"
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -180,70 +187,91 @@ const NoteEditor = ({ noteId, mode = "insert" }: NoteEditorProps) => {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <FormField
-            control={form.control}
-            name="priority"
-            render={({ field }) => {
-              return (
-                <FormItem key={field.value}>
-                  <FormLabel>Priority</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? "none"}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {priorityOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => {
+                return (
+                  <FormItem key={field.value}>
+                    <FormLabel>Priority</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? "none"}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {priorityOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="isFavorite"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Favorite</FormLabel>
+                  <FormControl>
+                    <Label
+                      className="dark:bg-input/30 border-input flex items-center rounded-md border p-2"
+                      htmlFor="favorite"
+                    >
+                      <Switch
+                        checked={field.value || false}
+                        onCheckedChange={field.onChange}
+                        id="favorite"
+                      />
+                      <Typography affects={["muted", "small"]}>Mark as favorite</Typography>
+                    </Label>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
-              )
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="isFavorite"
-            render={({ field }) => (
-              <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                <div>
-                  <FormLabel>Favorite</FormLabel>
-                </div>
-                <FormControl>
-                  <Switch checked={field.value || false} onCheckedChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isArchived"
-            render={({ field }) => (
-              <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                <div>
-                  <FormLabel>Archived</FormLabel>
-                </div>
-                <FormControl>
-                  <Switch checked={field.value || false} onCheckedChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            type="submit"
-            disabled={!form.formState.isValid || (mode === "update" && !form.formState.isDirty)}
-            isLoading={isPending}
-          >
-            {mode === "insert" ? "Create" : "Save"}
-          </Button>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isArchived"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Archive</FormLabel>
+                  <FormControl>
+                    <Label
+                      className="dark:bg-input/30 border-input flex items-center rounded-md border p-2"
+                      htmlFor="archive"
+                    >
+                      <Switch
+                        checked={field.value || false}
+                        onCheckedChange={field.onChange}
+                        id="archive"
+                      />
+                      <Typography affects={["muted", "small"]}>Archive note</Typography>
+                    </Label>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex items-center justify-end pt-4">
+            <Button
+              type="submit"
+              disabled={!form.formState.isValid || (mode === "update" && !form.formState.isDirty)}
+              isLoading={isPending}
+              className="min-w-24"
+            >
+              {mode === "insert" ? "Create" : "Save"}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>

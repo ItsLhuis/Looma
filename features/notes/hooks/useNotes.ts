@@ -4,7 +4,7 @@ import { useCallback, useState } from "react"
 
 import { useCreateNote, useListNotes, useUpdateNote } from "@/features/notes/api"
 
-import { type QueryNotesParams } from "@/features/notes/api/dal"
+import { type QueryNotesParams } from "@/features/notes/types"
 
 export function useNotes(initialParams: QueryNotesParams = { limit: 20, offset: 0 }) {
   const [params, setParams] = useState<QueryNotesParams>(initialParams)

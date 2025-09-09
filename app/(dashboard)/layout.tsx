@@ -1,5 +1,7 @@
 import { type ReactNode } from "react"
 
+import { cookies } from "next/headers"
+
 import { getUser } from "@/lib/dal"
 
 import { redirect } from "next/navigation"
@@ -15,8 +17,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     redirect("/sign-in")
   }
 
+  const cookieStore = await cookies()
+  const defaultOpen = cookieStore.get("sidebar.state")?.value === "true"
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <Fade className="flex h-full flex-1">
         <Sidebar collapsible="icon">
           <AppSidebar

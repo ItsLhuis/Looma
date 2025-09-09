@@ -28,7 +28,7 @@ function Container({
     return (
       <div className={cn("min-h-0 flex-1", className)}>
         <ScrollArea className="h-full">
-          <div className={cn(paddingClasses, contentClassName)}>{children}</div>
+          <div className={cn("h-full", paddingClasses, contentClassName)}>{children}</div>
         </ScrollArea>
       </div>
     )

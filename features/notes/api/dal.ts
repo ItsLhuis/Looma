@@ -7,13 +7,9 @@ import { createInsertNoteSchema, createUpdateNoteSchema } from "@/features/notes
 
 import { getUser } from "@/lib/dal"
 
-import { type QueryParams } from "@/lib/types/api"
-
-import type { InsertNote, Note, NoteColumns, UpdateNote } from "@/features/notes/types"
+import type { InsertNote, Note, QueryNotesParams, UpdateNote } from "@/features/notes/types"
 
 const { notes } = schema
-
-export type QueryNotesParams = QueryParams<NoteColumns>
 
 function resolveOrderBy(orderBy?: QueryNotesParams["orderBy"]) {
   if (!orderBy) return desc(notes.updatedAt)
@@ -43,16 +39,32 @@ export async function getNotes(params: QueryNotesParams = {}) {
   if (!user) throw new Error("UNAUTHORIZED")
 
   const { limit = 20, offset = 0, orderBy, filters } = params
-  const where = and(
-    eq(notes.userId, user.id),
-    filters?.search
-      ? or(
-          like(notes.title, `%${filters.search}%`),
-          like(notes.content, `%${filters.search}%`),
-          like(notes.summary, `%${filters.search}%`)
-        )
-      : undefined
-  )
+
+  const filterConditions = []
+
+  if (filters?.search) {
+    filterConditions.push(
+      or(
+        like(notes.title, `%${filters.search}%`),
+        like(notes.content, `%${filters.search}%`),
+        like(notes.summary, `%${filters.search}%`)
+      )
+    )
+  }
+
+  if (filters?.priority && filters.priority !== "none") {
+    filterConditions.push(eq(notes.priority, filters.priority))
+  }
+
+  if (filters?.isFavorite !== undefined) {
+    filterConditions.push(eq(notes.isFavorite, filters.isFavorite))
+  }
+
+  if (filters?.isArchived !== undefined) {
+    filterConditions.push(eq(notes.isArchived, filters.isArchived))
+  }
+
+  const where = and(eq(notes.userId, user.id), ...filterConditions)
 
   const [rows, totals] = await Promise.all([
     database
@@ -154,5 +166,6 @@ export async function searchNotes(query: string) {
     .where(where)
     .orderBy(desc(notes.updatedAt))
     .limit(50)
+
   return rows as Note[]
 }

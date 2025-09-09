@@ -2,7 +2,7 @@ import { createNote, getNotes } from "@/features/notes/api/dal"
 
 import { ZodError } from "zod"
 
-import type { NoteColumns, QueryNotesParams } from "@/features/notes/types"
+import type { NoteFilters, OrderableNoteColumns, QueryNotesParams } from "@/features/notes/types"
 
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -19,22 +19,25 @@ function isOrderByDirection(value: unknown): value is "asc" | "desc" {
   return value === "asc" || value === "desc"
 }
 
-const validNoteColumns: NoteColumns[] = [
-  "id",
+const validOrderByColumns: OrderableNoteColumns[] = [
   "createdAt",
   "updatedAt",
-  "userId",
   "title",
-  "content",
-  "categoryId",
-  "summary",
+  "priority",
   "isFavorite",
-  "isArchived",
-  "priority"
+  "isArchived"
 ]
 
-function isNoteColumn(column: unknown): column is NoteColumns {
-  return typeof column === "string" && validNoteColumns.includes(column as NoteColumns)
+function isOrderByColumn(column: unknown): column is OrderableNoteColumns {
+  return typeof column === "string" && validOrderByColumns.includes(column as OrderableNoteColumns)
+}
+
+function isNotePriority(
+  priority: unknown
+): priority is "none" | "low" | "medium" | "high" | "urgent" {
+  return (
+    typeof priority === "string" && ["none", "low", "medium", "high", "urgent"].includes(priority)
+  )
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -45,21 +48,38 @@ export async function GET(request: Request): Promise<Response> {
     const offsetParam = searchParams.get("offset")
     const columnParam = searchParams.get("orderBy[column]")
     const directionParam = searchParams.get("orderBy[direction]")
+
     const search = searchParams.get("filters[search]") || searchParams.get("search") || undefined
+    const priorityParam = searchParams.get("filters[priority]")
+    const isFavoriteParam = searchParams.get("filters[isFavorite]")
+    const isArchivedParam = searchParams.get("filters[isArchived]")
 
     const orderBy =
       columnParam &&
       directionParam &&
       isOrderByDirection(directionParam) &&
-      isNoteColumn(columnParam)
+      isOrderByColumn(columnParam)
         ? { column: columnParam, direction: directionParam }
         : undefined
+
+    const filters: NoteFilters = {}
+
+    if (search) filters.search = search
+    if (priorityParam && isNotePriority(priorityParam) && priorityParam !== "none") {
+      filters.priority = priorityParam
+    }
+    if (isFavoriteParam !== null) {
+      filters.isFavorite = isFavoriteParam === "true"
+    }
+    if (isArchivedParam !== null) {
+      filters.isArchived = isArchivedParam === "true"
+    }
 
     const params: QueryNotesParams = {
       limit: limitParam ? Number(limitParam) : undefined,
       offset: offsetParam ? Number(offsetParam) : undefined,
       orderBy,
-      filters: { search: search || undefined }
+      filters: Object.keys(filters).length > 0 ? filters : undefined
     }
 
     const result = await getNotes(params)

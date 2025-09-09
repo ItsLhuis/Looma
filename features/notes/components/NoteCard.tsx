@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -18,46 +17,69 @@ import {
 } from "@/components/ui"
 import { DeleteNoteDialog } from "./DeleteNoteDialog"
 
-import type { Note } from "@/features/notes/types"
+import type { Note, NotePriority } from "@/features/notes/types"
+
+const getPriorityClasses = (priority: NotePriority) => {
+  switch (priority) {
+    case "urgent":
+      return "bg-error text-error-foreground border border-error"
+    case "high":
+      return "bg-warning text-warning-foreground border border-warning"
+    case "medium":
+      return "bg-info text-info-foreground border border-info"
+    case "low":
+      return "bg-success text-success-foreground border border-success"
+    default:
+      return "bg-muted text-muted-foreground border border-muted"
+  }
+}
 
 export type NoteCardProps = {
   note: Note
   className?: string
 }
 
-export function NoteCard({ note, className }: NoteCardProps) {
-  const preview = useMemo(() => {
-    const source = note.summary?.trim() || note.content?.trim() || ""
-    const condensed = source.replace(/\s+/g, " ")
-    return condensed.length > 160 ? condensed.slice(0, 160) + "…" : condensed
-  }, [note.summary, note.content])
-
+function NoteCard({ note, className }: NoteCardProps) {
   return (
     <Card className={cn("flex flex-col", className)} aria-label={`Note ${note.title}`}>
-      <CardHeader className="flex flex-row items-start justify-between gap-2">
+      <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <Typography variant="h5" className="line-clamp-2 leading-tight">
             {note.title}
           </Typography>
           <Typography affects={["muted", "small"]}>
-            Updated {new Date(note.updatedAt).toLocaleString()}
+            Updated at {new Date(note.updatedAt).toLocaleString()}
           </Typography>
         </div>
-        <div className="flex items-center gap-2">
-          {note.priority !== "none" ? <Badge variant="secondary">{note.priority}</Badge> : null}
-          {note.isFavorite ? (
-            <Badge>
+        <div className="flex max-w-full flex-col flex-wrap items-end gap-1.5 overflow-hidden">
+          {note.priority !== "none" && (
+            <Badge className={cn(getPriorityClasses(note.priority), "shrink-0 capitalize")}>
+              {note.priority}
+            </Badge>
+          )}
+          {note.isFavorite && (
+            <Badge className="shrink-0">
               <Icon name="Star" isFilled /> Favorite
             </Badge>
-          ) : null}
-          {note.isArchived ? <Badge variant="outline">Archived</Badge> : null}
+          )}
+          {note.isArchived && (
+            <Badge variant="outline" className="shrink-0">
+              <Icon name="Archive" />
+              Archived
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <Separator />
-      <CardContent className="pt-4">
-        {preview ? (
-          <Typography className="line-clamp-4" affects={["muted", "small"]}>
-            {preview}
+      <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
+        {note.summary && (
+          <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">
+            {note.summary?.trim()}
+          </Typography>
+        )}
+        {note.content ? (
+          <Typography affects={["muted", "small"]} className="line-clamp-4">
+            {note.content?.trim()}
           </Typography>
         ) : (
           <Typography className="italic" affects={["muted", "small"]}>
@@ -65,7 +87,7 @@ export function NoteCard({ note, className }: NoteCardProps) {
           </Typography>
         )}
       </CardContent>
-      <CardFooter className="flex items-center justify-end gap-2">
+      <CardFooter className="flex items-end justify-end gap-2">
         <Button size="sm" variant="outline" asChild aria-label="Edit note">
           <Link href={`/notes/${note.id}`}>Edit</Link>
         </Button>
@@ -81,3 +103,5 @@ export function NoteCard({ note, className }: NoteCardProps) {
     </Card>
   )
 }
+
+export { NoteCard }

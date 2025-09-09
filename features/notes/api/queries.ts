@@ -22,7 +22,14 @@ export function useListNotes(params: ListNotesRequest) {
   if (params.orderBy?.column) url.searchParams.set("orderBy[column]", String(params.orderBy.column))
   if (params.orderBy?.direction)
     url.searchParams.set("orderBy[direction]", String(params.orderBy.direction))
+
   if (params.filters?.search) url.searchParams.set("filters[search]", String(params.filters.search))
+  if (params.filters?.priority)
+    url.searchParams.set("filters[priority]", String(params.filters.priority))
+  if (params.filters?.isFavorite !== undefined)
+    url.searchParams.set("filters[isFavorite]", String(params.filters.isFavorite))
+  if (params.filters?.isArchived !== undefined)
+    url.searchParams.set("filters[isArchived]", String(params.filters.isArchived))
 
   return useQuery<ListNotesResponse>({
     queryKey: notesKeys.list(params),

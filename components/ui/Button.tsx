@@ -68,7 +68,7 @@ function Button({
         show={!isLoading}
         initial={false}
         unmountOnExit={false}
-        className="relative flex w-full items-center justify-center gap-3"
+        className="relative flex w-full items-center justify-center gap-2"
       >
         {children}
       </Fade>
