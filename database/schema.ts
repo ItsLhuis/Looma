@@ -3,6 +3,8 @@
 import { relations, sql } from "drizzle-orm"
 import { blob, index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
+import { randomUUID } from "crypto"
+
 import { type IconProps } from "@/components/ui"
 
 export const users = sqliteTable("users", {
@@ -92,7 +94,9 @@ export const verifications = sqliteTable(
 export const categories = sqliteTable(
   "categories",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -100,7 +104,9 @@ export const categories = sqliteTable(
     description: text("description"),
     color: text("color").default("#6B7280"),
     icon: text("icon").$type<IconProps["name"]>(),
-    parentId: text("parent_id").references((): any => categories.id, { onDelete: "set null" }),
+    parentId: text("parent_id", { length: 36 }).references((): any => categories.id, {
+      onDelete: "set null"
+    }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
@@ -118,7 +124,9 @@ export const categories = sqliteTable(
 export const tags = sqliteTable(
   "tags",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -141,13 +149,17 @@ export const tags = sqliteTable(
 export const notes = sqliteTable(
   "notes",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     content: text("content"),
-    categoryId: text("category_id").references(() => categories.id, { onDelete: "set null" }),
+    categoryId: text("category_id", { length: 36 }).references(() => categories.id, {
+      onDelete: "set null"
+    }),
     summary: text("summary"),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false).notNull(),
     isArchived: integer("is_archived", { mode: "boolean" }).default(false).notNull(),
@@ -176,13 +188,17 @@ export const notes = sqliteTable(
 export const tasks = sqliteTable(
   "tasks",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     description: text("description"),
-    categoryId: text("category_id").references(() => categories.id, { onDelete: "set null" }),
+    categoryId: text("category_id", { length: 36 }).references(() => categories.id, {
+      onDelete: "set null"
+    }),
     status: text("status")
       .$type<"pending" | "inProgress" | "completed" | "cancelled" | "onHold">()
       .notNull()
@@ -194,7 +210,9 @@ export const tasks = sqliteTable(
     dueDate: integer("due_date", { mode: "timestamp" }),
     estimatedDuration: integer("estimated_duration"),
     position: integer("position").default(0).notNull(),
-    parentTaskId: text("parent_task_id").references((): any => tasks.id, { onDelete: "set null" }),
+    parentTaskId: text("parent_task_id", { length: 36 }).references((): any => tasks.id, {
+      onDelete: "set null"
+    }),
     completedAt: integer("completed_at", { mode: "timestamp" }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
@@ -217,13 +235,17 @@ export const tasks = sqliteTable(
 export const events = sqliteTable(
   "events",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     description: text("description"),
-    categoryId: text("category_id").references(() => categories.id, { onDelete: "set null" }),
+    categoryId: text("category_id", { length: 36 }).references(() => categories.id, {
+      onDelete: "set null"
+    }),
     startTime: integer("start_time", { mode: "timestamp" }).notNull(),
     endTime: integer("end_time", { mode: "timestamp" }),
     isAllDay: integer("is_all_day", { mode: "boolean" }).default(false).notNull(),
@@ -249,7 +271,9 @@ export const events = sqliteTable(
 export const memories = sqliteTable(
   "memories",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -279,11 +303,13 @@ export const memories = sqliteTable(
 export const noteAttachments = sqliteTable(
   "note_attachments",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    noteId: text("note_id")
+    noteId: text("note_id", { length: 36 })
       .notNull()
       .references(() => notes.id, { onDelete: "cascade" }),
     filename: text("filename").notNull(),
@@ -305,11 +331,13 @@ export const noteAttachments = sqliteTable(
 export const taskAttachments = sqliteTable(
   "task_attachments",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    taskId: text("task_id")
+    taskId: text("task_id", { length: 36 })
       .notNull()
       .references(() => tasks.id, { onDelete: "cascade" }),
     filename: text("filename").notNull(),
@@ -331,11 +359,13 @@ export const taskAttachments = sqliteTable(
 export const eventAttachments = sqliteTable(
   "event_attachments",
   {
-    id: text("id").primaryKey(),
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    eventId: text("event_id")
+    eventId: text("event_id", { length: 36 })
       .notNull()
       .references(() => events.id, { onDelete: "cascade" }),
     filename: text("filename").notNull(),
@@ -357,11 +387,13 @@ export const eventAttachments = sqliteTable(
 export const noteTags = sqliteTable(
   "note_tags",
   {
-    id: text("id").primaryKey(),
-    noteId: text("note_id")
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
+    noteId: text("note_id", { length: 36 })
       .notNull()
       .references(() => notes.id, { onDelete: "cascade" }),
-    tagId: text("tag_id")
+    tagId: text("tag_id", { length: 36 })
       .notNull()
       .references(() => tags.id, { onDelete: "cascade" }),
     createdAt: integer("created_at", { mode: "timestamp" })
@@ -377,11 +409,13 @@ export const noteTags = sqliteTable(
 export const taskTags = sqliteTable(
   "task_tags",
   {
-    id: text("id").primaryKey(),
-    taskId: text("task_id")
+    id: text("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => randomUUID()),
+    taskId: text("task_id", { length: 36 })
       .notNull()
       .references(() => tasks.id, { onDelete: "cascade" }),
-    tagId: text("tag_id")
+    tagId: text("tag_id", { length: 36 })
       .notNull()
       .references(() => tags.id, { onDelete: "cascade" }),
     createdAt: integer("created_at", { mode: "timestamp" })

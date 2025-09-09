@@ -4,6 +4,7 @@ import { type Metadata } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
 
 import { ThemeProvider } from "@/contexts/ThemeContext"
+import { QueryProvider } from "@/contexts/QueryClientProvider"
 
 import { Button, Toaster } from "@/components/ui"
 
@@ -73,9 +74,11 @@ export default function RootLayout({
           >
             <a href="#main">Skip to main content</a>
           </Button>
-          <main id="main" className="flex h-full flex-col">
-            {children}
-          </main>
+          <QueryProvider>
+            <main id="main" className="flex h-full flex-col">
+              {children}
+            </main>
+          </QueryProvider>
           <Toaster />
         </ThemeProvider>
       </body>

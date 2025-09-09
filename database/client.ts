@@ -6,4 +6,4 @@ import * as schema from "./schema"
 const client = new Database(process.env.DATABASE_URL)
 const database = drizzle(client, { schema })
 
-export { database, schema }
+export { database }
