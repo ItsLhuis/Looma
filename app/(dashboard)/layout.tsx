@@ -2,7 +2,7 @@ import { type ReactNode } from "react"
 
 import { cookies } from "next/headers"
 
-import { getUser } from "@/lib/dal"
+import { getUser } from "@/lib/dal.server"
 
 import { redirect } from "next/navigation"
 

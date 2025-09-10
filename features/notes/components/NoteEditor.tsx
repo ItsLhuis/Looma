@@ -108,8 +108,6 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
     await updateMutation.mutateAsync(values as UpdateNoteType)
   }
 
-  const isPending = form.formState.isSubmitting || currentMutation.isPending
-
   if (mode === "update" && fullNoteQuery?.isLoading) {
     return (
       <div className="flex h-full flex-1 flex-col space-y-4">
@@ -262,13 +260,16 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
               )}
             />
           </div>
-          <div className="flex items-center justify-end pt-4">
+          <div className="flex justify-end gap-2">
             <Button
-              type="submit"
-              disabled={!form.formState.isValid || (mode === "update" && !form.formState.isDirty)}
-              isLoading={isPending}
-              className="min-w-24"
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/notes")}
+              disabled={currentMutation.isPending}
             >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={currentMutation.isPending}>
               {mode === "insert" ? "Create" : "Save"}
             </Button>
           </div>

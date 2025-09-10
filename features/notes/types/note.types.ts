@@ -21,7 +21,7 @@ export type OrderableNoteColumns =
 
 export type NoteFilters = {
   search?: string
-  priority?: NotePriority
+  priority?: NotePriority | NotePriority[]
   isFavorite?: boolean
   isArchived?: boolean
 }

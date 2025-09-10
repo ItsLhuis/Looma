@@ -1,0 +1,6 @@
+export * from "./DeleteTaskDialog"
+export * from "./TaskCard"
+export * from "./TaskEditor"
+export * from "./TasksFilters"
+export * from "./TasksKanban"
+export * from "./TasksList"

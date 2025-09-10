@@ -120,15 +120,6 @@ the organization, Looma helps you take control of your life with minimal effort.
 Experience the power of having an AI assistant that organizes your world simply and intelligently.
 Your organized life is just one photo, one voice note, or one conversation away.
 
-## Development Status
-
-Currently implementing core features with a focus on:
-
-- ✅ Notes system (completed)
-- 🚧 Tasks management (in development)
-- 📅 Calendar integration (planned)
-- 🧠 AI memory system (planned)
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

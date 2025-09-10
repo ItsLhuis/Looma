@@ -24,8 +24,15 @@ export function useListNotes(params: ListNotesRequest) {
     url.searchParams.set("orderBy[direction]", String(params.orderBy.direction))
 
   if (params.filters?.search) url.searchParams.set("filters[search]", String(params.filters.search))
-  if (params.filters?.priority)
-    url.searchParams.set("filters[priority]", String(params.filters.priority))
+  if (params.filters?.priority) {
+    if (Array.isArray(params.filters.priority)) {
+      params.filters.priority.forEach((priority) => {
+        url.searchParams.append("filters[priority][]", String(priority))
+      })
+    } else {
+      url.searchParams.set("filters[priority]", String(params.filters.priority))
+    }
+  }
   if (params.filters?.isFavorite !== undefined)
     url.searchParams.set("filters[isFavorite]", String(params.filters.isFavorite))
   if (params.filters?.isArchived !== undefined)

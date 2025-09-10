@@ -1,8 +1,8 @@
-import { createNote, getNotes } from "@/features/notes/api/dal"
+import { createTask, getTasks } from "@/features/tasks/api/dal"
 
 import { ZodError } from "zod"
 
-import type { NoteFilters, OrderableNoteColumns, QueryNotesParams } from "@/features/notes/types"
+import type { OrderableTaskColumns, QueryTasksParams, TaskFilters } from "@/features/tasks/types"
 
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -19,20 +19,30 @@ function isOrderByDirection(value: unknown): value is "asc" | "desc" {
   return value === "asc" || value === "desc"
 }
 
-const validOrderByColumns: OrderableNoteColumns[] = [
+const validOrderByColumns: OrderableTaskColumns[] = [
   "createdAt",
   "updatedAt",
   "title",
+  "status",
   "priority",
-  "isFavorite",
-  "isArchived"
+  "dueDate",
+  "position"
 ]
 
-function isOrderByColumn(column: unknown): column is OrderableNoteColumns {
-  return typeof column === "string" && validOrderByColumns.includes(column as OrderableNoteColumns)
+function isOrderByColumn(column: unknown): column is OrderableTaskColumns {
+  return typeof column === "string" && validOrderByColumns.includes(column as OrderableTaskColumns)
 }
 
-function isNotePriority(
+function isTaskStatus(
+  status: unknown
+): status is "pending" | "inProgress" | "completed" | "cancelled" | "onHold" {
+  return (
+    typeof status === "string" &&
+    ["pending", "inProgress", "completed", "cancelled", "onHold"].includes(status)
+  )
+}
+
+function isTaskPriority(
   priority: unknown
 ): priority is "none" | "low" | "medium" | "high" | "urgent" {
   return (
@@ -50,14 +60,22 @@ export async function GET(request: Request): Promise<Response> {
     const directionParam = searchParams.get("orderBy[direction]")
 
     const search = searchParams.get("filters[search]") || searchParams.get("search") || undefined
+    const statusParams =
+      searchParams.getAll("filters[status][]").length > 0
+        ? searchParams.getAll("filters[status][]")
+        : searchParams.get("filters[status]")
+          ? [searchParams.get("filters[status]")!]
+          : []
     const priorityParams =
       searchParams.getAll("filters[priority][]").length > 0
         ? searchParams.getAll("filters[priority][]")
         : searchParams.get("filters[priority]")
           ? [searchParams.get("filters[priority]")!]
           : []
-    const isFavoriteParam = searchParams.get("filters[isFavorite]")
-    const isArchivedParam = searchParams.get("filters[isArchived]")
+    const dueDateFromParam = searchParams.get("filters[dueDate][from]")
+    const dueDateToParam = searchParams.get("filters[dueDate][to]")
+    const parentTaskIdParam = searchParams.get("filters[parentTaskId]")
+    const hasSubtasksParam = searchParams.get("filters[hasSubtasks]")
 
     const orderBy =
       columnParam &&
@@ -67,32 +85,50 @@ export async function GET(request: Request): Promise<Response> {
         ? { column: columnParam, direction: directionParam }
         : undefined
 
-    const filters: NoteFilters = {}
+    const filters: TaskFilters = {}
 
     if (search) filters.search = search
 
+    if (statusParams.length > 0) {
+      const validStatuses = statusParams.filter(isTaskStatus)
+      if (validStatuses.length > 0) {
+        filters.status = validStatuses.length === 1 ? validStatuses[0] : validStatuses
+      }
+    }
+
     if (priorityParams.length > 0) {
-      const validPriorities = priorityParams.filter(isNotePriority)
+      const validPriorities = priorityParams.filter(isTaskPriority)
       if (validPriorities.length > 0) {
         filters.priority = validPriorities.length === 1 ? validPriorities[0] : validPriorities
       }
     }
 
-    if (isFavoriteParam !== null) {
-      filters.isFavorite = isFavoriteParam === "true"
-    }
-    if (isArchivedParam !== null) {
-      filters.isArchived = isArchivedParam === "true"
+    if (dueDateFromParam || dueDateToParam) {
+      filters.dueDate = {}
+      if (dueDateFromParam) {
+        filters.dueDate.from = new Date(dueDateFromParam)
+      }
+      if (dueDateToParam) {
+        filters.dueDate.to = new Date(dueDateToParam)
+      }
     }
 
-    const params: QueryNotesParams = {
+    if (parentTaskIdParam !== null) {
+      filters.parentTaskId = parentTaskIdParam === "null" ? null : parentTaskIdParam
+    }
+
+    if (hasSubtasksParam !== null) {
+      filters.hasSubtasks = hasSubtasksParam === "true"
+    }
+
+    const params: QueryTasksParams = {
       limit: limitParam ? Number(limitParam) : undefined,
       offset: offsetParam ? Number(offsetParam) : undefined,
       orderBy,
       filters: Object.keys(filters).length > 0 ? filters : undefined
     }
 
-    const result = await getNotes(params)
+    const result = await getTasks(params)
     return jsonResponse(result)
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal Server Error"
@@ -104,7 +140,7 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   try {
     const body = await request.json()
-    const created = await createNote(body)
+    const created = await createTask(body)
     return jsonResponse({ data: created })
   } catch (error: unknown) {
     let status = 500

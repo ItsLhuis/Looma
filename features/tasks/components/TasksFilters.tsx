@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react"
 
 import { debounce } from "lodash"
 
-import { parseAsArrayOf, parseAsBoolean, parseAsStringEnum, useQueryState } from "nuqs"
+import { parseAsArrayOf, parseAsStringEnum, useQueryState } from "nuqs"
 
 import {
   Badge,
@@ -27,22 +27,23 @@ import {
   Typography
 } from "@/components/ui"
 
-import type { NoteFilters, NotePriority, OrderableNoteColumns } from "../types"
+import type { OrderableTaskColumns, TaskFilters, TaskPriority, TaskStatus } from "../types"
 
-type OrderByColumn = OrderableNoteColumns
+type OrderByColumn = OrderableTaskColumns
 type OrderByDirection = "asc" | "desc"
-type Priority = NotePriority
+type Priority = TaskPriority
+type Status = TaskStatus
 
-export type NotesFiltersParams = NoteFilters & {
+export type TasksFiltersParams = TaskFilters & {
   orderBy?: {
     column: OrderByColumn
     direction: OrderByDirection
   }
 }
 
-export type NotesFiltersParamsProps = {
-  defaultFilters?: NotesFiltersParams
-  onChange: (filters: NotesFiltersParams) => void
+export type TasksFiltersParamsProps = {
+  defaultFilters?: TasksFiltersParams
+  onChange: (filters: TasksFiltersParams) => void
 }
 
 const priorityLabels: Record<Priority, string> = {
@@ -53,13 +54,22 @@ const priorityLabels: Record<Priority, string> = {
   urgent: "Urgent"
 }
 
+const statusLabels: Record<Status, string> = {
+  pending: "Pending",
+  inProgress: "In Progress",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  onHold: "On Hold"
+}
+
 const orderColumnLabels: Record<OrderByColumn, string> = {
   createdAt: "Created Date",
   updatedAt: "Last Updated",
   title: "Title",
+  status: "Status",
   priority: "Priority",
-  isFavorite: "Favorite",
-  isArchived: "Archived"
+  dueDate: "Due Date",
+  position: "Position"
 }
 
 const priorityColors: Record<Priority, string> = {
@@ -70,11 +80,32 @@ const priorityColors: Record<Priority, string> = {
   urgent: "bg-error text-error-foreground border border-error"
 }
 
-function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps) {
+const statusColors: Record<Status, string> = {
+  pending: "bg-muted text-muted-foreground border border-muted",
+  inProgress: "bg-info text-info-foreground border border-info",
+  completed: "bg-success text-success-foreground border border-success",
+  cancelled: "bg-error text-error-foreground border border-error",
+  onHold: "bg-warning text-warning-foreground border border-warning"
+}
+
+function TasksFilters({ defaultFilters = {}, onChange }: TasksFiltersParamsProps) {
   const [search, setSearch] = useQueryState("search", {
     defaultValue: defaultFilters.search ?? "",
     clearOnDefault: true
   })
+
+  const [status, setStatus] = useQueryState(
+    "status",
+    parseAsArrayOf(parseAsStringEnum<Status>(Object.keys(statusLabels) as Status[]))
+      .withDefault(
+        Array.isArray(defaultFilters.status)
+          ? defaultFilters.status
+          : defaultFilters.status
+            ? [defaultFilters.status]
+            : []
+      )
+      .withOptions({ clearOnDefault: true })
+  )
 
   const [priority, setPriority] = useQueryState(
     "priority",
@@ -89,31 +120,18 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
       .withOptions({ clearOnDefault: true })
   )
 
-  const [isFavorite, setIsFavorite] = useQueryState(
-    "isFavorite",
-    parseAsBoolean
-      .withDefault(defaultFilters.isFavorite ?? false)
-      .withOptions({ clearOnDefault: true })
-  )
-
-  const [isArchived, setIsArchived] = useQueryState(
-    "isArchived",
-    parseAsBoolean
-      .withDefault(defaultFilters.isArchived ?? false)
-      .withOptions({ clearOnDefault: true })
-  )
-
   const [orderByColumn, setOrderByColumn] = useQueryState(
     "sortBy",
     parseAsStringEnum<OrderByColumn>([
       "createdAt",
       "updatedAt",
       "title",
+      "status",
       "priority",
-      "isFavorite",
-      "isArchived"
+      "dueDate",
+      "position"
     ])
-      .withDefault(defaultFilters.orderBy?.column ?? "createdAt")
+      .withDefault(defaultFilters.orderBy?.column ?? "updatedAt")
       .withOptions({ clearOnDefault: true })
   )
 
@@ -126,23 +144,22 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
 
   const [isFiltersOpen, setIsFiltersOpen] = useQueryState(
     "filtersOpen",
-    parseAsBoolean.withDefault(false).withOptions({ clearOnDefault: true })
+    parseAsStringEnum(["true", "false"]).withDefault("false").withOptions({ clearOnDefault: true })
   )
 
   const debouncedOnChange = useMemo(
     () =>
-      debounce((filters: NotesFiltersParams) => {
+      debounce((filters: TasksFiltersParams) => {
         onChange(filters)
       }, 300),
     [onChange]
   )
 
   useEffect(() => {
-    const filters: NotesFiltersParams = {
+    const filters: TasksFiltersParams = {
       ...(search && { search }),
+      ...(status.length > 0 && { status }),
       ...(priority.length > 0 && { priority }),
-      ...(isFavorite && { isFavorite }),
-      ...(isArchived && { isArchived }),
       orderBy: {
         column: orderByColumn,
         direction: orderByDirection
@@ -151,7 +168,7 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
 
     debouncedOnChange(filters)
     return () => debouncedOnChange.cancel()
-  }, [search, priority, isFavorite, isArchived, orderByColumn, orderByDirection, debouncedOnChange])
+  }, [search, status, priority, orderByColumn, orderByDirection, debouncedOnChange])
 
   const toggleSortDirection = () => {
     setOrderByDirection(orderByDirection === "asc" ? "desc" : "asc")
@@ -159,16 +176,13 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
 
   const clearAllFilters = () => {
     setSearch("")
+    setStatus([])
     setPriority([])
-    setIsFavorite(false)
-    setIsArchived(false)
-    setOrderByColumn("createdAt")
+    setOrderByColumn("updatedAt")
     setOrderByDirection("desc")
   }
 
-  const activeFiltersCount = [search, priority.length > 0, isFavorite, isArchived].filter(
-    Boolean
-  ).length
+  const activeFiltersCount = [search, status.length > 0, priority.length > 0].filter(Boolean).length
 
   return (
     <div className="space-y-4">
@@ -181,11 +195,11 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
             />
             <Input
               type="search"
-              placeholder="Search notes"
+              placeholder="Search tasks"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-11 pl-10"
-              aria-label="Search notes"
+              aria-label="Search tasks"
             />
           </div>
         </div>
@@ -220,7 +234,10 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
               )}
             </Button>
           </div>
-          <Popover open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+          <Popover
+            open={isFiltersOpen === "true"}
+            onOpenChange={(open) => setIsFiltersOpen(open ? "true" : "false")}
+          >
             <PopoverTrigger asChild>
               <Button variant="outline" size="lg" className="relative h-12 gap-2">
                 <Icon name="Filter" />
@@ -253,6 +270,32 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">
+                      <Typography affects="small">Status</Typography>
+                    </Label>
+                    <Select
+                      value={status.length > 0 ? status[0] : "all"}
+                      onValueChange={(value) => setStatus(value === "all" ? [] : [value as Status])}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        {Object.entries(statusLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`h-2 w-2 rounded-full ${statusColors[value as Status].split(" ")[0]}`}
+                              />
+                              {label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">
                       <Typography affects="small">Priority</Typography>
                     </Label>
                     <Select
@@ -278,36 +321,6 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="flex items-center gap-2 text-sm font-medium">
-                        <Icon name="Star" className="h-4 w-4 text-yellow-500" />
-                        <Typography affects="small">Show favorites only</Typography>
-                      </Label>
-                      <Button
-                        variant={isFavorite ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setIsFavorite(!isFavorite)}
-                        className="h-8 px-3"
-                      >
-                        <Typography affects="small">{isFavorite ? "On" : "Off"}</Typography>
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label className="flex items-center gap-2 text-sm font-medium">
-                        <Icon name="Archive" className="text-muted-foreground h-4 w-4" />
-                        <Typography affects="small">Show archived only</Typography>
-                      </Label>
-                      <Button
-                        variant={isArchived ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setIsArchived(!isArchived)}
-                        className="h-8 px-3"
-                      >
-                        <Typography affects="small">{isArchived ? "On" : "Off"}</Typography>
-                      </Button>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -350,6 +363,25 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
                 </Button>
               </Badge>
             )}
+            {status.map((s) => (
+              <Badge
+                key={s}
+                variant="secondary"
+                className="group hover:bg-muted flex items-center gap-1.5 pr-1 transition-colors"
+              >
+                <div className={`h-2 w-2 rounded-full ${statusColors[s].split(" ")[0]}`} />
+                <Typography affects="small">{statusLabels[s]}</Typography>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setStatus(status.filter((item) => item !== s))}
+                  className="hover:bg-destructive hover:text-destructive-foreground h-4 w-4 p-0 opacity-60 group-hover:opacity-100"
+                  title="Remove status filter"
+                >
+                  <Icon name="X" className="h-3 w-3" />
+                </Button>
+              </Badge>
+            ))}
             {priority.map((p) => (
               <Badge
                 key={p}
@@ -369,42 +401,6 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
                 </Button>
               </Badge>
             ))}
-            {isFavorite && (
-              <Badge
-                variant="secondary"
-                className="group hover:bg-muted flex items-center gap-1.5 pr-1 transition-colors"
-              >
-                <Icon name="Star" className="h-3 w-3 text-yellow-500" />
-                <Typography affects="small">Favorites</Typography>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsFavorite(false)}
-                  className="hover:bg-destructive hover:text-destructive-foreground h-4 w-4 p-0 opacity-60 group-hover:opacity-100"
-                  title="Remove favorites filter"
-                >
-                  <Icon name="X" className="h-3 w-3" />
-                </Button>
-              </Badge>
-            )}
-            {isArchived && (
-              <Badge
-                variant="secondary"
-                className="group hover:bg-muted flex items-center gap-1.5 pr-1 transition-colors"
-              >
-                <Icon name="Archive" className="h-3 w-3" />
-                <Typography affects="small">Archived</Typography>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsArchived(false)}
-                  className="hover:bg-destructive hover:text-destructive-foreground h-4 w-4 p-0 opacity-60 group-hover:opacity-100"
-                  title="Remove archived filter"
-                >
-                  <Icon name="X" className="h-3 w-3" />
-                </Button>
-              </Badge>
-            )}
           </div>
         </div>
       )}
@@ -412,4 +408,4 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
   )
 }
 
-export { NotesFilters }
+export { TasksFilters }

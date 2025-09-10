@@ -1,11 +1,11 @@
-import { and, asc, count, desc, eq, like, or } from "drizzle-orm"
+import { and, asc, count, desc, eq, inArray, like, or } from "drizzle-orm"
 
 import { database } from "@/database/client"
 import * as schema from "@/database/schema"
 
 import { createInsertNoteSchema, createUpdateNoteSchema } from "@/features/notes/schemas"
 
-import { getUser } from "@/lib/dal"
+import { getUser } from "@/lib/dal.server"
 
 import type { InsertNote, Note, QueryNotesParams, UpdateNote } from "@/features/notes/types"
 
@@ -52,8 +52,12 @@ export async function getNotes(params: QueryNotesParams = {}) {
     )
   }
 
-  if (filters?.priority && filters.priority !== "none") {
-    filterConditions.push(eq(notes.priority, filters.priority))
+  if (filters?.priority) {
+    if (Array.isArray(filters.priority)) {
+      filterConditions.push(inArray(notes.priority, filters.priority))
+    } else {
+      filterConditions.push(eq(notes.priority, filters.priority))
+    }
   }
 
   if (filters?.isFavorite !== undefined) {
