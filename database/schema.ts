@@ -300,90 +300,6 @@ export const memories = sqliteTable(
   ]
 )
 
-export const noteAttachments = sqliteTable(
-  "note_attachments",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    noteId: text("note_id", { length: 36 })
-      .notNull()
-      .references(() => notes.id, { onDelete: "cascade" }),
-    filename: text("filename").notNull(),
-    originalFilename: text("original_filename").notNull(),
-    mimeType: text("mime_type").notNull(),
-    fileSize: integer("file_size").notNull(),
-    storagePath: text("storage_path").notNull(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    index("note_attachments_user_id_idx").on(table.userId),
-    index("note_attachments_note_id_idx").on(table.noteId),
-    index("note_attachments_mime_type_idx").on(table.mimeType)
-  ]
-)
-
-export const taskAttachments = sqliteTable(
-  "task_attachments",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    taskId: text("task_id", { length: 36 })
-      .notNull()
-      .references(() => tasks.id, { onDelete: "cascade" }),
-    filename: text("filename").notNull(),
-    originalFilename: text("original_filename").notNull(),
-    mimeType: text("mime_type").notNull(),
-    fileSize: integer("file_size").notNull(),
-    storagePath: text("storage_path").notNull(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    index("task_attachments_user_id_idx").on(table.userId),
-    index("task_attachments_task_id_idx").on(table.taskId),
-    index("task_attachments_mime_type_idx").on(table.mimeType)
-  ]
-)
-
-export const eventAttachments = sqliteTable(
-  "event_attachments",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    eventId: text("event_id", { length: 36 })
-      .notNull()
-      .references(() => events.id, { onDelete: "cascade" }),
-    filename: text("filename").notNull(),
-    originalFilename: text("original_filename").notNull(),
-    mimeType: text("mime_type").notNull(),
-    fileSize: integer("file_size").notNull(),
-    storagePath: text("storage_path").notNull(),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    index("event_attachments_user_id_idx").on(table.userId),
-    index("event_attachments_event_id_idx").on(table.eventId),
-    index("event_attachments_mime_type_idx").on(table.mimeType)
-  ]
-)
-
 export const noteTags = sqliteTable(
   "note_tags",
   {
@@ -434,9 +350,6 @@ export const userRelations = relations(users, ({ many }) => ({
   notes: many(notes),
   tasks: many(tasks),
   events: many(events),
-  noteAttachments: many(noteAttachments),
-  taskAttachments: many(taskAttachments),
-  eventAttachments: many(eventAttachments),
   memories: many(memories),
   sessions: many(sessions),
   accounts: many(accounts)
@@ -475,7 +388,6 @@ export const noteRelations = relations(notes, ({ one, many }) => ({
     fields: [notes.categoryId],
     references: [categories.id]
   }),
-  noteAttachments: many(noteAttachments),
   noteTags: many(noteTags)
 }))
 
@@ -493,11 +405,10 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
     references: [tasks.id]
   }),
   subtasks: many(tasks),
-  taskAttachments: many(taskAttachments),
   taskTags: many(taskTags)
 }))
 
-export const eventRelations = relations(events, ({ one, many }) => ({
+export const eventRelations = relations(events, ({ one }) => ({
   user: one(users, {
     fields: [events.userId],
     references: [users.id]
@@ -505,47 +416,13 @@ export const eventRelations = relations(events, ({ one, many }) => ({
   category: one(categories, {
     fields: [events.categoryId],
     references: [categories.id]
-  }),
-  eventAttachments: many(eventAttachments)
+  })
 }))
 
 export const memoryRelations = relations(memories, ({ one }) => ({
   user: one(users, {
     fields: [memories.userId],
     references: [users.id]
-  })
-}))
-
-export const noteAttachmentRelations = relations(noteAttachments, ({ one }) => ({
-  user: one(users, {
-    fields: [noteAttachments.userId],
-    references: [users.id]
-  }),
-  note: one(notes, {
-    fields: [noteAttachments.noteId],
-    references: [notes.id]
-  })
-}))
-
-export const taskAttachmentRelations = relations(taskAttachments, ({ one }) => ({
-  user: one(users, {
-    fields: [taskAttachments.userId],
-    references: [users.id]
-  }),
-  task: one(tasks, {
-    fields: [taskAttachments.taskId],
-    references: [tasks.id]
-  })
-}))
-
-export const eventAttachmentRelations = relations(eventAttachments, ({ one }) => ({
-  user: one(users, {
-    fields: [eventAttachments.userId],
-    references: [users.id]
-  }),
-  event: one(events, {
-    fields: [eventAttachments.eventId],
-    references: [events.id]
   })
 }))
 

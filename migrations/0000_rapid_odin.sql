@@ -18,13 +18,13 @@ CREATE TABLE `accounts` (
 CREATE UNIQUE INDEX `accounts_provider_account_unique` ON `accounts` (`provider_id`,`account_id`);--> statement-breakpoint
 CREATE INDEX `accounts_user_id_idx` ON `accounts` (`user_id`);--> statement-breakpoint
 CREATE TABLE `categories` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`name` text NOT NULL,
 	`description` text,
 	`color` text DEFAULT '#6B7280',
 	`icon` text,
-	`parent_id` text,
+	`parent_id` text(36),
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
@@ -33,29 +33,12 @@ CREATE TABLE `categories` (
 --> statement-breakpoint
 CREATE INDEX `categories_user_id_idx` ON `categories` (`user_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `categories_user_name_unique` ON `categories` (`user_id`,`name`);--> statement-breakpoint
-CREATE TABLE `event_attachments` (
-	`id` text PRIMARY KEY NOT NULL,
-	`user_id` text NOT NULL,
-	`event_id` text NOT NULL,
-	`filename` text NOT NULL,
-	`original_filename` text NOT NULL,
-	`mime_type` text NOT NULL,
-	`file_size` integer NOT NULL,
-	`storage_path` text NOT NULL,
-	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
-CREATE INDEX `event_attachments_user_id_idx` ON `event_attachments` (`user_id`);--> statement-breakpoint
-CREATE INDEX `event_attachments_event_id_idx` ON `event_attachments` (`event_id`);--> statement-breakpoint
-CREATE INDEX `event_attachments_mime_type_idx` ON `event_attachments` (`mime_type`);--> statement-breakpoint
 CREATE TABLE `events` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
-	`category_id` text,
+	`category_id` text(36),
 	`start_time` integer NOT NULL,
 	`end_time` integer,
 	`is_all_day` integer DEFAULT false NOT NULL,
@@ -73,7 +56,7 @@ CREATE INDEX `events_end_time_idx` ON `events` (`end_time`);--> statement-breakp
 CREATE INDEX `events_google_calendar_id_idx` ON `events` (`google_calendar_id`);--> statement-breakpoint
 CREATE INDEX `events_is_all_day_idx` ON `events` (`is_all_day`);--> statement-breakpoint
 CREATE TABLE `memories` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`title` text NOT NULL,
 	`content` text NOT NULL,
@@ -88,27 +71,10 @@ CREATE TABLE `memories` (
 CREATE INDEX `memories_user_id_idx` ON `memories` (`user_id`);--> statement-breakpoint
 CREATE INDEX `memories_importance_idx` ON `memories` (`importance`);--> statement-breakpoint
 CREATE INDEX `memories_is_active_idx` ON `memories` (`is_active`);--> statement-breakpoint
-CREATE TABLE `note_attachments` (
-	`id` text PRIMARY KEY NOT NULL,
-	`user_id` text NOT NULL,
-	`note_id` text NOT NULL,
-	`filename` text NOT NULL,
-	`original_filename` text NOT NULL,
-	`mime_type` text NOT NULL,
-	`file_size` integer NOT NULL,
-	`storage_path` text NOT NULL,
-	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`note_id`) REFERENCES `notes`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
-CREATE INDEX `note_attachments_user_id_idx` ON `note_attachments` (`user_id`);--> statement-breakpoint
-CREATE INDEX `note_attachments_note_id_idx` ON `note_attachments` (`note_id`);--> statement-breakpoint
-CREATE INDEX `note_attachments_mime_type_idx` ON `note_attachments` (`mime_type`);--> statement-breakpoint
 CREATE TABLE `note_tags` (
-	`id` text PRIMARY KEY NOT NULL,
-	`note_id` text NOT NULL,
-	`tag_id` text NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
+	`note_id` text(36) NOT NULL,
+	`tag_id` text(36) NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	FOREIGN KEY (`note_id`) REFERENCES `notes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON UPDATE no action ON DELETE cascade
@@ -117,11 +83,11 @@ CREATE TABLE `note_tags` (
 CREATE UNIQUE INDEX `note_tags_unique_idx` ON `note_tags` (`note_id`,`tag_id`);--> statement-breakpoint
 CREATE INDEX `note_tags_tag_id_idx` ON `note_tags` (`tag_id`);--> statement-breakpoint
 CREATE TABLE `notes` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`title` text NOT NULL,
 	`content` text,
-	`category_id` text,
+	`category_id` text(36),
 	`summary` text,
 	`is_favorite` integer DEFAULT false NOT NULL,
 	`is_archived` integer DEFAULT false NOT NULL,
@@ -152,7 +118,7 @@ CREATE TABLE `sessions` (
 --> statement-breakpoint
 CREATE UNIQUE INDEX `sessions_token_unique` ON `sessions` (`token`);--> statement-breakpoint
 CREATE TABLE `tags` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`name` text NOT NULL,
 	`color` text DEFAULT '#6B7280',
@@ -163,27 +129,10 @@ CREATE TABLE `tags` (
 --> statement-breakpoint
 CREATE INDEX `tags_user_id_idx` ON `tags` (`user_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `tags_user_name_unique` ON `tags` (`user_id`,`name`);--> statement-breakpoint
-CREATE TABLE `task_attachments` (
-	`id` text PRIMARY KEY NOT NULL,
-	`user_id` text NOT NULL,
-	`task_id` text NOT NULL,
-	`filename` text NOT NULL,
-	`original_filename` text NOT NULL,
-	`mime_type` text NOT NULL,
-	`file_size` integer NOT NULL,
-	`storage_path` text NOT NULL,
-	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
-CREATE INDEX `task_attachments_user_id_idx` ON `task_attachments` (`user_id`);--> statement-breakpoint
-CREATE INDEX `task_attachments_task_id_idx` ON `task_attachments` (`task_id`);--> statement-breakpoint
-CREATE INDEX `task_attachments_mime_type_idx` ON `task_attachments` (`mime_type`);--> statement-breakpoint
 CREATE TABLE `task_tags` (
-	`id` text PRIMARY KEY NOT NULL,
-	`task_id` text NOT NULL,
-	`tag_id` text NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
+	`task_id` text(36) NOT NULL,
+	`tag_id` text(36) NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON UPDATE no action ON DELETE cascade
@@ -192,17 +141,17 @@ CREATE TABLE `task_tags` (
 CREATE UNIQUE INDEX `task_tags_unique_idx` ON `task_tags` (`task_id`,`tag_id`);--> statement-breakpoint
 CREATE INDEX `task_tags_tag_id_idx` ON `task_tags` (`tag_id`);--> statement-breakpoint
 CREATE TABLE `tasks` (
-	`id` text PRIMARY KEY NOT NULL,
+	`id` text(36) PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
-	`category_id` text,
+	`category_id` text(36),
 	`status` text DEFAULT 'pending' NOT NULL,
 	`priority` text DEFAULT 'none' NOT NULL,
 	`due_date` integer,
 	`estimated_duration` integer,
 	`position` integer DEFAULT 0 NOT NULL,
-	`parent_task_id` text,
+	`parent_task_id` text(36),
 	`completed_at` integer,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,

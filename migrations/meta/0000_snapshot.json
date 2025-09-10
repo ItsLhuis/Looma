@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "85c66c86-4d05-4800-b725-56e85f6de778",
+  "id": "0561d21e-9269-4c0b-8af2-87a7c65af51a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -133,7 +133,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -176,7 +176,7 @@
         },
         "parent_id": {
           "name": "parent_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -234,121 +234,12 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "event_attachments": {
-      "name": "event_attachments",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "filename": {
-          "name": "filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "original_filename": {
-          "name": "original_filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "mime_type": {
-          "name": "mime_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "file_size": {
-          "name": "file_size",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "storage_path": {
-          "name": "storage_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "event_attachments_user_id_idx": {
-          "name": "event_attachments_user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "event_attachments_event_id_idx": {
-          "name": "event_attachments_event_id_idx",
-          "columns": ["event_id"],
-          "isUnique": false
-        },
-        "event_attachments_mime_type_idx": {
-          "name": "event_attachments_mime_type_idx",
-          "columns": ["mime_type"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "event_attachments_user_id_users_id_fk": {
-          "name": "event_attachments_user_id_users_id_fk",
-          "tableFrom": "event_attachments",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "event_attachments_event_id_events_id_fk": {
-          "name": "event_attachments_event_id_events_id_fk",
-          "tableFrom": "event_attachments",
-          "tableTo": "events",
-          "columnsFrom": ["event_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "events": {
       "name": "events",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -376,7 +267,7 @@
         },
         "category_id": {
           "name": "category_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -490,7 +381,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -588,135 +479,26 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "note_attachments": {
-      "name": "note_attachments",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "note_id": {
-          "name": "note_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "filename": {
-          "name": "filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "original_filename": {
-          "name": "original_filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "mime_type": {
-          "name": "mime_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "file_size": {
-          "name": "file_size",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "storage_path": {
-          "name": "storage_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "note_attachments_user_id_idx": {
-          "name": "note_attachments_user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "note_attachments_note_id_idx": {
-          "name": "note_attachments_note_id_idx",
-          "columns": ["note_id"],
-          "isUnique": false
-        },
-        "note_attachments_mime_type_idx": {
-          "name": "note_attachments_mime_type_idx",
-          "columns": ["mime_type"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "note_attachments_user_id_users_id_fk": {
-          "name": "note_attachments_user_id_users_id_fk",
-          "tableFrom": "note_attachments",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "note_attachments_note_id_notes_id_fk": {
-          "name": "note_attachments_note_id_notes_id_fk",
-          "tableFrom": "note_attachments",
-          "tableTo": "notes",
-          "columnsFrom": ["note_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "note_tags": {
       "name": "note_tags",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "note_id": {
           "name": "note_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "tag_id": {
           "name": "tag_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -771,7 +553,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -799,7 +581,7 @@
         },
         "category_id": {
           "name": "category_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -997,7 +779,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -1068,135 +850,26 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "task_attachments": {
-      "name": "task_attachments",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "task_id": {
-          "name": "task_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "filename": {
-          "name": "filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "original_filename": {
-          "name": "original_filename",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "mime_type": {
-          "name": "mime_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "file_size": {
-          "name": "file_size",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "storage_path": {
-          "name": "storage_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "task_attachments_user_id_idx": {
-          "name": "task_attachments_user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "task_attachments_task_id_idx": {
-          "name": "task_attachments_task_id_idx",
-          "columns": ["task_id"],
-          "isUnique": false
-        },
-        "task_attachments_mime_type_idx": {
-          "name": "task_attachments_mime_type_idx",
-          "columns": ["mime_type"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "task_attachments_user_id_users_id_fk": {
-          "name": "task_attachments_user_id_users_id_fk",
-          "tableFrom": "task_attachments",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "task_attachments_task_id_tasks_id_fk": {
-          "name": "task_attachments_task_id_tasks_id_fk",
-          "tableFrom": "task_attachments",
-          "tableTo": "tasks",
-          "columnsFrom": ["task_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "task_tags": {
       "name": "task_tags",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "task_id": {
           "name": "task_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "tag_id": {
           "name": "tag_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1251,7 +924,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -1279,7 +952,7 @@
         },
         "category_id": {
           "name": "category_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1324,7 +997,7 @@
         },
         "parent_task_id": {
           "name": "parent_task_id",
-          "type": "text",
+          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
