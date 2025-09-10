@@ -48,7 +48,7 @@ export default function SignInPage() {
       </Fade>
       <Fade
         direction="left"
-        className="relative m-3 mb-0 hidden flex-[1] overflow-hidden rounded-t-4xl lg:block"
+        className="relative m-2 mb-0 hidden flex-[1] overflow-hidden rounded-t-4xl lg:block"
       >
         <Image
           fill
@@ -60,9 +60,7 @@ export default function SignInPage() {
         <div className="absolute right-0 bottom-0 left-0 p-8">
           <div className="space-y-3">
             <div className="flex flex-col gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl">
-                <Image src="/icon.png" alt="Brain AI" width={48} height={48} />
-              </div>
+              <Image src="/icon.png" alt="Brain AI" width={48} height={48} />
               <div>
                 <Typography variant="h3" className="leading-tight font-light tracking-wide">
                   <AuroraText className="font-bold">Intelligence</AuroraText>

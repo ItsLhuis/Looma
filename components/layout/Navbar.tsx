@@ -9,16 +9,24 @@ import { Typography } from "@/components/ui/Typography"
 
 export type NavbarProps = {
   title: string
+  padding?: "none" | "sm" | "md"
   className?: string
   children?: ReactNode
 }
 
-function Navbar({ title = "Home", className, children }: NavbarProps) {
+function Navbar({ title = "Home", padding = "md", className, children }: NavbarProps) {
   const { isMobile } = useSidebar()
+
+  const paddingClasses =
+    padding === "none" ? "p-0" : padding === "sm" ? "p-4 sm:p-5 lg:p-6" : "p-4 sm:p-6 lg:p-8"
 
   return (
     <header
-      className={cn("flex h-12 w-full items-center justify-between gap-3 border-b px-3", className)}
+      className={cn(
+        "flex w-full items-center justify-between gap-3 border-b",
+        paddingClasses,
+        className
+      )}
     >
       <div className="flex items-center gap-3">
         {isMobile && <SidebarTrigger />}

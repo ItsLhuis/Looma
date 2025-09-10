@@ -32,8 +32,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             }}
           />
         </Sidebar>
-        <SidebarInset className="min-h-0 flex-1">
-          <FadeLayout as="main" className="flex min-h-0 flex-1 flex-col">
+        <SidebarInset className="bg-sidebar min-h-0 flex-1">
+          <FadeLayout
+            as="main"
+            className="bg-background border-border m-2 flex min-h-0 flex-1 flex-col overflow-hidden rounded-4xl border md:ml-0"
+          >
             {children}
           </FadeLayout>
         </SidebarInset>

@@ -39,7 +39,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
   SidebarTrigger,
   Typography,
   useSidebar
@@ -136,7 +135,7 @@ function Sidebar({ user }: SidebarProps) {
   if (isMobile) {
     return (
       <>
-        <SidebarHeader className="flex h-12 items-start justify-center border-b p-3">
+        <SidebarHeader className="flex h-12 items-start justify-center p-3">
           <div className="relative flex w-full items-center justify-between gap-2">
             <Link href="/" className="flex items-center gap-2">
               <Image src="/icon.png" alt="Looma" width={24} height={24} />
@@ -174,7 +173,7 @@ function Sidebar({ user }: SidebarProps) {
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="border-t">
+        <SidebarFooter>
           <Link href="/settings">
             <Button
               variant="ghost"
@@ -191,7 +190,6 @@ function Sidebar({ user }: SidebarProps) {
             </Button>
           </Link>
         </SidebarFooter>
-        <SidebarRail />
         <LogoutDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen} />
       </>
     )
@@ -199,7 +197,7 @@ function Sidebar({ user }: SidebarProps) {
 
   return (
     <>
-      <SidebarHeader className="flex h-12 items-start justify-center border-b p-3">
+      <SidebarHeader className="flex h-12 items-start justify-center p-3">
         <div className="relative flex w-full items-center justify-between gap-2">
           <Fade show={isMobile || isExpanded} initial={false}>
             <Link href="/" className="flex items-center gap-2">
@@ -236,7 +234,7 @@ function Sidebar({ user }: SidebarProps) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t">
+      <SidebarFooter>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className={cn("h-auto w-full p-3", !isExpanded && "my-3 p-0")}>
@@ -261,7 +259,6 @@ function Sidebar({ user }: SidebarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarFooter>
-      <SidebarRail />
       <LogoutDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen} />
     </>
   )
