@@ -5,8 +5,6 @@ import { blob, index, integer, sqliteTable, text, uniqueIndex } from "drizzle-or
 
 import { randomUUID } from "crypto"
 
-import { type IconProps } from "@/components/ui"
-
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -91,61 +89,6 @@ export const verifications = sqliteTable(
   ]
 )
 
-export const categories = sqliteTable(
-  "categories",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    description: text("description"),
-    color: text("color").default("#6B7280"),
-    icon: text("icon").$type<IconProps["name"]>(),
-    parentId: text("parent_id", { length: 36 }).references((): any => categories.id, {
-      onDelete: "set null"
-    }),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .$onUpdate(() => sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    index("categories_user_id_idx").on(table.userId),
-    uniqueIndex("categories_user_name_unique").on(table.userId, table.name)
-  ]
-)
-
-export const tags = sqliteTable(
-  "tags",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    userId: text("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    color: text("color").default("#6B7280"),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .$onUpdate(() => sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    index("tags_user_id_idx").on(table.userId),
-    uniqueIndex("tags_user_name_unique").on(table.userId, table.name)
-  ]
-)
-
 export const notes = sqliteTable(
   "notes",
   {
@@ -157,9 +100,6 @@ export const notes = sqliteTable(
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     content: text("content"),
-    categoryId: text("category_id", { length: 36 }).references(() => categories.id, {
-      onDelete: "set null"
-    }),
     summary: text("summary"),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false).notNull(),
     isArchived: integer("is_archived", { mode: "boolean" }).default(false).notNull(),
@@ -177,7 +117,6 @@ export const notes = sqliteTable(
   },
   (table) => [
     index("notes_user_id_idx").on(table.userId),
-    index("notes_category_id_idx").on(table.categoryId),
     index("notes_created_at_idx").on(table.createdAt),
     index("notes_priority_idx").on(table.priority),
     index("notes_is_favorite_idx").on(table.isFavorite),
@@ -196,9 +135,6 @@ export const tasks = sqliteTable(
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     description: text("description"),
-    categoryId: text("category_id", { length: 36 }).references(() => categories.id, {
-      onDelete: "set null"
-    }),
     status: text("status")
       .$type<"pending" | "inProgress" | "completed" | "cancelled" | "onHold">()
       .notNull()
@@ -243,9 +179,6 @@ export const events = sqliteTable(
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     description: text("description"),
-    categoryId: text("category_id", { length: 36 }).references(() => categories.id, {
-      onDelete: "set null"
-    }),
     startTime: integer("start_time", { mode: "timestamp" }).notNull(),
     endTime: integer("end_time", { mode: "timestamp" }),
     isAllDay: integer("is_all_day", { mode: "boolean" }).default(false).notNull(),
@@ -300,53 +233,7 @@ export const memories = sqliteTable(
   ]
 )
 
-export const noteTags = sqliteTable(
-  "note_tags",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    noteId: text("note_id", { length: 36 })
-      .notNull()
-      .references(() => notes.id, { onDelete: "cascade" }),
-    tagId: text("tag_id", { length: 36 })
-      .notNull()
-      .references(() => tags.id, { onDelete: "cascade" }),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    uniqueIndex("note_tags_unique_idx").on(table.noteId, table.tagId),
-    index("note_tags_tag_id_idx").on(table.tagId)
-  ]
-)
-
-export const taskTags = sqliteTable(
-  "task_tags",
-  {
-    id: text("id", { length: 36 })
-      .primaryKey()
-      .$defaultFn(() => randomUUID()),
-    taskId: text("task_id", { length: 36 })
-      .notNull()
-      .references(() => tasks.id, { onDelete: "cascade" }),
-    tagId: text("tag_id", { length: 36 })
-      .notNull()
-      .references(() => tags.id, { onDelete: "cascade" }),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .default(sql`(unixepoch())`)
-      .notNull()
-  },
-  (table) => [
-    uniqueIndex("task_tags_unique_idx").on(table.taskId, table.tagId),
-    index("task_tags_tag_id_idx").on(table.tagId)
-  ]
-)
-
 export const userRelations = relations(users, ({ many }) => ({
-  categories: many(categories),
-  tags: many(tags),
   notes: many(notes),
   tasks: many(tasks),
   events: many(events),
@@ -355,40 +242,11 @@ export const userRelations = relations(users, ({ many }) => ({
   accounts: many(accounts)
 }))
 
-export const categoryRelations = relations(categories, ({ one, many }) => ({
-  user: one(users, {
-    fields: [categories.userId],
-    references: [users.id]
-  }),
-  parent: one(categories, {
-    fields: [categories.parentId],
-    references: [categories.id]
-  }),
-  children: many(categories),
-  notes: many(notes),
-  tasks: many(tasks),
-  events: many(events)
-}))
-
-export const tagRelations = relations(tags, ({ one, many }) => ({
-  user: one(users, {
-    fields: [tags.userId],
-    references: [users.id]
-  }),
-  noteTags: many(noteTags),
-  taskTags: many(taskTags)
-}))
-
-export const noteRelations = relations(notes, ({ one, many }) => ({
+export const noteRelations = relations(notes, ({ one }) => ({
   user: one(users, {
     fields: [notes.userId],
     references: [users.id]
-  }),
-  category: one(categories, {
-    fields: [notes.categoryId],
-    references: [categories.id]
-  }),
-  noteTags: many(noteTags)
+  })
 }))
 
 export const taskRelations = relations(tasks, ({ one, many }) => ({
@@ -396,26 +254,17 @@ export const taskRelations = relations(tasks, ({ one, many }) => ({
     fields: [tasks.userId],
     references: [users.id]
   }),
-  category: one(categories, {
-    fields: [tasks.categoryId],
-    references: [categories.id]
-  }),
   parentTask: one(tasks, {
     fields: [tasks.parentTaskId],
     references: [tasks.id]
   }),
-  subtasks: many(tasks),
-  taskTags: many(taskTags)
+  subtasks: many(tasks)
 }))
 
 export const eventRelations = relations(events, ({ one }) => ({
   user: one(users, {
     fields: [events.userId],
     references: [users.id]
-  }),
-  category: one(categories, {
-    fields: [events.categoryId],
-    references: [categories.id]
   })
 }))
 
@@ -423,28 +272,6 @@ export const memoryRelations = relations(memories, ({ one }) => ({
   user: one(users, {
     fields: [memories.userId],
     references: [users.id]
-  })
-}))
-
-export const noteTagRelations = relations(noteTags, ({ one }) => ({
-  note: one(notes, {
-    fields: [noteTags.noteId],
-    references: [notes.id]
-  }),
-  tag: one(tags, {
-    fields: [noteTags.tagId],
-    references: [tags.id]
-  })
-}))
-
-export const taskTagRelations = relations(taskTags, ({ one }) => ({
-  task: one(tasks, {
-    fields: [taskTags.taskId],
-    references: [tasks.id]
-  }),
-  tag: one(tags, {
-    fields: [taskTags.tagId],
-    references: [tags.id]
   })
 }))
 

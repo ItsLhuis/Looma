@@ -20,70 +20,114 @@ Looma uses advanced AI to understand and organize any type of input you throw at
 - **📸 Smart Photo Recognition**: Snap photos of handwritten notes, whiteboards, receipts, or
   business cards—Looma reads and organizes everything automatically.
 - **🎤 Intelligent Voice Processing**: Speak naturally and watch as "Call mom tomorrow" becomes a
-  calendar reminder, while long voice memos transform into structured notes.
+  task reminder, while long voice memos transform into structured notes.
 - **⌨️ Natural Language Understanding**: Type as you think—"meeting with John next Tuesday at 3
   PM"—and Looma creates the appropriate actions without rigid syntax.
 - **🧠 Conversational AI**: Chat with your assistant like a real person, ask for suggestions, and
   get proactive help that learns your preferences over time.
 
-## Key Features
+## Core Features
 
-- **Universal Input Processing**: Transform photos, voice, text, and files into organized digital
-  content with AI-powered recognition and understanding.
-- **Smart Organization**: Automatic categorization, semantic search, and intelligent linking of
-  related notes, tasks, and events.
-- **Flexible Task Management**: Multiple views including checklists, Kanban boards, and visual
-  flowcharts with AI-powered scheduling and priority detection.
-- **Intelligent Calendar Integration**: Seamless Google Calendar sync with conflict detection, smart
-  scheduling, and automatic meeting preparation.
-- **AI Memory System**: Contextual memory that learns your preferences, recognizes patterns, and
-  provides relevant suggestions based on your history.
-- **Complete Privacy**: Offline-first design with local encryption, optional cloud sync, and full
-  data ownership—your information stays yours.
+### 📝 Intelligent Note-Taking
+
+- **Universal Input Processing**: Transform photos, voice, text, and files into organized notes with
+  AI-powered recognition
+- **Smart Content Understanding**: Automatic summarization and key point extraction
+- **Semantic Search**: Find notes by meaning, not just keywords
+- **Flexible Organization**: Simple, clean interface focused on content over complexity
+
+### ✅ Smart Task Management
+
+- **Natural Task Creation**: Convert any input into actionable tasks automatically
+- **Multiple Views**: Switch between simple lists and visual Kanban boards
+- **Priority Intelligence**: AI detects and suggests task priorities
+- **Due Date Management**: Smart scheduling with overdue detection
+- **Subtasks Support**: Break complex tasks into manageable pieces
+- **Status Workflow**: Clear progression from pending to completion
+
+### 📅 Calendar Integration
+
+- **Google Calendar Sync**: Seamless two-way synchronization
+- **Smart Scheduling**: AI suggests optimal meeting times
+- **Event Creation**: Natural language to calendar events instantly
+- **Conflict Detection**: Automatic overlap prevention
+
+### 🧠 AI Memory System
+
+- **Contextual Learning**: Remembers your preferences and patterns
+- **Intelligent Suggestions**: Proactive recommendations based on your history
+- **Cross-Reference Intelligence**: Connects related notes, tasks, and events automatically
+
+## Design Philosophy
+
+Looma embraces simplicity over complexity:
+
+- **Focus on Content**: Clean, distraction-free interface that prioritizes your information
+- **Natural Interaction**: Work the way you think, not how software demands
+- **AI-First Organization**: Let artificial intelligence handle the categorization and structure
+- **Minimal Friction**: From capture to action in the fewest steps possible
 
 ## Real-World Use Cases
 
 ### For Busy Professionals
 
-- Photo of meeting whiteboard → Action items automatically distributed to team
+- Photo of meeting whiteboard → Action items automatically converted to tasks
 - Voice memo during commute → Tasks organized and scheduled before reaching office
-- Business cards → Contact information organized with context and follow-up reminders
+- Quick notes → Intelligent prioritization and deadline suggestions
 
 ### For Students
 
-- Class notes photos → Summarized study guides with quiz questions
-- Assignment details → Study schedule automatically created with calendar integration
-- Research materials → Organized by topic with smart cross-references
+- Class notes photos → Summarized study materials
+- Assignment details → Automatic task breakdown with study schedules
+- Research notes → Smart organization with easy retrieval
 
 ### For Personal Life
 
-- Shopping lists → Smart categorization with store layout optimization
-- Recipe photos → Ingredient lists with automatic shopping reminders
-- Medical appointments → Preparation checklists and follow-up tracking
+- Shopping thoughts → Organized task lists with priorities
+- Quick reminders → Properly scheduled tasks and events
+- Ideas and inspiration → Searchable notes with AI insights
 
 ### For Creative Work
 
-- Brainstorming sessions → Ideas organized into actionable project plans
-- Reference materials → Smart tagging and easy retrieval system
-- Creative inspiration → Mood boards with contextual organization
+- Brainstorming sessions → Actionable project tasks
+- Reference materials → Organized notes with smart tagging
+- Creative inspiration → Structured notes with context
 
 ## What Makes Looma Special
 
-- **🚀 Instant Organization**: From any type of input to organized life in seconds
-- **🧠 AI That Learns**: Adapts to your preferences, patterns, and unique working style
-- **🔒 Privacy-First**: Complete offline operation with enterprise-grade security for personal use
-- **🔄 Seamless Integration**: Works with existing tools like Google Calendar
-- **⚡ Proactive Assistance**: Anticipates your needs and provides contextual recommendations
-- **🎯 Ultimate Flexibility**: Adapts to any lifestyle, from busy professionals to creative minds
+- **🚀 Instant Organization**: From any input to organized content in seconds
+- **🧠 AI That Learns**: Adapts to your preferences without complex setup
+- **🔒 Privacy-First**: Your data stays yours with local-first architecture
+- **⚡ Proactive Assistance**: Anticipates needs without overwhelming you
+- **🎯 Ultimate Simplicity**: Powerful features with minimal complexity
+- **🔄 Seamless Flow**: Natural progression from notes to tasks to events
+
+## Technical Approach
+
+Looma is built with a focus on:
+
+- **Streamlined Data Model**: Clean, efficient database design focused on core functionality
+- **AI-Powered Intelligence**: Smart organization without manual categorization
+- **Performance First**: Fast, responsive interface that gets out of your way
+- **Local-First**: Offline capability with optional cloud synchronization
 
 ## The Future of Personal Organization
 
 Looma isn't just another productivity app—it's an intelligent personal ecosystem that transforms
-chaos into clarity, tasks into achievements, and helps you take control of your life with the power
-of AI.
+chaos into clarity without adding complexity. By focusing on the essentials and letting AI handle
+the organization, Looma helps you take control of your life with minimal effort.
 
-Experience the magic of having an AI assistant that truly understands and organizes your world. Your
-organized life is just one photo, one voice note, or one conversation away.
+Experience the power of having an AI assistant that organizes your world simply and intelligently.
+Your organized life is just one photo, one voice note, or one conversation away.
+
+## Development Status
+
+Currently implementing core features with a focus on:
+
+- ✅ Notes system (completed)
+- 🚧 Tasks management (in development)
+- 📅 Calendar integration (planned)
+- 🧠 AI memory system (planned)
 
 ## License
 

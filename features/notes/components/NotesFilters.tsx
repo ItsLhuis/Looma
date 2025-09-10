@@ -307,7 +307,7 @@ function NotesFilters({ defaultFilters = {}, onChange }: NotesFiltersParamsProps
         </div>
       </div>
       {activeFiltersCount > 0 && (
-        <div>
+        <div className="flex flex-col justify-center gap-3">
           <div className="flex items-center justify-between">
             <Typography affects={["small", "muted"]}>Active filters</Typography>
             <Button

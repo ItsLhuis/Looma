@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0561d21e-9269-4c0b-8af2-87a7c65af51a",
+  "id": "68ae5387-5b70-4a02-8d0f-6d986789e260",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -128,112 +128,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "categories": {
-      "name": "categories",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(36)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'#6B7280'"
-        },
-        "icon": {
-          "name": "icon",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "parent_id": {
-          "name": "parent_id",
-          "type": "text(36)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "categories_user_id_idx": {
-          "name": "categories_user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "categories_user_name_unique": {
-          "name": "categories_user_name_unique",
-          "columns": ["user_id", "name"],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "categories_user_id_users_id_fk": {
-          "name": "categories_user_id_users_id_fk",
-          "tableFrom": "categories",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "categories_parent_id_categories_id_fk": {
-          "name": "categories_parent_id_categories_id_fk",
-          "tableFrom": "categories",
-          "tableTo": "categories",
-          "columnsFrom": ["parent_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "events": {
       "name": "events",
       "columns": {
@@ -261,13 +155,6 @@
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "category_id": {
-          "name": "category_id",
-          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -360,15 +247,6 @@
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "events_category_id_categories_id_fk": {
-          "name": "events_category_id_categories_id_fk",
-          "tableFrom": "events",
-          "tableTo": "categories",
-          "columnsFrom": ["category_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -479,75 +357,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "note_tags": {
-      "name": "note_tags",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(36)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "note_id": {
-          "name": "note_id",
-          "type": "text(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tag_id": {
-          "name": "tag_id",
-          "type": "text(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "note_tags_unique_idx": {
-          "name": "note_tags_unique_idx",
-          "columns": ["note_id", "tag_id"],
-          "isUnique": true
-        },
-        "note_tags_tag_id_idx": {
-          "name": "note_tags_tag_id_idx",
-          "columns": ["tag_id"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "note_tags_note_id_notes_id_fk": {
-          "name": "note_tags_note_id_notes_id_fk",
-          "tableFrom": "note_tags",
-          "tableTo": "notes",
-          "columnsFrom": ["note_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "note_tags_tag_id_tags_id_fk": {
-          "name": "note_tags_tag_id_tags_id_fk",
-          "tableFrom": "note_tags",
-          "tableTo": "tags",
-          "columnsFrom": ["tag_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "notes": {
       "name": "notes",
       "columns": {
@@ -575,13 +384,6 @@
         "content": {
           "name": "content",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "category_id": {
-          "name": "category_id",
-          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -640,11 +442,6 @@
           "columns": ["user_id"],
           "isUnique": false
         },
-        "notes_category_id_idx": {
-          "name": "notes_category_id_idx",
-          "columns": ["category_id"],
-          "isUnique": false
-        },
         "notes_created_at_idx": {
           "name": "notes_created_at_idx",
           "columns": ["created_at"],
@@ -674,15 +471,6 @@
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "notes_category_id_categories_id_fk": {
-          "name": "notes_category_id_categories_id_fk",
-          "tableFrom": "notes",
-          "tableTo": "categories",
-          "columnsFrom": ["category_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -774,151 +562,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "tags": {
-      "name": "tags",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(36)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'#6B7280'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "tags_user_id_idx": {
-          "name": "tags_user_id_idx",
-          "columns": ["user_id"],
-          "isUnique": false
-        },
-        "tags_user_name_unique": {
-          "name": "tags_user_name_unique",
-          "columns": ["user_id", "name"],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "tags_user_id_users_id_fk": {
-          "name": "tags_user_id_users_id_fk",
-          "tableFrom": "tags",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "task_tags": {
-      "name": "task_tags",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(36)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "task_id": {
-          "name": "task_id",
-          "type": "text(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tag_id": {
-          "name": "tag_id",
-          "type": "text(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "task_tags_unique_idx": {
-          "name": "task_tags_unique_idx",
-          "columns": ["task_id", "tag_id"],
-          "isUnique": true
-        },
-        "task_tags_tag_id_idx": {
-          "name": "task_tags_tag_id_idx",
-          "columns": ["tag_id"],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "task_tags_task_id_tasks_id_fk": {
-          "name": "task_tags_task_id_tasks_id_fk",
-          "tableFrom": "task_tags",
-          "tableTo": "tasks",
-          "columnsFrom": ["task_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "task_tags_tag_id_tags_id_fk": {
-          "name": "task_tags_tag_id_tags_id_fk",
-          "tableFrom": "task_tags",
-          "tableTo": "tags",
-          "columnsFrom": ["tag_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "tasks": {
       "name": "tasks",
       "columns": {
@@ -946,13 +589,6 @@
         "description": {
           "name": "description",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "category_id": {
-          "name": "category_id",
-          "type": "text(36)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1066,15 +702,6 @@
           "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "tasks_category_id_categories_id_fk": {
-          "name": "tasks_category_id_categories_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "categories",
-          "columnsFrom": ["category_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "tasks_parent_task_id_tasks_id_fk": {

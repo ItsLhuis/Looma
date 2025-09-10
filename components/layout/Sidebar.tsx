@@ -54,8 +54,7 @@ const items: NavItem[] = [
   { href: "/home", icon: "Home", label: "Home" },
   { href: "/notes", icon: "Notebook", label: "Notes" },
   { href: "/tasks", icon: "CheckSquare", label: "Tasks" },
-  { href: "/calendar", icon: "Calendar", label: "Calendar" },
-  { href: "/categories", icon: "Tag", label: "Categories" }
+  { href: "/calendar", icon: "Calendar", label: "Calendar" }
 ]
 
 function Sidebar({ user }: SidebarProps) {
