@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils"
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types"
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString("en-CA")
+  return date.toLocaleDateString()
 }
 
 export type TaskEditorProps = {
@@ -139,11 +139,36 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
 
   if (mode === "update" && fullTaskQuery.isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-10 w-24" />
+      <div className="flex h-full flex-1 flex-col space-y-4">
+        <Skeleton className="h-3 w-40" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-3 w-28" />
+        <Skeleton className="min-h-[400px] w-full" />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+        </div>
+        <div className="flex h-full flex-1 flex-col space-y-4">
+          <Skeleton className="h-3 w-28" />
+          <Skeleton className="h-9 w-full" />
+        </div>
+        <div className="flex items-center justify-end gap-2">
+          <Skeleton className="h-9 w-20" />
+        </div>
       </div>
     )
   }
@@ -322,10 +347,17 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
               variant="outline"
               onClick={() => router.push("/tasks")}
               disabled={currentMutation.isPending}
+              isLoading={currentMutation.isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={currentMutation.isPending}>
+            <Button
+              type="submit"
+              disabled={
+                !form.formState.isDirty || !form.formState.isValid || currentMutation.isPending
+              }
+              isLoading={currentMutation.isPending}
+            >
               {mode === "insert" ? "Create" : "Save"}
             </Button>
           </div>

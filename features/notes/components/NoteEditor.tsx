@@ -266,10 +266,17 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
               variant="outline"
               onClick={() => router.push("/notes")}
               disabled={currentMutation.isPending}
+              isLoading={currentMutation.isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={currentMutation.isPending}>
+            <Button
+              type="submit"
+              disabled={
+                !form.formState.isDirty || !form.formState.isValid || currentMutation.isPending
+              }
+              isLoading={currentMutation.isPending}
+            >
               {mode === "insert" ? "Create" : "Save"}
             </Button>
           </div>

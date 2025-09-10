@@ -140,7 +140,7 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   try {
     const body = await request.json()
-    const created = await createTask(body)
+    const created = await createTask({ ...body, dueDate: new Date(body.dueDate) })
     return jsonResponse({ data: created })
   } catch (error: unknown) {
     let status = 500

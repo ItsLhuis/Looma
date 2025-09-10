@@ -32,7 +32,7 @@ export async function PUT(request: Request, context: Params): Promise<Response> 
   try {
     const body = await request.json()
     const { id } = await context.params
-    const updated = await updateTask(id, body)
+    const updated = await updateTask(id, { ...body, dueDate: new Date(body.dueDate) })
     if (!updated) return jsonResponse({ error: "Not Found" }, 404)
     return jsonResponse({ data: updated })
   } catch (error: unknown) {
