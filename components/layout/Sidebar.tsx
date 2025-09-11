@@ -117,12 +117,6 @@ function Sidebar({ user }: SidebarProps) {
           </DropdownMenuRadioGroup>
         </DropdownMenuSubContent>
       </DropdownMenuSub>
-      <DropdownMenuItem asChild>
-        <Link href="/settings" className="flex items-center gap-2">
-          <Icon name="Settings" />
-          Settings
-        </Link>
-      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={() => setLogoutDialogOpen(true)}>
         <Icon name="LogOut" />
@@ -130,69 +124,6 @@ function Sidebar({ user }: SidebarProps) {
       </DropdownMenuItem>
     </>
   )
-
-  if (isMobile) {
-    return (
-      <>
-        <SidebarHeader className="flex h-12 items-start justify-center p-3">
-          <div className="relative flex w-full items-center justify-between gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <Image src="/icon.png" alt="Looma" width={24} height={24} />
-              <Typography variant="h5">
-                <AuroraText>Looma</AuroraText>
-              </Typography>
-            </Link>
-            <SidebarTrigger className="absolute right-0" />
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Navigation Tools</SidebarGroupLabel>
-            <SidebarMenu>
-              {items.map((item) => {
-                const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <Link href={item.href} tabIndex={-1}>
-                      <SidebarMenuButton
-                        isActive={isActive}
-                        data-active={isActive}
-                        tooltip={item.label}
-                        onClick={() => {
-                          setOpenMobile(false)
-                        }}
-                      >
-                        <Icon name={item.icon} />
-                        {item.label}
-                      </SidebarMenuButton>
-                    </Link>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <Link href="/settings">
-            <Button
-              variant="ghost"
-              className="h-auto w-full p-3"
-              onClick={() => {
-                setOpenMobile(false)
-              }}
-            >
-              <UserAvatar />
-              <div className="flex w-full items-center justify-between">
-                <UserInfo />
-                <Icon name="Settings" />
-              </div>
-            </Button>
-          </Link>
-        </SidebarFooter>
-        <LogoutDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen} />
-      </>
-    )
-  }
 
   return (
     <>
@@ -222,6 +153,9 @@ function Sidebar({ user }: SidebarProps) {
                       isActive={isActive}
                       data-active={isActive}
                       tooltip={item.label}
+                      onClick={() => {
+                        setOpenMobile(false)
+                      }}
                     >
                       <Icon name={item.icon} />
                       {item.label}
@@ -236,7 +170,10 @@ function Sidebar({ user }: SidebarProps) {
       <SidebarFooter>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className={cn("h-auto w-full p-3", !isExpanded && "my-3 p-0")}>
+            <Button
+              variant="ghost"
+              className={cn("h-auto w-full p-3", !isExpanded && !isMobile && "my-3 p-0")}
+            >
               <UserAvatar className={isMobile ? "" : !isExpanded ? "mx-auto" : ""} />
               {isMobile ? (
                 <div className="flex w-full items-center justify-between">
@@ -253,7 +190,11 @@ function Sidebar({ user }: SidebarProps) {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side={isExpanded ? "left" : "right"} className="w-56">
+          <DropdownMenuContent
+            align={isMobile ? undefined : "end"}
+            side={isMobile ? "top" : isExpanded ? "left" : "right"}
+            className="w-56"
+          >
             <DropdownMenuItems />
           </DropdownMenuContent>
         </DropdownMenu>

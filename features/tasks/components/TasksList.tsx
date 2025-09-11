@@ -112,15 +112,13 @@ function TasksList({ initialParams }: TasksListProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="space-y-4">
       <div className="min-h-8">
         <Typography affects={["lead", "bold"]} className="shrink-0">
           {isFetching ? <Spinner /> : `${total} tasks`}
         </Typography>
       </div>
-
       <TasksFilters defaultFilters={defaultFilters} onChange={onFiltersChange} />
-
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 12 }).map((_, index) => (

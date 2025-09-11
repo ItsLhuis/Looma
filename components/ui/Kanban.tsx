@@ -4,9 +4,10 @@ import { useEffect, useState, type Dispatch, type DragEvent, type SetStateAction
 
 import { cn } from "@/lib/utils"
 
-import { Flame, Trash2 } from "lucide-react"
-
+import { Badge } from "@/components/ui/Badge"
+import { Button } from "@/components/ui/Button"
 import { Card as UICard } from "@/components/ui/Card"
+import { Icon } from "@/components/ui/Icon"
 
 import { motion } from "motion/react"
 
@@ -21,6 +22,34 @@ export type KanbanCardType = {
   description?: string
   priority?: KanbanPriority
   assignee?: string
+  parentTaskId?: string | null
+  parentTaskTitle?: string
+}
+
+export type HierarchicalKanbanCardType = KanbanCardType & {
+  depth?: number
+  isExpanded?: boolean
+  hasChildren?: boolean
+  parentPath?: string[]
+  isVisible?: boolean
+  hierarchyKey?: string
+  onToggleExpansion?: (cardId: string) => void
+  onFocusParent?: (parentId: string) => void
+}
+
+export type ResponsiveKanbanConfig = {
+  breakpoints: {
+    mobile: number
+    tablet: number
+    desktop: number
+  }
+  columnsPerBreakpoint: {
+    mobile: number
+    tablet: number
+    desktop: number
+  }
+  enableHorizontalScroll: boolean
+  snapToColumns: boolean
 }
 
 export type KanbanColumnConfig = {
@@ -36,6 +65,19 @@ type KanbanProps = {
   onCardsChange?: (cards: KanbanCardType[]) => void
   className?: string
   showDeleteZone?: boolean
+  hierarchical?: boolean
+  responsiveConfig?: Partial<ResponsiveKanbanConfig>
+  onHierarchicalMove?: (params: {
+    cardId: string
+    newColumn: string
+    newPosition: number
+    newParentId?: string | null
+    insertIndex: number
+  }) => Promise<void>
+  onValidateMove?: (params: { cardId: string; newParentId: string | null }) => {
+    isValid: boolean
+    reason?: string
+  }
 }
 
 export function Kanban({
@@ -43,15 +85,21 @@ export function Kanban({
   initialCards = [],
   onCardsChange,
   className,
-  showDeleteZone = true
+  showDeleteZone = true,
+  hierarchical = false,
+  onHierarchicalMove,
+  onValidateMove
 }: KanbanProps) {
   return (
-    <div className={cn("bg-background text-foreground h-screen w-full", className)}>
+    <div className={cn("h-full w-full overflow-hidden", className)}>
       <KanbanBoard
         columns={columns}
         initialCards={initialCards}
         onCardsChange={onCardsChange}
         showDeleteZone={showDeleteZone}
+        hierarchical={hierarchical}
+        onHierarchicalMove={onHierarchicalMove}
+        onValidateMove={onValidateMove}
       />
     </div>
   )
@@ -62,9 +110,29 @@ type KanbanBoardProps = {
   initialCards: KanbanCardType[]
   onCardsChange?: (cards: KanbanCardType[]) => void
   showDeleteZone: boolean
+  hierarchical?: boolean
+  onHierarchicalMove?: (params: {
+    cardId: string
+    newColumn: string
+    newPosition: number
+    newParentId?: string | null
+    insertIndex: number
+  }) => Promise<void>
+  onValidateMove?: (params: { cardId: string; newParentId: string | null }) => {
+    isValid: boolean
+    reason?: string
+  }
 }
 
-function KanbanBoard({ columns, initialCards, onCardsChange, showDeleteZone }: KanbanBoardProps) {
+function KanbanBoard({
+  columns,
+  initialCards,
+  onCardsChange,
+  showDeleteZone,
+  hierarchical = false,
+  onHierarchicalMove,
+  onValidateMove
+}: KanbanBoardProps) {
   const [cards, setCards] = useState<KanbanCardType[]>(initialCards)
 
   useEffect(() => {
@@ -76,16 +144,33 @@ function KanbanBoard({ columns, initialCards, onCardsChange, showDeleteZone }: K
   }, [cards, onCardsChange])
 
   return (
-    <div className="flex h-full w-full gap-6 overflow-auto p-6">
+    <div
+      className={cn(
+        "h-full w-full",
+        "grid gap-3",
+        "grid-cols-[repeat(auto-fit,minmax(280px,1fr))]",
+        "lg:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]",
+        "auto-rows-max",
+        "overflow-auto"
+      )}
+    >
       {columns.map((columnConfig) => (
         <KanbanColumn
           key={columnConfig.id}
           config={columnConfig}
           cards={cards}
           setCards={setCards}
+          hierarchical={hierarchical}
+          onHierarchicalMove={onHierarchicalMove}
+          onValidateMove={onValidateMove}
         />
       ))}
-      {showDeleteZone && <KanbanBurnBarrel setCards={setCards} />}
+
+      {showDeleteZone && (
+        <div className="flex items-start justify-center">
+          <KanbanBurnBarrel setCards={setCards} />
+        </div>
+      )}
     </div>
   )
 }
@@ -94,16 +179,42 @@ type KanbanColumnProps = {
   config: KanbanColumnConfig
   cards: KanbanCardType[]
   setCards: Dispatch<SetStateAction<KanbanCardType[]>>
+  hierarchical?: boolean
+  onHierarchicalMove?: (params: {
+    cardId: string
+    newColumn: string
+    newPosition: number
+    newParentId?: string | null
+    insertIndex: number
+  }) => Promise<void>
+  onValidateMove?: (params: { cardId: string; newParentId: string | null }) => {
+    isValid: boolean
+    reason?: string
+  }
 }
 
-function KanbanColumn({ config, cards, setCards }: KanbanColumnProps) {
+function KanbanColumn({
+  config,
+  cards,
+  setCards,
+  hierarchical = false,
+  onHierarchicalMove,
+  onValidateMove
+}: KanbanColumnProps) {
   const [active, setActive] = useState(false)
 
   function handleDragStart(e: DragEvent, card: KanbanCardType) {
     e.dataTransfer.setData("cardId", card.id)
+
+    if (hierarchical) {
+      const hierarchicalCard = card as HierarchicalKanbanCardType
+      e.dataTransfer.setData("originalColumn", card.column)
+      e.dataTransfer.setData("parentPath", JSON.stringify(hierarchicalCard.parentPath || []))
+      e.dataTransfer.setData("hasChildren", String(hierarchicalCard.hasChildren || false))
+    }
   }
 
-  function handleDragEnd(e: DragEvent) {
+  async function handleDragEnd(e: DragEvent) {
     const cardId = e.dataTransfer.getData("cardId")
 
     setActive(false)
@@ -115,26 +226,58 @@ function KanbanColumn({ config, cards, setCards }: KanbanColumnProps) {
     const before = element.dataset.before || "-1"
 
     if (before !== cardId) {
-      let copy = [...cards]
+      if (hierarchical && onHierarchicalMove) {
+        try {
+          const moveToBack = before === "-1"
+          const columnCards = cards.filter((c) => c.column === config.id)
+          let insertIndex = 0
 
-      let cardToTransfer = copy.find((c) => c.id === cardId)
-      if (!cardToTransfer) return
-      cardToTransfer = { ...cardToTransfer, column: config.id }
+          if (!moveToBack) {
+            insertIndex = columnCards.findIndex((el) => el.id === before)
+            if (insertIndex === -1) insertIndex = columnCards.length
+          } else {
+            insertIndex = columnCards.length
+          }
 
-      copy = copy.filter((c) => c.id !== cardId)
+          const draggedCard = cards.find((c) => c.id === cardId)
+          const newParentId = draggedCard?.parentTaskId || null
 
-      const moveToBack = before === "-1"
+          if (onValidateMove) {
+            const validation = onValidateMove({ cardId, newParentId })
+            if (!validation.isValid) {
+              return
+            }
+          }
 
-      if (moveToBack) {
-        copy.push(cardToTransfer)
+          await onHierarchicalMove({
+            cardId,
+            newColumn: config.id,
+            newPosition: insertIndex,
+            newParentId,
+            insertIndex
+          })
+        } catch (error) {
+          console.log(error)
+        }
       } else {
-        const insertAtIndex = copy.findIndex((el) => el.id === before)
-        if (insertAtIndex === undefined) return
+        let copy = [...cards]
+        let cardToTransfer = copy.find((c) => c.id === cardId)
+        if (!cardToTransfer) return
 
-        copy.splice(insertAtIndex, 0, cardToTransfer)
+        cardToTransfer = { ...cardToTransfer, column: config.id }
+        copy = copy.filter((c) => c.id !== cardId)
+
+        const moveToBack = before === "-1"
+        if (moveToBack) {
+          copy.push(cardToTransfer)
+        } else {
+          const insertAtIndex = copy.findIndex((el) => el.id === before)
+          if (insertAtIndex === -1) return
+          copy.splice(insertAtIndex, 0, cardToTransfer)
+        }
+
+        setCards(copy)
       }
-
-      setCards(copy)
     }
   }
 
@@ -196,15 +339,20 @@ function KanbanColumn({ config, cards, setCards }: KanbanColumnProps) {
   const isAtLimit = config.maxCards && filteredCards.length >= config.maxCards
 
   return (
-    <div className="w-80 shrink-0">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className={cn("text-lg font-semibold", config.color || "text-foreground")}>
+    <div className="w-[280px] shrink-0 snap-start sm:w-[300px] md:w-80">
+      <div className="mb-3 flex items-center justify-between md:mb-4">
+        <h3
+          className={cn(
+            "truncate text-base font-semibold md:text-lg",
+            config.color || "text-foreground"
+          )}
+        >
           {config.title}
         </h3>
         <div className="flex items-center gap-2">
           <span
             className={cn(
-              "rounded-full px-2 py-1 text-xs",
+              "shrink-0 rounded-full px-2 py-1 text-xs",
               isAtLimit
                 ? "bg-destructive text-destructive-foreground"
                 : "bg-muted text-muted-foreground"
@@ -220,17 +368,32 @@ function KanbanColumn({ config, cards, setCards }: KanbanColumnProps) {
         onDragOver={isAtLimit ? undefined : handleDragOver}
         onDragLeave={handleDragLeave}
         className={cn(
-          "min-h-[200px] w-full rounded-lg border-2 border-dashed p-2 transition-colors",
+          "min-h-[200px] w-full rounded-lg border-2 border-dashed p-2 transition-colors sm:min-h-[300px]",
           isAtLimit
             ? "border-destructive/50 bg-destructive/5 cursor-not-allowed"
             : active
               ? "border-primary bg-primary/5"
               : "border-muted bg-muted/20"
         )}
+        role="region"
+        aria-label={`${config.title} column with ${filteredCards.length} tasks${config.maxCards ? ` (max ${config.maxCards})` : ""}${isAtLimit ? " - at capacity" : ""}`}
+        aria-live="polite"
       >
-        {filteredCards.map((c) => (
-          <KanbanCard key={c.id} {...c} handleDragStart={handleDragStart} />
-        ))}
+        {filteredCards.map((c) => {
+          const hierarchicalCard = c as HierarchicalKanbanCardType
+          return (
+            <KanbanCard
+              key={c.id}
+              {...c}
+              handleDragStart={handleDragStart}
+              depth={hierarchicalCard.depth}
+              isExpanded={hierarchicalCard.isExpanded}
+              hasChildren={hierarchicalCard.hasChildren}
+              onToggleExpansion={hierarchicalCard.onToggleExpansion}
+              onFocusParent={hierarchicalCard.onFocusParent}
+            />
+          )
+        })}
         <KanbanDropIndicator beforeId={null} column={config.id} />
       </div>
     </div>
@@ -239,6 +402,12 @@ function KanbanColumn({ config, cards, setCards }: KanbanColumnProps) {
 
 type KanbanCardProps = KanbanCardType & {
   handleDragStart: (e: DragEvent, card: KanbanCardType) => void
+  depth?: number
+  isExpanded?: boolean
+  hasChildren?: boolean
+  parentPath?: string[]
+  onToggleExpansion?: (cardId: string) => void
+  onFocusParent?: (parentId: string) => void
 }
 
 function KanbanCard({
@@ -248,7 +417,14 @@ function KanbanCard({
   description,
   priority,
   assignee,
-  handleDragStart
+  parentTaskId,
+  parentTaskTitle,
+  handleDragStart,
+  depth = 0,
+  isExpanded = false,
+  hasChildren = false,
+  onToggleExpansion,
+  onFocusParent
 }: KanbanCardProps) {
   const priorityColors: Record<KanbanPriority, string> = {
     none: "bg-muted text-muted-foreground border border-muted",
@@ -266,30 +442,110 @@ function KanbanCard({
     urgent: "border-l-red-500"
   }
 
+  const handleExpansionToggle = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (onToggleExpansion) {
+      onToggleExpansion(id)
+    }
+  }
+
+  const indentLevel = Math.min(depth, 5)
+  const indentPx = indentLevel * 16
+
   return (
     <>
       <KanbanDropIndicator beforeId={id} column={column} />
-      <motion.div layout layoutId={id}>
+      <motion.div
+        layout
+        layoutId={id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        whileDrag={{
+          scale: 1.05,
+          rotate: 2,
+          zIndex: 1000
+        }}
+        dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+        style={{ marginLeft: `${indentPx}px` }}
+        className={cn(
+          depth > 0 && "relative",
+          depth > 0 &&
+            "before:bg-border before:absolute before:top-0 before:bottom-0 before:left-[-8px] before:w-px"
+        )}
+      >
         <UICard
           draggable="true"
           onDragStart={(e) =>
-            handleDragStart(e, { title, id, column, description, priority, assignee })
+            handleDragStart(e, {
+              title,
+              id,
+              column,
+              description,
+              priority,
+              assignee,
+              parentTaskId,
+              parentTaskTitle
+            })
           }
           className={cn(
-            "mb-3 cursor-grab border-l-4 p-4 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing",
-            priority ? borderColors[priority] : borderColors.none
+            "focus:ring-primary mb-2 cursor-grab touch-manipulation border-l-4 shadow-sm transition-all hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:outline-none active:cursor-grabbing md:mb-3",
+            priority ? borderColors[priority] : borderColors.none,
+            depth > 0 && "bg-muted/30",
+            hasChildren && "border-r-primary border-r-4"
           )}
+          tabIndex={0}
+          role="button"
+          aria-label={`Task: ${title}. ${description ? `Description: ${description}. ` : ""}${priority && priority !== "none" ? `Priority: ${priority}. ` : ""}Draggable. Press Enter or Space to interact.`}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+            }
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+              e.preventDefault()
+            }
+          }}
         >
-          <div className="space-y-2">
-            <h4 className="text-sm leading-tight font-medium">{title}</h4>
+          <div className="space-y-2 p-3 md:p-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                {hasChildren && (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleExpansionToggle}
+                    className="hover:bg-muted flex-shrink-0 rounded p-1 transition-colors"
+                    aria-label={isExpanded ? "Collapse" : "Expand"}
+                  >
+                    {isExpanded ? <Icon name="ChevronDown" /> : <Icon name="ChevronRight" />}
+                  </Button>
+                )}
+                <h4 className="truncate text-sm leading-tight font-medium">{title}</h4>
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                {parentTaskId && parentTaskTitle && (
+                  <Badge
+                    variant="secondary"
+                    onClick={onFocusParent ? () => onFocusParent(parentTaskId) : undefined}
+                  >
+                    <Icon name="Link" />
+                    {parentTaskTitle}
+                  </Badge>
+                )}
+                {depth > 0 && <Badge variant="secondary">L {depth}</Badge>}
+              </div>
+            </div>
             {description && (
-              <p className="text-muted-foreground line-clamp-2 text-xs">{description}</p>
+              <p className="text-muted-foreground line-clamp-2 text-xs break-words">
+                {description}
+              </p>
             )}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               {priority && priority !== "none" && (
                 <span
                   className={cn(
-                    "rounded-full px-2 py-1 text-xs font-medium",
+                    "rounded-full px-2 py-1 text-xs font-medium whitespace-nowrap",
                     priorityColors[priority]
                   )}
                 >
@@ -297,7 +553,7 @@ function KanbanCard({
                 </span>
               )}
               {assignee && (
-                <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium">
+                <div className="bg-primary text-primary-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium">
                   {assignee.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -316,10 +572,14 @@ type KanbanDropIndicatorProps = {
 
 function KanbanDropIndicator({ beforeId, column }: KanbanDropIndicatorProps) {
   return (
-    <div
+    <motion.div
       data-before={beforeId || "-1"}
       data-column={column}
-      className="bg-primary my-0.5 h-0.5 w-full opacity-0 transition-opacity"
+      className="bg-primary my-0.5 h-0.5 w-full rounded-full opacity-0"
+      initial={{ opacity: 0, scaleX: 0 }}
+      animate={{ opacity: 0, scaleX: 1 }}
+      style={{ transformOrigin: "center" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
     />
   )
 }
@@ -347,18 +607,37 @@ function KanbanBurnBarrel({ setCards }: KanbanBurnBarrelProps) {
   }
 
   return (
-    <div
+    <motion.div
       onDrop={handleDragEnd}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "mt-10 grid h-56 w-56 shrink-0 place-content-center rounded-lg border-2 border-dashed text-4xl transition-colors",
+        "mt-6 grid h-40 w-40 shrink-0 snap-start place-content-center rounded-lg border-2 border-dashed text-3xl transition-colors md:mt-10 md:h-56 md:w-56 md:text-4xl",
         active
           ? "border-destructive bg-destructive/10 text-destructive"
           : "border-muted-foreground/25 bg-muted/20 text-muted-foreground"
       )}
+      animate={{
+        scale: active ? 1.05 : 1,
+        borderWidth: active ? "3px" : "2px"
+      }}
+      transition={{ duration: 0.2 }}
+      role="region"
+      aria-label="Delete zone - drop tasks here to delete them"
+      aria-live="polite"
     >
-      {active ? <Flame className="animate-bounce" /> : <Trash2 />}
-    </div>
+      <motion.div
+        animate={{
+          rotate: active ? [0, -10, 10, -10, 0] : 0,
+          scale: active ? 1.1 : 1
+        }}
+        transition={{
+          rotate: { duration: 0.5, repeat: active ? Infinity : 0 },
+          scale: { duration: 0.2 }
+        }}
+      >
+        {active ? <Icon name="Flame" /> : <Icon name="Trash" />}
+      </motion.div>
+    </motion.div>
   )
 }

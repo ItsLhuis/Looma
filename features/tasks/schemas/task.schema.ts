@@ -21,3 +21,11 @@ export const createUpdateTaskSchema = () => {
 }
 
 export type UpdateTaskType = z.infer<ReturnType<typeof createUpdateTaskSchema>>
+
+export const reorderTaskSchema = z.object({
+  taskId: z.uuid("Invalid task ID format"),
+  newPosition: z.number().int().min(0, "Position must be a non-negative integer"),
+  newStatus: z.enum(["pending", "inProgress", "completed", "cancelled", "onHold"]).optional()
+})
+
+export type ReorderTaskRequest = z.infer<typeof reorderTaskSchema>

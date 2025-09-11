@@ -93,10 +93,12 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     const result = await getNotes(params)
+
     return jsonResponse(result)
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal Server Error"
     const status = message === "UNAUTHORIZED" ? 401 : 500
+
     return jsonResponse({ error: message }, status)
   }
 }
@@ -104,7 +106,9 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   try {
     const body = await request.json()
+
     const created = await createNote(body)
+
     return jsonResponse({ data: created })
   } catch (error: unknown) {
     let status = 500

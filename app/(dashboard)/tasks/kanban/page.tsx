@@ -1,3 +1,5 @@
+"use client"
+
 import { Fragment } from "react"
 
 import { Button, Icon } from "@/components/ui"
@@ -5,17 +7,17 @@ import Link from "next/link"
 
 import { Container, Navbar } from "@/components/layout"
 
-import { TasksList } from "@/features/tasks/components"
+import { TasksKanban } from "@/features/tasks/components"
 
-export default async function TasksPage() {
+export default function TasksKanbanPage() {
   return (
     <Fragment>
       <Navbar title="Tasks">
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link href="/tasks/kanban">
-              <Icon name="Columns" />
-              Kanban View
+            <Link href="/tasks">
+              <Icon name="List" />
+              List View
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm">
@@ -27,7 +29,7 @@ export default async function TasksPage() {
         </div>
       </Navbar>
       <Container>
-        <TasksList />
+        <TasksKanban />
       </Container>
     </Fragment>
   )

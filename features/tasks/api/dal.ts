@@ -83,11 +83,6 @@ export async function getTasks(params: QueryTasksParams = {}) {
     }
   }
 
-  if (filters?.hasSubtasks !== undefined) {
-    // This would require a subquery to check if task has children
-    // For now, we'll handle this in the application layer
-  }
-
   const where = and(eq(tasks.userId, user.id), ...filterConditions)
 
   const [rows, totals] = await Promise.all([
@@ -170,10 +165,12 @@ export async function updateTask(id: string, input: UpdateTask) {
 
   const body = createUpdateTaskSchema().parse(merged) as UpdateTask
 
+  const now = new Date()
   const setValues = {
     ...body,
     userId: user.id,
-    completedAt: body.status === "completed" ? new Date() : existing.completedAt
+    completedAt: body.status === "completed" ? now : existing.completedAt,
+    updatedAt: now
   }
 
   const [updated] = await database
@@ -195,9 +192,11 @@ export async function updateTaskStatus(id: string, status: Task["status"]) {
     .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
   if (!existing) return undefined
 
+  const now = new Date()
   const setValues = {
     status,
-    completedAt: status === "completed" ? new Date() : null
+    completedAt: status === "completed" ? now : null,
+    updatedAt: now
   }
 
   const [updated] = await database
@@ -211,23 +210,43 @@ export async function updateTaskStatus(id: string, status: Task["status"]) {
 
 export async function reorderTask(id: string, newPosition: number, newStatus?: Task["status"]) {
   const user = await getUser()
-  if (!user) throw new Error("UNAUTHORIZED")
+  if (!user) {
+    throw new Error("UNAUTHORIZED")
+  }
 
   const [existing] = await database
     .select()
     .from(tasks)
     .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
-  if (!existing) return undefined
 
-  const status = newStatus || existing.status
+  if (!existing) {
+    return undefined
+  }
+
+  const finalStatus = newStatus || existing.status
+  const now = new Date()
+
+  const completedAt =
+    finalStatus === "completed" && existing.status !== "completed"
+      ? now
+      : finalStatus !== "completed"
+        ? null
+        : existing.completedAt
+
+  const setValues = {
+    position: newPosition,
+    status: finalStatus,
+    completedAt,
+    updatedAt: now
+  }
 
   const [updated] = await database
     .update(tasks)
-    .set({ position: newPosition, status })
+    .set(setValues)
     .where(and(eq(tasks.id, id), eq(tasks.userId, user.id)))
     .returning()
 
-  return (updated as Task | undefined) ?? undefined
+  return updated as Task
 }
 
 export async function deleteTask(id: string) {

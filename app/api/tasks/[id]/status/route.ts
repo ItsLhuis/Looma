@@ -21,8 +21,11 @@ export async function PATCH(request: Request, context: Params): Promise<Response
   try {
     const body: UpdateTaskStatusRequest = await request.json()
     const { id } = await context.params
+
     const updated = await updateTaskStatus(id, body.status)
+
     if (!updated) return jsonResponse({ error: "Not Found" }, 404)
+
     return jsonResponse({ data: updated })
   } catch (error: unknown) {
     let status = 500
