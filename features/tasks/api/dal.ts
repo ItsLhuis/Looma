@@ -12,7 +12,7 @@ import type { InsertTask, QueryTasksParams, Task, UpdateTask } from "@/features/
 const { tasks } = schema
 
 function resolveOrderBy(orderBy?: QueryTasksParams["orderBy"]) {
-  if (!orderBy) return [desc(tasks.position), desc(tasks.updatedAt)]
+  if (!orderBy) return [desc(tasks.updatedAt)]
 
   const direction = orderBy.direction
 
@@ -32,7 +32,7 @@ function resolveOrderBy(orderBy?: QueryTasksParams["orderBy"]) {
     case "position":
       return [direction === "asc" ? asc(tasks.position) : desc(tasks.position)]
     default:
-      return [desc(tasks.position), desc(tasks.updatedAt)]
+      return [desc(tasks.updatedAt)]
   }
 }
 
