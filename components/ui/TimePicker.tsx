@@ -74,7 +74,7 @@ function TimePicker({ value, onChange, disabled, error, className }: TimePickerP
         </PopoverTrigger>
         <PopoverContent className="p-4" align="start">
           <div className="flex w-full items-center gap-2">
-            <div className="flex w-full flex-col items-center">
+            <div className="flex w-full flex-col items-start">
               <label className="mb-2 text-sm font-medium">Hour</label>
               <Select
                 disabled={disabled}
@@ -94,7 +94,7 @@ function TimePicker({ value, onChange, disabled, error, className }: TimePickerP
               </Select>
             </div>
             <span className="mt-6">:</span>
-            <div className="flex w-full flex-col items-center">
+            <div className="flex w-full flex-col items-start">
               <label className="mb-2 text-sm font-medium">Minute</label>
               <Select
                 disabled={disabled}

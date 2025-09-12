@@ -62,7 +62,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} h-screen scroll-smooth`}
     >
-      <body className={`${plusJakartaSans.className} h-full overflow-hidden antialiased`}>
+      <body className={`${plusJakartaSans.className} h-full antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
