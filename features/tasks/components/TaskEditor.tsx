@@ -269,7 +269,7 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full pl-3 text-left font-normal",
+                            "hover:text-foreground w-full pl-3",
                             !field.value && "text-muted-foreground"
                           )}
                         >

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { useIsMobile } from "@/hooks/useIsMobile"
+import { useIsMobile } from "@/hooks/useMediaQuery"
 
 import { cva, VariantProps } from "class-variance-authority"
 

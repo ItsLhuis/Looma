@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react"
 
-import { useIsMobile } from "@/hooks/useIsMobile"
+import { useIsMobile } from "@/hooks/useMediaQuery"
 
 import { cn } from "@/lib/utils"
 
