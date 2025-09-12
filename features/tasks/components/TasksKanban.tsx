@@ -7,6 +7,7 @@ import { useListTasks, useReorderTask } from "@/features/tasks/api"
 import {
   Button,
   Kanban,
+  Skeleton,
   Spinner,
   Typography,
   type HierarchicalKanbanCardType,
@@ -141,12 +142,55 @@ function TasksKanban({ initialParams }: TasksKanbanProps) {
     [tasks]
   )
 
+  const visibleTasksCount = flattenedTasks.length
+  const totalTasksCount = tasks.length
+
+  const headerContent = (
+    <div className="flex min-h-8 items-center justify-between">
+      <Typography affects={["lead", "bold"]}>
+        {isFetching ? <Spinner /> : `${visibleTasksCount} of ${totalTasksCount} tasks visible`}
+      </Typography>
+    </div>
+  )
+
+  const actionsContent = (
+    <div className="flex w-full justify-end gap-2">
+      <Button
+        variant="outline"
+        onClick={() =>
+          setHierarchyState({
+            expandedIds: new Set(tasks.filter((t) => t.parentTaskId).map((t) => t.parentTaskId!)),
+            collapsedIds: new Set()
+          })
+        }
+      >
+        Expand All
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          setHierarchyState({
+            expandedIds: new Set(),
+            collapsedIds: new Set(tasks.filter((t) => t.parentTaskId === null).map((t) => t.id))
+          })
+        }
+      >
+        Collapse All
+      </Button>
+    </div>
+  )
+
   if (isLoading) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <div className="flex items-center gap-2">
-          <Spinner />
-          <Typography affects={["muted"]}>Loading hierarchical tasks...</Typography>
+      <div className="space-y-4">
+        {headerContent}
+        {actionsContent}
+        <div className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3">
+          <Skeleton className="h-[500px]" />
+          <Skeleton className="h-[500px]" />
+          <Skeleton className="h-[500px]" />
+          <Skeleton className="h-[500px]" />
+          <Skeleton className="h-[500px ]" />
         </div>
       </div>
     )
@@ -154,66 +198,42 @@ function TasksKanban({ initialParams }: TasksKanbanProps) {
 
   if (isError) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <Typography className="text-destructive" affects={["small"]}>
-          Failed to load tasks
-        </Typography>
+      <div className="space-y-4">
+        {headerContent}
+        {actionsContent}
+        <div className="flex h-96 items-center justify-center">
+          <Typography className="text-destructive" affects={["small"]}>
+            Failed to load tasks
+          </Typography>
+        </div>
       </div>
     )
   }
 
   if (tasks.length === 0) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <Typography affects={["muted", "small"]}>No tasks found</Typography>
+      <div className="space-y-4">
+        {headerContent}
+        {actionsContent}
+        <div className="flex h-96 items-center justify-center">
+          <Typography affects={["muted", "small"]}>No tasks found</Typography>
+        </div>
       </div>
     )
   }
 
-  const visibleTasksCount = flattenedTasks.length
-  const totalTasksCount = tasks.length
-
   return (
     <div className="space-y-4">
-      <div className="flex min-h-8 items-center justify-between">
-        <Typography affects={["lead", "bold"]}>
-          {isFetching ? <Spinner /> : `${visibleTasksCount} of ${totalTasksCount} tasks visible`}
-        </Typography>
-      </div>
-      <div className="flex w-full justify-end gap-2">
-        <Button
-          variant="outline"
-          onClick={() =>
-            setHierarchyState({
-              expandedIds: new Set(tasks.filter((t) => t.parentTaskId).map((t) => t.parentTaskId!)),
-              collapsedIds: new Set()
-            })
-          }
-        >
-          Expand All
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() =>
-            setHierarchyState({
-              expandedIds: new Set(),
-              collapsedIds: new Set(tasks.filter((t) => t.parentTaskId === null).map((t) => t.id))
-            })
-          }
-        >
-          Collapse All
-        </Button>
-      </div>
-      <div>
-        <Kanban
-          columns={statusColumns}
-          initialCards={kanbanCards}
-          hierarchical
-          onHierarchicalMove={handleHierarchicalMove}
-          onValidateMove={handleValidateMove}
-          showDeleteZone={false}
-        />
-      </div>
+      {headerContent}
+      {actionsContent}
+      <Kanban
+        columns={statusColumns}
+        initialCards={kanbanCards}
+        hierarchical
+        onHierarchicalMove={handleHierarchicalMove}
+        onValidateMove={handleValidateMove}
+        showDeleteZone={false}
+      />
     </div>
   )
 }

@@ -111,15 +111,21 @@ function TasksList({ initialParams }: TasksListProps) {
     orderBy: params.orderBy || { column: "updatedAt", direction: "desc" }
   }
 
-  return (
-    <div className="space-y-4">
-      <div className="min-h-8">
-        <Typography affects={["lead", "bold"]} className="shrink-0">
-          {isFetching ? <Spinner /> : `${total} tasks`}
-        </Typography>
-      </div>
-      <TasksFilters defaultFilters={defaultFilters} onChange={onFiltersChange} />
-      {isLoading ? (
+  const headerContent = (
+    <div className="min-h-8">
+      <Typography affects={["lead", "bold"]} className="shrink-0">
+        {isFetching ? <Spinner /> : `${total} tasks`}
+      </Typography>
+    </div>
+  )
+
+  const filtersContent = <TasksFilters defaultFilters={defaultFilters} onChange={onFiltersChange} />
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {headerContent}
+        {filtersContent}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 12 }).map((_, index) => (
             <Card key={index}>
@@ -143,23 +149,45 @@ function TasksList({ initialParams }: TasksListProps) {
             </Card>
           ))}
         </div>
-      ) : isError ? (
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-4">
+        {headerContent}
+        {filtersContent}
         <div className="flex h-full items-center justify-center py-6">
           <Typography className="text-destructive" affects={["small"]}>
             Failed to load tasks
           </Typography>
         </div>
-      ) : data && data.data.length === 0 ? (
+      </div>
+    )
+  }
+
+  if (data && data.data.length === 0) {
+    return (
+      <div className="space-y-4">
+        {headerContent}
+        {filtersContent}
         <div className="flex h-full items-center justify-center py-6">
           <Typography affects={["muted", "small"]}>No tasks found</Typography>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {data?.data.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </div>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {headerContent}
+      {filtersContent}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {data?.data.map((task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
+      </div>
       {totalPages > 1 && (
         <Pagination>
           <PaginationContent>

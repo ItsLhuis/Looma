@@ -100,7 +100,7 @@ function TaskCard({ task, className }: TaskCardProps) {
             Updated at {new Date(task.updatedAt).toLocaleString()}
           </Typography>
         </div>
-        <div className="flex max-w-full flex-col flex-wrap items-end gap-1.5 overflow-hidden">
+        <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
           <Badge className={cn(getStatusClasses(task.status), "shrink-0")}>
             {getStatusLabel(task.status)}
           </Badge>

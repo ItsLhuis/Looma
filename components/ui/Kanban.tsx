@@ -1,13 +1,22 @@
 "use client"
 
-import { useEffect, useState, type Dispatch, type DragEvent, type SetStateAction } from "react"
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type DragEvent,
+  type SetStateAction
+} from "react"
 
 import { cn } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
-import { Card as UICard } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader } from "@/components/ui/Card"
 import { Icon } from "@/components/ui/Icon"
+import { Typography } from "@/components/ui/Typography"
 
 import { motion } from "motion/react"
 
@@ -91,7 +100,7 @@ export function Kanban({
   onValidateMove
 }: KanbanProps) {
   return (
-    <div className={cn("h-full w-full overflow-hidden", className)}>
+    <div className={cn("h-full w-full", className)}>
       <KanbanBoard
         columns={columns}
         initialCards={initialCards}
@@ -134,6 +143,10 @@ function KanbanBoard({
   onValidateMove
 }: KanbanBoardProps) {
   const [cards, setCards] = useState<KanbanCardType[]>(initialCards)
+  const boardRef = useRef<HTMLDivElement>(null)
+  const autoScrollRef = useRef<NodeJS.Timeout | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragEvent, setDragEvent] = useState<DragEvent | null>(null)
 
   useEffect(() => {
     setCards(initialCards)
@@ -143,16 +156,94 @@ function KanbanBoard({
     onCardsChange?.(cards)
   }, [cards, onCardsChange])
 
+  const handleAutoScroll = useCallback(() => {
+    if (!dragEvent || !isDragging) return
+
+    let scrollContainer: Element | null = null
+    let element: Element | null = boardRef.current
+
+    while (element && element !== document.body) {
+      const computedStyle = window.getComputedStyle(element)
+      const overflowY = computedStyle.overflowY
+      const overflowX = computedStyle.overflowX
+
+      if (
+        overflowY === "auto" ||
+        overflowY === "scroll" ||
+        overflowX === "auto" ||
+        overflowX === "scroll"
+      ) {
+        scrollContainer = element
+        break
+      }
+      element = element.parentElement
+    }
+
+    if (!scrollContainer) scrollContainer = document.documentElement
+
+    const rect = scrollContainer.getBoundingClientRect()
+    const scrollThreshold = 100
+    const scrollSpeed = 15
+
+    if (dragEvent.clientY < rect.top + scrollThreshold) {
+      scrollContainer.scrollBy(0, -scrollSpeed)
+    } else if (dragEvent.clientY > rect.bottom - scrollThreshold) {
+      scrollContainer.scrollBy(0, scrollSpeed)
+    }
+
+    if (dragEvent.clientX < rect.left + scrollThreshold) {
+      scrollContainer.scrollBy(-scrollSpeed, 0)
+    } else if (dragEvent.clientX > rect.right - scrollThreshold) {
+      scrollContainer.scrollBy(scrollSpeed, 0)
+    }
+  }, [dragEvent, isDragging])
+
+  const startAutoScroll = useCallback(
+    (e: DragEvent) => {
+      setIsDragging(true)
+      setDragEvent(e)
+
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current)
+      }
+
+      autoScrollRef.current = setInterval(() => {
+        handleAutoScroll()
+      }, 16)
+    },
+    [handleAutoScroll]
+  )
+
+  const updateDragEvent = useCallback(
+    (e: DragEvent) => {
+      if (isDragging) {
+        setDragEvent(e)
+      }
+    },
+    [isDragging]
+  )
+
+  const stopAutoScroll = useCallback(() => {
+    setIsDragging(false)
+    setDragEvent(null)
+    if (autoScrollRef.current) {
+      clearInterval(autoScrollRef.current)
+      autoScrollRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current)
+      }
+    }
+  }, [])
+
   return (
     <div
-      className={cn(
-        "h-full w-full",
-        "grid gap-3",
-        "grid-cols-[repeat(auto-fit,minmax(280px,1fr))]",
-        "lg:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]",
-        "auto-rows-max",
-        "overflow-auto"
-      )}
+      ref={boardRef}
+      className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3"
     >
       {columns.map((columnConfig) => (
         <KanbanColumn
@@ -163,11 +254,14 @@ function KanbanBoard({
           hierarchical={hierarchical}
           onHierarchicalMove={onHierarchicalMove}
           onValidateMove={onValidateMove}
+          startAutoScroll={startAutoScroll}
+          updateDragEvent={updateDragEvent}
+          stopAutoScroll={stopAutoScroll}
+          isDragging={isDragging}
         />
       ))}
-
       {showDeleteZone && (
-        <div className="flex items-start justify-center">
+        <div className="border-border flex items-start justify-center border-l p-3">
           <KanbanBurnBarrel setCards={setCards} />
         </div>
       )}
@@ -191,6 +285,10 @@ type KanbanColumnProps = {
     isValid: boolean
     reason?: string
   }
+  startAutoScroll: (e: DragEvent) => void
+  updateDragEvent: (e: DragEvent) => void
+  stopAutoScroll: () => void
+  isDragging: boolean
 }
 
 function KanbanColumn({
@@ -199,7 +297,11 @@ function KanbanColumn({
   setCards,
   hierarchical = false,
   onHierarchicalMove,
-  onValidateMove
+  onValidateMove,
+  startAutoScroll,
+  updateDragEvent,
+  stopAutoScroll,
+  isDragging
 }: KanbanColumnProps) {
   const [active, setActive] = useState(false)
 
@@ -212,6 +314,8 @@ function KanbanColumn({
       e.dataTransfer.setData("parentPath", JSON.stringify(hierarchicalCard.parentPath || []))
       e.dataTransfer.setData("hasChildren", String(hierarchicalCard.hasChildren || false))
     }
+
+    startAutoScroll(e)
   }
 
   async function handleDragEnd(e: DragEvent) {
@@ -219,6 +323,7 @@ function KanbanColumn({
 
     setActive(false)
     clearHighlights()
+    stopAutoScroll()
 
     const indicators = getIndicators()
     const { element } = getNearestIndicator(e, indicators)
@@ -283,6 +388,7 @@ function KanbanColumn({
 
   function handleDragOver(e: DragEvent) {
     e.preventDefault()
+    updateDragEvent(e)
     highlightIndicator(e)
     setActive(true)
   }
@@ -339,62 +445,67 @@ function KanbanColumn({
   const isAtLimit = config.maxCards && filteredCards.length >= config.maxCards
 
   return (
-    <div className="w-[280px] shrink-0 snap-start sm:w-[300px] md:w-80">
-      <div className="mb-3 flex items-center justify-between md:mb-4">
-        <h3
-          className={cn(
-            "truncate text-base font-semibold md:text-lg",
-            config.color || "text-foreground"
-          )}
-        >
-          {config.title}
-        </h3>
-        <div className="flex items-center gap-2">
-          <span
+    <div className="border-border bg-sidebar flex h-full min-w-0 flex-col rounded-md border">
+      <div className="border-border shrink-0 rounded-t-md border-b p-3">
+        <div className="flex items-center justify-between">
+          <h3
             className={cn(
-              "shrink-0 rounded-full px-2 py-1 text-xs",
-              isAtLimit
-                ? "bg-destructive text-destructive-foreground"
-                : "bg-muted text-muted-foreground"
+              "truncate text-base font-semibold md:text-lg",
+              config.color || "text-foreground"
             )}
           >
-            {filteredCards.length}
-            {config.maxCards && ` / ${config.maxCards}`}
-          </span>
+            {config.title}
+          </h3>
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                "shrink-0 rounded-full px-2 py-1 text-xs",
+                isAtLimit
+                  ? "bg-destructive text-destructive-foreground"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              {filteredCards.length}
+              {config.maxCards && ` / ${config.maxCards}`}
+            </span>
+          </div>
         </div>
       </div>
-      <div
-        onDrop={isAtLimit ? undefined : handleDragEnd}
-        onDragOver={isAtLimit ? undefined : handleDragOver}
-        onDragLeave={handleDragLeave}
-        className={cn(
-          "min-h-[200px] w-full rounded-lg border-2 border-dashed p-2 transition-colors sm:min-h-[300px]",
-          isAtLimit
-            ? "border-destructive/50 bg-destructive/5 cursor-not-allowed"
-            : active
-              ? "border-primary bg-primary/5"
-              : "border-muted bg-muted/20"
-        )}
-        role="region"
-        aria-label={`${config.title} column with ${filteredCards.length} tasks${config.maxCards ? ` (max ${config.maxCards})` : ""}${isAtLimit ? " - at capacity" : ""}`}
-        aria-live="polite"
-      >
-        {filteredCards.map((c) => {
-          const hierarchicalCard = c as HierarchicalKanbanCardType
-          return (
-            <KanbanCard
-              key={c.id}
-              {...c}
-              handleDragStart={handleDragStart}
-              depth={hierarchicalCard.depth}
-              isExpanded={hierarchicalCard.isExpanded}
-              hasChildren={hierarchicalCard.hasChildren}
-              onToggleExpansion={hierarchicalCard.onToggleExpansion}
-              onFocusParent={hierarchicalCard.onFocusParent}
-            />
-          )
-        })}
-        <KanbanDropIndicator beforeId={null} column={config.id} />
+      <div className="min-h-0 flex-1 p-3">
+        <div
+          onDrop={isAtLimit ? undefined : handleDragEnd}
+          onDragOver={isAtLimit ? undefined : handleDragOver}
+          onDragLeave={handleDragLeave}
+          className={cn(
+            "min-h-full w-full transition-colors",
+            isAtLimit
+              ? "cursor-not-allowed"
+              : active
+                ? "bg-primary/5 rounded-lg"
+                : "bg-transparent",
+            isDragging && active && "ring-primary/20 ring-2"
+          )}
+          role="region"
+          aria-label={`${config.title} column with ${filteredCards.length} tasks${config.maxCards ? ` (max ${config.maxCards})` : ""}${isAtLimit ? " - at capacity" : ""}`}
+          aria-live="polite"
+        >
+          {filteredCards.map((c) => {
+            const hierarchicalCard = c as HierarchicalKanbanCardType
+            return (
+              <KanbanCard
+                key={c.id}
+                {...c}
+                handleDragStart={handleDragStart}
+                depth={hierarchicalCard.depth}
+                isExpanded={hierarchicalCard.isExpanded}
+                hasChildren={hierarchicalCard.hasChildren}
+                onToggleExpansion={hierarchicalCard.onToggleExpansion}
+                onFocusParent={hierarchicalCard.onFocusParent}
+              />
+            )
+          })}
+          <KanbanDropIndicator beforeId={null} column={config.id} />
+        </div>
       </div>
     </div>
   )
@@ -436,10 +547,10 @@ function KanbanCard({
 
   const borderColors: Record<KanbanPriority, string> = {
     none: "border-l-muted",
-    low: "border-l-green-500",
-    medium: "border-l-blue-500",
-    high: "border-l-yellow-500",
-    urgent: "border-l-red-500"
+    low: "border-l-success",
+    medium: "border-l-info",
+    high: "border-l-warning",
+    urgent: "border-l-error"
   }
 
   const handleExpansionToggle = (e: React.MouseEvent) => {
@@ -458,6 +569,7 @@ function KanbanCard({
       <KanbanDropIndicator beforeId={id} column={column} />
       <motion.div
         layout
+        className="flex items-center justify-start gap-3"
         layoutId={id}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -469,13 +581,9 @@ function KanbanCard({
         }}
         dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
         style={{ marginLeft: `${indentPx}px` }}
-        className={cn(
-          depth > 0 && "relative",
-          depth > 0 &&
-            "before:bg-border before:absolute before:top-0 before:bottom-0 before:left-[-8px] before:w-px"
-        )}
       >
-        <UICard
+        {depth > 0 && <Icon name="Link2" />}
+        <Card
           draggable="true"
           onDragStart={(e) =>
             handleDragStart(e, {
@@ -490,9 +598,8 @@ function KanbanCard({
             })
           }
           className={cn(
-            "focus:ring-primary mb-2 cursor-grab touch-manipulation border-l-4 shadow-sm transition-all hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:outline-none active:cursor-grabbing md:mb-3",
+            "focus:ring-primary mb-2 w-full cursor-grab touch-manipulation gap-3 border-l-4 transition-all focus:ring-1 focus:outline-none active:cursor-grabbing",
             priority ? borderColors[priority] : borderColors.none,
-            depth > 0 && "bg-muted/30",
             hasChildren && "border-r-primary border-r-4"
           )}
           tabIndex={0}
@@ -507,7 +614,7 @@ function KanbanCard({
             }
           }}
         >
-          <div className="space-y-2 p-3 md:p-4">
+          <CardHeader>
             <div className="flex items-start justify-between gap-2">
               <div className="flex min-w-0 flex-1 items-center gap-2">
                 {hasChildren && (
@@ -515,51 +622,77 @@ function KanbanCard({
                     size="icon"
                     variant="ghost"
                     onClick={handleExpansionToggle}
-                    className="hover:bg-muted flex-shrink-0 rounded p-1 transition-colors"
+                    className="hover:bg-muted h-6 w-6 flex-shrink-0 rounded p-1 transition-colors"
                     aria-label={isExpanded ? "Collapse" : "Expand"}
                   >
                     {isExpanded ? <Icon name="ChevronDown" /> : <Icon name="ChevronRight" />}
                   </Button>
                 )}
-                <h4 className="truncate text-sm leading-tight font-medium">{title}</h4>
+                <Typography
+                  variant="h6"
+                  className="truncate text-sm leading-tight font-medium text-balance"
+                >
+                  {title}
+                </Typography>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-1.5">
                 {parentTaskId && parentTaskTitle && (
                   <Badge
                     variant="secondary"
                     onClick={onFocusParent ? () => onFocusParent(parentTaskId) : undefined}
+                    className="hover:bg-secondary/80 cursor-pointer transition-colors"
                   >
-                    <Icon name="Link" />
-                    {parentTaskTitle}
+                    <Icon name="Link" className="mr-1 h-3 w-3" />
+                    <Typography variant="span" affects="small">
+                      {parentTaskTitle}
+                    </Typography>
                   </Badge>
                 )}
-                {depth > 0 && <Badge variant="secondary">L {depth}</Badge>}
+                {depth > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    <Typography variant="span" affects="small">
+                      L {depth}
+                    </Typography>
+                  </Badge>
+                )}
               </div>
             </div>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-0">
             {description && (
-              <p className="text-muted-foreground line-clamp-2 text-xs break-words">
+              <Typography
+                variant="p"
+                affects={["muted", "removePMargin"]}
+                className="line-clamp-2 text-xs leading-relaxed break-words"
+              >
                 {description}
-              </p>
+              </Typography>
             )}
             <div className="flex flex-wrap items-center justify-between gap-2">
-              {priority && priority !== "none" && (
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-1 text-xs font-medium whitespace-nowrap",
-                    priorityColors[priority]
-                  )}
-                >
-                  {priority}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {priority && priority !== "none" && (
+                  <Typography
+                    variant="span"
+                    affects="small"
+                    className={cn(
+                      "rounded-full px-2.5 py-1 font-medium whitespace-nowrap",
+                      priorityColors[priority]
+                    )}
+                  >
+                    {priority}
+                  </Typography>
+                )}
+              </div>
               {assignee && (
-                <div className="bg-primary text-primary-foreground flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium">
-                  {assignee.charAt(0).toUpperCase()}
+                <div className="bg-primary text-primary-foreground flex h-7 w-7 shrink-0 items-center justify-center rounded-full shadow-sm">
+                  <Typography variant="span" affects="small" className="font-semibold">
+                    {assignee.charAt(0).toUpperCase()}
+                  </Typography>
                 </div>
               )}
             </div>
-          </div>
-        </UICard>
+          </CardContent>
+        </Card>
       </motion.div>
     </>
   )
@@ -612,7 +745,7 @@ function KanbanBurnBarrel({ setCards }: KanbanBurnBarrelProps) {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={cn(
-        "mt-6 grid h-40 w-40 shrink-0 snap-start place-content-center rounded-lg border-2 border-dashed text-3xl transition-colors md:mt-10 md:h-56 md:w-56 md:text-4xl",
+        "grid h-32 w-32 shrink-0 place-content-center rounded-lg border-2 border-dashed text-2xl transition-colors md:h-40 md:w-40 md:text-3xl",
         active
           ? "border-destructive bg-destructive/10 text-destructive"
           : "border-muted-foreground/25 bg-muted/20 text-muted-foreground"

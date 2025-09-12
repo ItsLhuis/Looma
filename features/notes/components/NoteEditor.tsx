@@ -118,9 +118,18 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
         <Skeleton className="h-3 w-28" />
         <Skeleton className="min-h-[400px] w-full" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+          <div className="flex h-full flex-1 flex-col space-y-4">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-9 w-full" />
+          </div>
         </div>
         <div className="flex items-center justify-end gap-2">
           <Skeleton className="h-9 w-20" />

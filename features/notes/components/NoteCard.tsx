@@ -51,7 +51,7 @@ function NoteCard({ note, className }: NoteCardProps) {
             Updated at {new Date(note.updatedAt).toLocaleString()}
           </Typography>
         </div>
-        <div className="flex max-w-full flex-col flex-wrap items-end gap-1.5 overflow-hidden">
+        <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
           {note.priority !== "none" && (
             <Badge className={cn(getPriorityClasses(note.priority), "shrink-0 capitalize")}>
               {note.priority}

@@ -107,15 +107,21 @@ function NotesList({ initialParams }: NotesListProps) {
     orderBy: params.orderBy || { column: "createdAt", direction: "desc" }
   }
 
-  return (
-    <div className="space-y-4">
-      <div className="min-h-8">
-        <Typography affects={["lead", "bold"]} className="shrink-0">
-          {isFetching ? <Spinner /> : `${total} notes`}
-        </Typography>
-      </div>
-      <NotesFilters defaultFilters={defaultFilters} onChange={onFiltersChange} />
-      {isLoading ? (
+  const headerContent = (
+    <div className="min-h-8">
+      <Typography affects={["lead", "bold"]} className="shrink-0">
+        {isFetching ? <Spinner /> : `${total} notes`}
+      </Typography>
+    </div>
+  )
+
+  const filtersContent = <NotesFilters defaultFilters={defaultFilters} onChange={onFiltersChange} />
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {headerContent}
+        {filtersContent}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 12 }).map((_, index) => (
             <Card key={index}>
@@ -139,23 +145,45 @@ function NotesList({ initialParams }: NotesListProps) {
             </Card>
           ))}
         </div>
-      ) : isError ? (
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-4">
+        {headerContent}
+        {filtersContent}
         <div className="flex h-full items-center justify-center py-6">
           <Typography className="text-destructive" affects={["small"]}>
             Failed to load notes
           </Typography>
         </div>
-      ) : data && data.data.length === 0 ? (
+      </div>
+    )
+  }
+
+  if (data && data.data.length === 0) {
+    return (
+      <div className="space-y-4">
+        {headerContent}
+        {filtersContent}
         <div className="flex h-full items-center justify-center py-6">
           <Typography affects={["muted", "small"]}>No notes found</Typography>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {data?.data.map((note) => (
-            <NoteCard key={note.id} note={note} />
-          ))}
-        </div>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {headerContent}
+      {filtersContent}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {data?.data.map((note) => (
+          <NoteCard key={note.id} note={note} />
+        ))}
+      </div>
       {totalPages > 1 && (
         <Pagination>
           <PaginationContent>
