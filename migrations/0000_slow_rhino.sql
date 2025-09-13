@@ -25,8 +25,6 @@ CREATE TABLE `events` (
 	`start_time` integer NOT NULL,
 	`end_time` integer,
 	`is_all_day` integer DEFAULT false NOT NULL,
-	`google_calendar_id` text,
-	`last_sync_at` integer,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
@@ -35,7 +33,6 @@ CREATE TABLE `events` (
 CREATE INDEX `events_user_id_idx` ON `events` (`user_id`);--> statement-breakpoint
 CREATE INDEX `events_start_time_idx` ON `events` (`start_time`);--> statement-breakpoint
 CREATE INDEX `events_end_time_idx` ON `events` (`end_time`);--> statement-breakpoint
-CREATE INDEX `events_google_calendar_id_idx` ON `events` (`google_calendar_id`);--> statement-breakpoint
 CREATE INDEX `events_is_all_day_idx` ON `events` (`is_all_day`);--> statement-breakpoint
 CREATE TABLE `memories` (
 	`id` text(36) PRIMARY KEY NOT NULL,

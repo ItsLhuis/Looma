@@ -45,13 +45,6 @@ Looma uses advanced AI to understand and organize any type of input you throw at
 - **Subtasks Support**: Break complex tasks into manageable pieces
 - **Status Workflow**: Clear progression from pending to completion
 
-### 📅 Calendar Integration
-
-- **Google Calendar Sync**: Seamless two-way synchronization
-- **Smart Scheduling**: AI suggests optimal meeting times
-- **Event Creation**: Natural language to calendar events instantly
-- **Conflict Detection**: Automatic overlap prevention
-
 ### 🧠 AI Memory System
 
 - **Contextual Learning**: Remembers your preferences and patterns
@@ -84,7 +77,7 @@ Looma embraces simplicity over complexity:
 ### For Personal Life
 
 - Shopping thoughts → Organized task lists with priorities
-- Quick reminders → Properly scheduled tasks and events
+- Quick reminders → Properly scheduled tasks
 - Ideas and inspiration → Searchable notes with AI insights
 
 ### For Creative Work
@@ -100,7 +93,6 @@ Looma embraces simplicity over complexity:
 - **🔒 Privacy-First**: Your data stays yours with local-first architecture
 - **⚡ Proactive Assistance**: Anticipates needs without overwhelming you
 - **🎯 Ultimate Simplicity**: Powerful features with minimal complexity
-- **🔄 Seamless Flow**: Natural progression from notes to tasks to events
 
 ## Technical Approach
 

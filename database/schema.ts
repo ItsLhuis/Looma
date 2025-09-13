@@ -182,8 +182,6 @@ export const events = sqliteTable(
     startTime: integer("start_time", { mode: "timestamp" }).notNull(),
     endTime: integer("end_time", { mode: "timestamp" }),
     isAllDay: integer("is_all_day", { mode: "boolean" }).default(false).notNull(),
-    googleCalendarId: text("google_calendar_id"),
-    lastSyncAt: integer("last_sync_at", { mode: "timestamp" }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
@@ -196,7 +194,6 @@ export const events = sqliteTable(
     index("events_user_id_idx").on(table.userId),
     index("events_start_time_idx").on(table.startTime),
     index("events_end_time_idx").on(table.endTime),
-    index("events_google_calendar_id_idx").on(table.googleCalendarId),
     index("events_is_all_day_idx").on(table.isAllDay)
   ]
 )

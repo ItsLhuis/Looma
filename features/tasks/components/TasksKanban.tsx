@@ -201,7 +201,7 @@ function TasksKanban({ initialParams }: TasksKanbanProps) {
       <div className="space-y-4">
         {headerContent}
         {actionsContent}
-        <div className="flex h-96 items-center justify-center">
+        <div className="flex h-full items-center justify-center py-6">
           <Typography className="text-destructive" affects={["small"]}>
             Failed to load tasks
           </Typography>
@@ -215,7 +215,7 @@ function TasksKanban({ initialParams }: TasksKanbanProps) {
       <div className="space-y-4">
         {headerContent}
         {actionsContent}
-        <div className="flex h-96 items-center justify-center">
+        <div className="flex h-full items-center justify-center py-6">
           <Typography affects={["muted", "small"]}>No tasks found</Typography>
         </div>
       </div>

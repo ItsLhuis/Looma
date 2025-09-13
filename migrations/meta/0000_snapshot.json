@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "68ae5387-5b70-4a02-8d0f-6d986789e260",
+  "id": "e471a798-4f84-49c0-a538-08e481d2428b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -181,20 +181,6 @@
           "autoincrement": false,
           "default": false
         },
-        "google_calendar_id": {
-          "name": "google_calendar_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "last_sync_at": {
-          "name": "last_sync_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -226,11 +212,6 @@
         "events_end_time_idx": {
           "name": "events_end_time_idx",
           "columns": ["end_time"],
-          "isUnique": false
-        },
-        "events_google_calendar_id_idx": {
-          "name": "events_google_calendar_id_idx",
-          "columns": ["google_calendar_id"],
           "isUnique": false
         },
         "events_is_all_day_idx": {
