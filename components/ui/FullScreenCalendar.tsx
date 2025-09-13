@@ -72,7 +72,7 @@ type CreateEventPayload = {
   isAllDay: boolean
 }
 
-type UpdateEventPayload = Partial<CreateEventPayload> & {
+type UpdateEventPayload = CreateEventPayload & {
   startTime?: Date | null
   endTime?: Date | null
 }
@@ -82,6 +82,11 @@ type FullScreenCalendarProps = {
   onCreateEvent?: (payload: CreateEventPayload) => Promise<void> | void
   onUpdateEvent?: (id: string, payload: UpdateEventPayload) => Promise<void> | void
   onDeleteEvent?: (id: string) => Promise<void> | void
+  selectedDate?: Date
+  onDateSelect?: (date: Date) => void
+  showCreateButton?: boolean
+  shouldOpenCreateDialog?: boolean
+  onCreateDialogClose?: () => void
 }
 
 const colStartClasses = [
@@ -474,6 +479,7 @@ function EventDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
+                isLoading={isLoading}
               >
                 Cancel
               </Button>
@@ -537,11 +543,16 @@ function FullScreenCalendar({
   events,
   onCreateEvent,
   onUpdateEvent,
-  onDeleteEvent
+  onDeleteEvent,
+  selectedDate,
+  onDateSelect,
+  showCreateButton = true,
+  shouldOpenCreateDialog = false,
+  onCreateDialogClose
 }: FullScreenCalendarProps) {
   const today = startOfToday()
 
-  const [selectedDay, setSelectedDay] = React.useState(today)
+  const [selectedDay, setSelectedDay] = React.useState(selectedDate || today)
   const [currentMonth, setCurrentMonth] = React.useState(format(today, "MMM-yyyy"))
 
   const [dialogOpen, setDialogOpen] = React.useState(false)
@@ -550,6 +561,34 @@ function FullScreenCalendar({
   const [activeEvent, setActiveEvent] = React.useState<CalendarEvent | null>(null)
 
   const [isLoading, setIsLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    if (selectedDate) {
+      setSelectedDay(selectedDate)
+    }
+  }, [selectedDate])
+
+  const handleDaySelect = React.useCallback(
+    (day: Date) => {
+      setSelectedDay(day)
+      onDateSelect?.(day)
+    },
+    [onDateSelect]
+  )
+
+  const openCreateDialog = React.useCallback((day: Date) => {
+    setActiveEvent(null)
+    setSelectedDay(day)
+    setDialogMode("create")
+    setDialogOpen(true)
+  }, [])
+
+  React.useEffect(() => {
+    if (shouldOpenCreateDialog) {
+      openCreateDialog(selectedDay)
+      onCreateDialogClose?.()
+    }
+  }, [shouldOpenCreateDialog, selectedDay, onCreateDialogClose, openCreateDialog])
 
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date())
 
@@ -580,13 +619,6 @@ function FullScreenCalendar({
   const goToToday = React.useCallback(() => {
     setCurrentMonth(format(today, "MMM-yyyy"))
   }, [today])
-
-  const openCreateDialog = React.useCallback((day: Date) => {
-    setActiveEvent(null)
-    setSelectedDay(day)
-    setDialogMode("create")
-    setDialogOpen(true)
-  }, [])
 
   const openEditDialog = React.useCallback((event: CalendarEvent) => {
     setActiveEvent(event)
@@ -688,10 +720,15 @@ function FullScreenCalendar({
               <Icon name="ChevronRightIcon" />
             </Button>
           </div>
-          <Button className="w-full gap-2 md:w-auto" onClick={() => openCreateDialog(selectedDay)}>
-            <Icon name="PlusCircle" />
-            <Typography>New Event</Typography>
-          </Button>
+          {showCreateButton && (
+            <Button
+              className="w-full gap-2 md:w-auto"
+              onClick={() => openCreateDialog(selectedDay)}
+            >
+              <Icon name="Plus" />
+              <Typography>New Event</Typography>
+            </Button>
+          )}
         </div>
       </div>
       <div className="overflow-hidden lg:flex lg:flex-auto lg:flex-col">
@@ -707,7 +744,7 @@ function FullScreenCalendar({
             {days.map((day, dayIdx) => (
               <div
                 key={dayIdx}
-                onClick={() => setSelectedDay(day)}
+                onClick={() => handleDaySelect(day)}
                 onDoubleClick={() => openCreateDialog(day)}
                 className={cn(
                   dayIdx === 0 && colStartClasses[getDay(day)],
@@ -813,7 +850,7 @@ function FullScreenCalendar({
           <div className="isolate grid w-full grid-cols-7 grid-rows-5 lg:hidden">
             {days.map((day, dayIdx) => (
               <Button
-                onClick={() => setSelectedDay(day)}
+                onClick={() => handleDaySelect(day)}
                 onDoubleClick={() => openCreateDialog(day)}
                 key={dayIdx}
                 variant="ghost"
