@@ -71,12 +71,12 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
     resolver: zodResolver(formSchema),
     mode: "onChange",
     defaultValues: {
-      title: note?.title ?? "",
-      content: note?.content ?? "",
-      summary: note?.summary ?? "",
-      isFavorite: note?.isFavorite ?? false,
-      isArchived: note?.isArchived ?? false,
-      priority: note?.priority ?? "none"
+      title: "",
+      content: "",
+      summary: "",
+      isFavorite: false,
+      isArchived: false,
+      priority: "none" as NotePriority
     }
   })
 
@@ -91,7 +91,7 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
         isArchived: note.isArchived || false
       })
     }
-  }, [note, form, mode])
+  }, [note, mode])
 
   useEffect(() => {
     if (currentMutation.isSuccess) {
@@ -156,7 +156,7 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Note title" {...field} />
+                  <Input placeholder="Note title" {...field} disabled={currentMutation.isPending} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -169,7 +169,12 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
               <FormItem>
                 <FormLabel>Summary</FormLabel>
                 <FormControl>
-                  <Input placeholder="Brief summary" {...field} value={field.value ?? ""} />
+                  <Input
+                    placeholder="Brief summary"
+                    {...field}
+                    value={field.value ?? ""}
+                    disabled={currentMutation.isPending}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -188,6 +193,7 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
                   placeholder="Write your note"
                   {...field}
                   value={field.value ?? ""}
+                  disabled={currentMutation.isPending}
                 />
               </FormControl>
               <FormMessage />
@@ -203,7 +209,11 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
                 return (
                   <FormItem key={field.value}>
                     <FormLabel>Priority</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value ?? "none"}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? "none"}
+                      disabled={currentMutation.isPending}
+                    >
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select priority" />
@@ -237,6 +247,7 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
                         checked={field.value || false}
                         onCheckedChange={field.onChange}
                         id="favorite"
+                        disabled={currentMutation.isPending}
                       />
                       <Typography affects={["muted", "small"]}>Mark as favorite</Typography>
                     </Label>
@@ -260,6 +271,7 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
                         checked={field.value || false}
                         onCheckedChange={field.onChange}
                         id="archive"
+                        disabled={currentMutation.isPending}
                       />
                       <Typography affects={["muted", "small"]}>Archive note</Typography>
                     </Label>
@@ -281,9 +293,7 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
             </Button>
             <Button
               type="submit"
-              disabled={
-                !form.formState.isDirty || !form.formState.isValid || currentMutation.isPending
-              }
+              disabled={!form.formState.isValid || currentMutation.isPending}
               isLoading={currentMutation.isPending}
             >
               {mode === "insert" ? "Create" : "Save"}

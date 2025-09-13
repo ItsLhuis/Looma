@@ -93,13 +93,13 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
     resolver: zodResolver(formSchema),
     mode: "onChange",
     defaultValues: {
-      title: task?.title ?? "",
-      description: task?.description ?? "",
-      status: task?.status ?? "pending",
-      priority: task?.priority ?? "none",
-      dueDate: task?.dueDate ? new Date(task.dueDate) : undefined,
-      estimatedDuration: task?.estimatedDuration ?? undefined,
-      parentTaskId: task?.parentTaskId ?? undefined
+      title: "",
+      description: "",
+      status: "pending" as TaskStatus,
+      priority: "none" as TaskPriority,
+      dueDate: undefined,
+      estimatedDuration: undefined,
+      parentTaskId: undefined
     }
   })
 
@@ -185,7 +185,11 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
                 <FormItem className="md:col-span-2">
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Task title" {...field} />
+                    <Input
+                      placeholder="Task title"
+                      {...field}
+                      disabled={currentMutation.isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,6 +207,7 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
                       className="min-h-[400px]"
                       {...field}
                       value={field.value ?? ""}
+                      disabled={currentMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -213,9 +218,13 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
               control={form.control}
               name="status"
               render={({ field }) => (
-                <FormItem>
+                <FormItem key={field.value}>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={currentMutation.isPending}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select status" />
@@ -237,9 +246,13 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
               control={form.control}
               name="priority"
               render={({ field }) => (
-                <FormItem>
+                <FormItem key={field.value}>
                   <FormLabel>Priority</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={currentMutation.isPending}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select priority" />
@@ -272,6 +285,7 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
                             "hover:text-foreground w-full pl-3",
                             !field.value && "text-muted-foreground"
                           )}
+                          disabled={currentMutation.isPending}
                         >
                           {field.value ? formatDate(field.value) : <span>Pick a date</span>}
                           <Icon name="Calendar" className="ml-auto h-4 w-4 opacity-50" />
@@ -283,7 +297,9 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
                         mode="single"
                         selected={field.value || undefined}
                         onSelect={field.onChange}
-                        disabled={(date) => date < new Date("1900-01-01")}
+                        disabled={(date) =>
+                          date < new Date("1900-01-01") || currentMutation.isPending
+                        }
                         autoFocus
                       />
                     </PopoverContent>
@@ -307,6 +323,7 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
                       onChange={(e) =>
                         field.onChange(e.target.value ? parseInt(e.target.value) : undefined)
                       }
+                      disabled={currentMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -317,9 +334,13 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
               control={form.control}
               name="parentTaskId"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem className="md:col-span-2" key={field.value}>
                   <FormLabel>Parent Task (for subtasks)</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || undefined}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || undefined}
+                    disabled={currentMutation.isPending}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select parent task (optional)" />
@@ -353,9 +374,7 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
             </Button>
             <Button
               type="submit"
-              disabled={
-                !form.formState.isDirty || !form.formState.isValid || currentMutation.isPending
-              }
+              disabled={!form.formState.isValid || currentMutation.isPending}
               isLoading={currentMutation.isPending}
             >
               {mode === "insert" ? "Create" : "Save"}
