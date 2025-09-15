@@ -43,7 +43,7 @@ const getStatusClasses = (status: TaskStatus) => {
     case "onHold":
       return "bg-warning text-warning-foreground border border-warning"
     case "cancelled":
-      return "bg-destructive text-destructive-foreground border border-destructive"
+      return "bg-error text-error-foreground border border-error"
     default:
       return "bg-muted text-muted-foreground border border-muted"
   }

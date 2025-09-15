@@ -3,6 +3,7 @@ import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { eventsKeys } from "./queries"
+import { dashboardKeys } from "@/features/dashboard/api/queries"
 
 import type {
   CreateEventRequest,
@@ -23,6 +24,7 @@ export function useCreateEvent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }
@@ -39,6 +41,7 @@ export function useUpdateEvent(id: string) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: eventsKeys.details() })
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(eventsKeys.detail(id), data)
     }
   })
@@ -56,6 +59,7 @@ export function useDeleteEvent(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() })
       queryClient.invalidateQueries({ queryKey: eventsKeys.details() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }

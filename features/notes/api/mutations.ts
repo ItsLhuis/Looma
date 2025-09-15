@@ -3,6 +3,7 @@ import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { notesKeys } from "./queries"
+import { dashboardKeys } from "@/features/dashboard/api/queries"
 
 import type {
   CreateNoteRequest,
@@ -23,6 +24,7 @@ export function useCreateNote() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notesKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }
@@ -39,6 +41,7 @@ export function useUpdateNote(id: string) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: notesKeys.details() })
       queryClient.invalidateQueries({ queryKey: notesKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(notesKeys.detail(id), data)
     }
   })
@@ -54,6 +57,7 @@ export function useDeleteNote(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: notesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: notesKeys.details() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }

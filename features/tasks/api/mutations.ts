@@ -3,6 +3,7 @@ import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { tasksKeys } from "./queries"
+import { dashboardKeys } from "@/features/dashboard/api/queries"
 
 import type {
   CreateTaskRequest,
@@ -27,6 +28,7 @@ export function useCreateTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }
@@ -43,6 +45,7 @@ export function useUpdateTask(id: string) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.details() })
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(tasksKeys.detail(id), data)
     }
   })
@@ -60,6 +63,7 @@ export function useUpdateTaskStatus(id: string) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.details() })
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(tasksKeys.detail(id), data)
     }
   })
@@ -80,6 +84,7 @@ export function useReorderTask() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }
@@ -94,6 +99,7 @@ export function useDeleteTask(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tasksKeys.details() })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
     }
   })
 }
