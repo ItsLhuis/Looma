@@ -138,7 +138,7 @@ export function TodaysFocus({ data, isLoading }: TodaysFocusProps) {
               {data.events.map((event) => (
                 <div
                   key={event.id}
-                  className="bg-card hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                  className="bg-card lex items-center justify-between rounded-lg border p-3"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
                     <Typography affects={["bold", "small"]} className="truncate">
@@ -180,7 +180,7 @@ export function TodaysFocus({ data, isLoading }: TodaysFocusProps) {
               {data.tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="bg-card hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                  className="bg-card flex items-center justify-between rounded-lg border p-3"
                 >
                   <div className="min-w-0 flex-1">
                     <Typography affects={["bold", "small"]} className="truncate">

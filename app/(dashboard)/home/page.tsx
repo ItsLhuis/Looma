@@ -16,7 +16,7 @@ export default function HomePage() {
 
   return (
     <Fragment>
-      <Navbar title="Dashboard">
+      <Navbar title="Home">
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm">
             <Link href="/notes">
