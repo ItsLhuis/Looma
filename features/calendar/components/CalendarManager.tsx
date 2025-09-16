@@ -75,7 +75,10 @@ function CalendarManager({
     externalOnCreateDialogClose?.()
   }
 
-  const shouldOpenCreateDialog = externalShouldOpenCreateDialog ?? internalShouldOpenCreateDialog
+  const shouldOpenCreateDialog =
+    externalShouldOpenCreateDialog !== undefined
+      ? externalShouldOpenCreateDialog
+      : internalShouldOpenCreateDialog
 
   const handleUpdateEvent = async (
     id: string,

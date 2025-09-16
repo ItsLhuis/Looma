@@ -14,6 +14,10 @@ export default function CalendarPage() {
     setShouldOpenCreateDialog(true)
   }
 
+  const handleCreateDialogClose = () => {
+    setShouldOpenCreateDialog(false)
+  }
+
   return (
     <Fragment>
       <Navbar title="Calendar">
@@ -23,7 +27,10 @@ export default function CalendarPage() {
         </Button>
       </Navbar>
       <Container>
-        <EventsList initialParams={{ shouldOpenCreateDialog }} />
+        <EventsList
+          initialParams={{ shouldOpenCreateDialog }}
+          onCreateDialogClose={handleCreateDialogClose}
+        />
       </Container>
     </Fragment>
   )

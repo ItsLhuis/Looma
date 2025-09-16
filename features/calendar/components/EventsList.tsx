@@ -14,9 +14,10 @@ export type EventsListProps = {
   initialParams?: QueryEventsParams & {
     shouldOpenCreateDialog?: boolean
   }
+  onCreateDialogClose?: () => void
 }
 
-function EventsList({ initialParams }: EventsListProps) {
+function EventsList({ initialParams, onCreateDialogClose }: EventsListProps) {
   const [params, setParams] = useState<QueryEventsParams>({
     limit: 1000,
     offset: 0,
@@ -49,13 +50,11 @@ function EventsList({ initialParams }: EventsListProps) {
   )
 
   const handleCreateDialogClose = () => {
-    setShouldOpenCreateDialog(false)
+    onCreateDialogClose?.()
   }
 
   useEffect(() => {
-    if (initialParams?.shouldOpenCreateDialog) {
-      setShouldOpenCreateDialog(true)
-    }
+    setShouldOpenCreateDialog(initialParams?.shouldOpenCreateDialog ?? false)
   }, [initialParams?.shouldOpenCreateDialog])
 
   const total = data?.total ?? 0
