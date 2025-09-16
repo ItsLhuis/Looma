@@ -7,20 +7,24 @@ import { cn } from "@/lib/utils"
 import { ScrollArea, Typography } from "@/components/ui"
 
 import { ChatMessage } from "./ChatMessage"
+import { ChatMessageError } from "./ChatMessageError"
+import { ChatMessageLoading } from "./ChatMessageLoading"
 
 import type { ChatMessage as ChatMessageType } from "../types"
 
 type ChatMessagesProps = {
   messages: ChatMessageType[]
+  status: "ready" | "submitted" | "streaming" | "error"
+  error?: string | null
   className?: string
 }
 
-function ChatMessages({ messages, className }: ChatMessagesProps) {
+function ChatMessages({ messages, status, error, className }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  }, [messages, status])
 
   if (messages.length === 0) {
     return (
@@ -41,6 +45,8 @@ function ChatMessages({ messages, className }: ChatMessagesProps) {
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
+        {status === "submitted" && <ChatMessageLoading />}
+        {status === "error" && error && <ChatMessageError error={error} />}
         <div ref={bottomRef} />
       </div>
     </ScrollArea>

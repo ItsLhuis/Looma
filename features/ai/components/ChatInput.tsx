@@ -20,7 +20,6 @@ type FileWithPreview = {
 type ChatInputProps = {
   onSendMessage: (text: string, files?: File[]) => void
   onStop: () => void
-  onReload: () => void
   status: "ready" | "submitted" | "streaming" | "error"
   disabled?: boolean
 }
@@ -99,7 +98,7 @@ const FilePreviewCard = ({
   )
 }
 
-function ChatInput({ onSendMessage, onStop, onReload, status, disabled = false }: ChatInputProps) {
+function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInputProps) {
   const [input, setInput] = useState("")
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -233,31 +232,24 @@ function ChatInput({ onSendMessage, onStop, onReload, status, disabled = false }
                   <Icon name="Square" />
                 </Button>
               ) : (
-                <>
-                  {status === "error" && (
-                    <Button type="button" variant="outline" size="icon" onClick={onReload}>
-                      <Icon name="RotateCcw" />
-                    </Button>
+                <Button
+                  size="icon"
+                  className={cn(
+                    "h-9 w-9 flex-shrink-0 rounded-md transition-colors",
+                    canSend
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
                   )}
-                  <Button
-                    size="icon"
-                    className={cn(
-                      "h-9 w-9 flex-shrink-0 rounded-md transition-colors",
-                      canSend
-                        ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                        : "bg-muted text-muted-foreground cursor-not-allowed"
-                    )}
-                    onClick={handleSubmit}
-                    disabled={!canSend}
-                    title="Send message"
-                  >
-                    {isProcessing ? (
-                      <Icon name="Loader2" className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Icon name="ArrowUp" />
-                    )}
-                  </Button>
-                </>
+                  onClick={handleSubmit}
+                  disabled={!canSend}
+                  title="Send message"
+                >
+                  {isProcessing ? (
+                    <Icon name="Loader2" className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Icon name="ArrowUp" />
+                  )}
+                </Button>
               )}
             </div>
           </div>

@@ -11,6 +11,9 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Dialog,
+  DialogContent,
+  DialogTrigger,
   MarkdownRenderer,
   Typography
 } from "@/components/ui"
@@ -45,9 +48,7 @@ function ChatMessage({ message }: ChatMessageProps) {
                 {user?.name ? getInitials(user.name) : "U"}
               </AvatarFallback>
             </Avatar>
-            <Typography variant="span" affects={["small", "muted"]} className="opacity-70">
-              {message.createdAt && new Date(message.createdAt).toLocaleTimeString()}
-            </Typography>
+            <Typography affects={["small", "muted"]}>{user?.name}</Typography>
           </CardHeader>
           <CardContent className="space-y-2">
             {message.parts.map((part, index) => {
@@ -60,19 +61,31 @@ function ChatMessage({ message }: ChatMessageProps) {
               }
               if (part.type === "file" && part.mediaType?.startsWith("image/")) {
                 return (
-                  <div
-                    key={index}
-                    className="bg-muted relative my-2 h-full w-full overflow-hidden rounded-md"
-                  >
-                    <Image
-                      src={part.url}
-                      alt={part.filename || "Uploaded image"}
-                      fill
-                      className="object-cover"
-                      sizes="125px"
-                      unoptimized={part.url.startsWith("data:")}
-                    />
-                  </div>
+                  <Dialog key={index}>
+                    <DialogTrigger asChild>
+                      <div className="bg-muted relative mt-3 h-[100px] w-[100px] cursor-pointer overflow-hidden rounded-md transition-opacity hover:opacity-80">
+                        <Image
+                          src={part.url}
+                          alt={part.filename || "Uploaded image"}
+                          fill
+                          className="object-cover"
+                          sizes="100px"
+                          unoptimized={part.url.startsWith("data:")}
+                        />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl p-12">
+                      <div className="relative aspect-video w-full">
+                        <Image
+                          src={part.url}
+                          alt={part.filename || "Uploaded image"}
+                          fill
+                          className="object-contain"
+                          unoptimized={part.url.startsWith("data:")}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )
               }
               return null
@@ -83,9 +96,7 @@ function ChatMessage({ message }: ChatMessageProps) {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Image src="/icon.png" alt="AI" width={24} height={24} />
-            <Typography variant="span" affects={["small", "muted"]} className="opacity-70">
-              {message.createdAt && new Date(message.createdAt).toLocaleTimeString()}
-            </Typography>
+            <Typography affects={["small", "muted"]}>Looma</Typography>
           </div>
           <div className="space-y-2">
             {message.parts.map((part, index) => {

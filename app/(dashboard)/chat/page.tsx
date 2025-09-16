@@ -10,7 +10,7 @@ import { Container, Navbar } from "@/components/layout"
 import { ChatInput, ChatMessages } from "@/features/ai/components"
 
 export default function ChatPage() {
-  const { messages, status, isTyping, sendMessage, clearMessages, stop, reload } = useChat()
+  const { messages, status, error, isTyping, sendMessage, clearMessages, stop } = useChat()
 
   return (
     <Fragment>
@@ -26,15 +26,13 @@ export default function ChatPage() {
         </Button>
       </Navbar>
       <Container>
-        <ChatMessages messages={messages} />
+        <ChatMessages
+          messages={messages}
+          status={status}
+          error={error ? "Something went wrong. Please try again." : null}
+        />
       </Container>
-      <ChatInput
-        onSendMessage={sendMessage}
-        onStop={stop}
-        onReload={reload}
-        status={status}
-        disabled={isTyping}
-      />
+      <ChatInput onSendMessage={sendMessage} onStop={stop} status={status} disabled={isTyping} />
     </Fragment>
   )
 }

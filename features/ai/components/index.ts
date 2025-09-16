@@ -1,3 +1,5 @@
 export * from "./ChatInput"
 export * from "./ChatMessage"
+export * from "./ChatMessageError"
+export * from "./ChatMessageLoading"
 export * from "./ChatMessages"
