@@ -183,6 +183,8 @@
 
   --animate-fade-in: fade-in 0.3s ease-out both;
   --animate-fade-out: fade-out 0.3s ease-in both;
+  --animate-shine: shine 5s linear infinite;
+
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -197,6 +199,14 @@
     }
     to {
       opacity: 0;
+    }
+  }
+  @keyframes shine {
+    0% {
+      background-position: 100%;
+    }
+    100% {
+      background-position: -100%;
     }
   }
 }

@@ -10,6 +10,8 @@ import { Fade, FadeLayout, Sidebar, SidebarInset, SidebarProvider } from "@/comp
 
 import { Sidebar as AppSidebar } from "@/components/layout"
 
+import { UserProvider } from "@/contexts/UserProvider"
+
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const user = await getUser()
 
@@ -20,27 +22,29 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const cookieStore = await cookies()
   const defaultOpen = cookieStore.get("sidebar.state")?.value === "true"
 
+  const userData = {
+    name: user?.name ?? null,
+    email: user?.email ?? null,
+    image: user?.image ?? null
+  }
+
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <Fade className="flex h-full flex-1">
-        <Sidebar collapsible="icon">
-          <AppSidebar
-            user={{
-              name: user?.name ?? null,
-              email: user?.email ?? null,
-              image: user?.image ?? null
-            }}
-          />
-        </Sidebar>
-        <SidebarInset className="bg-sidebar min-h-0 flex-1">
-          <FadeLayout
-            as="main"
-            className="bg-background border-border m-2 flex min-h-0 flex-1 flex-col overflow-hidden rounded-4xl border md:ml-0"
-          >
-            {children}
-          </FadeLayout>
-        </SidebarInset>
-      </Fade>
-    </SidebarProvider>
+    <UserProvider user={userData}>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <Fade className="flex h-full flex-1">
+          <Sidebar collapsible="icon">
+            <AppSidebar />
+          </Sidebar>
+          <SidebarInset className="bg-sidebar min-h-0 flex-1">
+            <FadeLayout
+              as="main"
+              className="bg-background border-border m-2 flex min-h-0 flex-1 flex-col overflow-hidden rounded-4xl border md:ml-0"
+            >
+              {children}
+            </FadeLayout>
+          </SidebarInset>
+        </Fade>
+      </SidebarProvider>
+    </UserProvider>
   )
 }

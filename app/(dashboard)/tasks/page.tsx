@@ -1,9 +1,9 @@
 import { Fragment } from "react"
 
-import { Button, Icon } from "@/components/ui"
 import Link from "next/link"
 
 import { Container, Navbar } from "@/components/layout"
+import { Button, Icon } from "@/components/ui"
 
 import { TasksList } from "@/features/tasks/components"
 

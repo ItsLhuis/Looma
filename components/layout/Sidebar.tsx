@@ -1,7 +1,10 @@
 "use client"
 
-import { usePathname } from "next/navigation"
 import { useState } from "react"
+
+import { useUser } from "@/contexts/UserProvider"
+
+import { usePathname } from "next/navigation"
 
 import { useTheme } from "next-themes"
 
@@ -45,19 +48,27 @@ import {
 } from "@/components/ui"
 
 type NavItem = { href: string; icon: IconProps["name"]; label: string }
+type NavGroup = { label: string; items: NavItem[] }
 
-export type SidebarProps = {
-  user: { name: string | null; email: string | null; image: string | null }
-}
-
-const items: NavItem[] = [
-  { href: "/home", icon: "Home", label: "Home" },
-  { href: "/notes", icon: "Notebook", label: "Notes" },
-  { href: "/tasks", icon: "CheckSquare", label: "Tasks" },
-  { href: "/calendar", icon: "Calendar", label: "Calendar" }
+const navigationGroups: NavGroup[] = [
+  {
+    label: "Navigation Tools",
+    items: [
+      { href: "/home", icon: "Home", label: "Home" },
+      { href: "/notes", icon: "Notebook", label: "Notes" },
+      { href: "/tasks", icon: "CheckSquare", label: "Tasks" },
+      { href: "/calendar", icon: "Calendar", label: "Calendar" }
+    ]
+  },
+  {
+    label: "Looma AI",
+    items: [{ href: "/chat", icon: "MessageSquare", label: "Chat" }]
+  }
 ]
 
-function Sidebar({ user }: SidebarProps) {
+function Sidebar() {
+  const user = useUser()
+
   const pathname = usePathname()
 
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
@@ -141,31 +152,33 @@ function Sidebar({ user }: SidebarProps) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation Tools</SidebarGroupLabel>
-          <SidebarMenu>
-            {items.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-              return (
-                <SidebarMenuItem key={item.href}>
-                  <Link href={item.href} tabIndex={-1}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      data-active={isActive}
-                      tooltip={item.label}
-                      onClick={() => {
-                        setOpenMobile(false)
-                      }}
-                    >
-                      <Icon name={item.icon} />
-                      {item.label}
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              )
-            })}
-          </SidebarMenu>
-        </SidebarGroup>
+        {navigationGroups.map((group, groupIndex) => (
+          <SidebarGroup key={groupIndex}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarMenu>
+              {group.items.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <Link href={item.href} tabIndex={-1}>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        data-active={isActive}
+                        tooltip={item.label}
+                        onClick={() => {
+                          setOpenMobile(false)
+                        }}
+                      >
+                        <Icon name={item.icon} />
+                        {item.label}
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <DropdownMenu>
