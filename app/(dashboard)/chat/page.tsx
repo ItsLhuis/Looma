@@ -21,7 +21,7 @@ export default function ChatPage() {
           onClick={clearMessages}
           disabled={!messages.length || isTyping}
         >
-          <Icon name="Plus" />
+          <Icon name="Trash" />
           Clear Messages
         </Button>
       </Navbar>
