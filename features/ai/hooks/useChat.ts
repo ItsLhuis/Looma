@@ -1,7 +1,7 @@
 "use client"
 
 import { useChat as useAIChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai"
 
 export function useChat() {
   const {
@@ -10,11 +10,13 @@ export function useChat() {
     status,
     error,
     stop,
-    setMessages
+    setMessages,
+    addToolResult
   } = useAIChat({
     transport: new DefaultChatTransport({
       api: "/api/ai/chat"
-    })
+    }),
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls
   })
 
   const handleSendMessage = (text: string, files?: File[]) => {
@@ -59,6 +61,7 @@ export function useChat() {
     isTyping,
     sendMessage: handleSendMessage,
     clearMessages: handleClearMessages,
-    stop
+    stop,
+    addToolResult
   }
 }
