@@ -31,7 +31,7 @@ export function CodeBlock({ language, children, className }: CodeBlockProps) {
   const isDark = theme === "dark"
 
   return (
-    <div className={cn("group relative", className)}>
+    <div className={cn("group relative mt-6", className)}>
       <div className="bg-muted/50 text-muted-foreground flex items-center justify-between rounded-t-md px-4 py-2 text-xs">
         <span className="font-mono">{language}</span>
         <Button
@@ -51,7 +51,12 @@ export function CodeBlock({ language, children, className }: CodeBlockProps) {
         style={isDark ? oneDark : oneLight}
         language={language}
         PreTag="div"
-        className="!mt-0 !rounded-t-none"
+        customStyle={{
+          marginTop: 0,
+          borderRadius: 0,
+          borderBottomLeftRadius: "calc(var(--radius) /* 0.25rem = 4px */ - 2px)",
+          borderBottomRightRadius: "calc(var(--radius) /* 0.25rem = 4px */ - 2px)"
+        }}
         showLineNumbers
         wrapLines
       >
