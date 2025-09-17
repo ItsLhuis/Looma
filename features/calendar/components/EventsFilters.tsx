@@ -43,6 +43,7 @@ const eventTypeLabels: Record<EventType, string> = {
 }
 
 const timePeriodLabels = {
+  allTime: "All Time",
   today: "Today",
   thisWeek: "This Week",
   thisMonth: "This Month",
@@ -64,8 +65,14 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
 
   const [timePeriod, setTimePeriod] = useQueryState(
     "timePeriod",
-    parseAsStringEnum<keyof typeof timePeriodLabels>(["today", "thisWeek", "thisMonth", "custom"])
-      .withDefault("thisMonth")
+    parseAsStringEnum<keyof typeof timePeriodLabels>([
+      "allTime",
+      "today",
+      "thisWeek",
+      "thisMonth",
+      "custom"
+    ])
+      .withDefault("allTime")
       .withOptions({ clearOnDefault: true })
   )
 
@@ -88,6 +95,8 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
     switch (period) {
+      case "allTime":
+        return undefined // No date filter for all time
       case "today":
         return {
           start: today,
@@ -111,10 +120,11 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
   }
 
   useEffect(() => {
+    const dateRange = getDateRange(timePeriod)
     const filters: EventFilters = {
       ...(search && { search }),
       ...(eventType !== "all" && { isAllDay: eventType === "allDay" }),
-      ...(timePeriod !== "custom" && { dateRange: getDateRange(timePeriod) }),
+      ...(dateRange && { dateRange }),
       ...(defaultFilters.dateRange &&
         timePeriod === "custom" && { dateRange: defaultFilters.dateRange })
     }
@@ -126,10 +136,10 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
   const clearAllFilters = () => {
     setSearch("")
     setEventType("all")
-    setTimePeriod("thisMonth")
+    setTimePeriod("allTime")
   }
 
-  const activeFiltersCount = [search, eventType !== "all", timePeriod !== "thisMonth"].filter(
+  const activeFiltersCount = [search, eventType !== "all", timePeriod !== "allTime"].filter(
     Boolean
   ).length
 
@@ -285,7 +295,7 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
                 </Button>
               </Badge>
             )}
-            {timePeriod !== "thisMonth" && (
+            {timePeriod !== "allTime" && (
               <Badge
                 variant="secondary"
                 className="group hover:bg-muted flex items-center gap-1.5 pr-1 transition-colors"
@@ -295,7 +305,7 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setTimePeriod("thisMonth")}
+                  onClick={() => setTimePeriod("allTime")}
                   className="hover:bg-destructive hover:text-destructive-foreground h-4 w-4 p-0 opacity-60 group-hover:opacity-100"
                   title="Remove time period filter"
                 >
