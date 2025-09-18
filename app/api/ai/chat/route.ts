@@ -71,8 +71,6 @@ export async function POST(req: Request) {
 
     const chatModel = ollama(OLLAMA_CHAT_MODEL)
 
-    console.log(`Using Ollama for chat with model: ${OLLAMA_CHAT_MODEL}`)
-
     let imageAnalysis = ""
     if (hasImages(messages)) {
       imageAnalysis = await analyzeImages(messages)
