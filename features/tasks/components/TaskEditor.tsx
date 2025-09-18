@@ -168,9 +168,14 @@ function TaskEditor({ taskId, mode = "insert" }: TaskEditorProps) {
         </div>
         <div className="flex items-center justify-end gap-2">
           <Skeleton className="h-9 w-20" />
+          <Skeleton className="h-9 w-20" />
         </div>
       </div>
     )
+  }
+
+  if (mode === "update" && fullTaskQuery?.isError) {
+    return <div className="text-destructive text-sm">Failed to load task</div>
   }
 
   return (

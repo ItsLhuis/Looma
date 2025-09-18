@@ -133,13 +133,14 @@ function NoteEditor({ noteId, mode = "insert" }: NoteEditorProps) {
         </div>
         <div className="flex items-center justify-end gap-2">
           <Skeleton className="h-9 w-20" />
+          <Skeleton className="h-9 w-20" />
         </div>
       </div>
     )
   }
 
   if (mode === "update" && fullNoteQuery?.isError) {
-    return <div className="text-destructive text-sm">Failed to load note.</div>
+    return <div className="text-destructive text-sm">Failed to load note</div>
   }
 
   return (
