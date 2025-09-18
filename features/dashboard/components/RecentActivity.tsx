@@ -30,20 +30,70 @@ function RecentActivity({ data, isLoading }: RecentActivityProps) {
             <Typography variant="h5">Recent Activity</Typography>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <div className="space-y-1">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
+        <CardContent className="space-y-6">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <div className="space-y-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Skeleton className="mb-2 h-4 w-40" />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <div className="space-y-1">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <div className="space-y-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Skeleton className="mb-2 h-4 w-40" />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-5 w-16" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <div className="space-y-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Skeleton className="mb-2 h-4 w-40" />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

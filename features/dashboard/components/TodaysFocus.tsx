@@ -25,25 +25,55 @@ export function TodaysFocus({ data, isLoading }: TodaysFocusProps) {
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>
+        <CardHeader className="border-border border-b">
+          <CardTitle className="flex items-center justify-between">
             <Typography variant="h5">Today&apos;s Focus</Typography>
+            <Skeleton className="h-6 w-16" />
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <div className="space-y-1">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
+        <CardContent className="space-y-6">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <div className="space-y-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <div className="space-y-1">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-5 w-16" />
+              </div>
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <div className="space-y-2">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-full" />
+                <div
+                  key={i}
+                  className="bg-card flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Skeleton className="mb-2 h-4 w-40" />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-5 w-16" />
+                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-5 w-14" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

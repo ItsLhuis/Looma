@@ -62,7 +62,10 @@ const navigationGroups: NavGroup[] = [
   },
   {
     label: "Looma AI",
-    items: [{ href: "/chat", icon: "MessageSquare", label: "Chat" }]
+    items: [
+      { href: "/chat", icon: "MessageSquare", label: "Chat" },
+      { href: "/memories", icon: "Brain", label: "Memories" }
+    ]
   }
 ]
 

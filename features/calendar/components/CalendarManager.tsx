@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from "react"
 
-import { FullScreenCalendar } from "@/components/ui"
+import { toLocalDate } from "@/lib/date"
+
+import { FullScreenCalendar, Skeleton } from "@/components/ui"
 
 import {
   useCreateEvent,
@@ -48,8 +50,8 @@ function CalendarManager({
       id: event.id,
       title: event.title,
       description: event.description,
-      startTime: new Date(event.startTime),
-      endTime: event.endTime ? new Date(event.endTime) : null,
+      startTime: toLocalDate(new Date(event.startTime)),
+      endTime: event.endTime ? toLocalDate(new Date(event.endTime)) : null,
       isAllDay: event.isAllDay
     }))
   }, [eventsData])
@@ -124,8 +126,8 @@ function CalendarManager({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-muted-foreground">Loading calendar...</div>
+      <div className="h-full w-full">
+        <Skeleton className="h-[600px]" />
       </div>
     )
   }
