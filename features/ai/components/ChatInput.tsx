@@ -163,7 +163,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && status === "ready") {
       e.preventDefault()
       handleSubmit(e)
     }
@@ -180,7 +180,6 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
     }
   }, [input])
 
-  // Focus input when chat finishes
   useEffect(() => {
     if (status === "ready" && textareaRef.current) {
       textareaRef.current.focus()
@@ -209,7 +208,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message or drag images here"
-            disabled={disabled || isProcessing}
+            disabled={disabled}
             className="text-foreground placeholder:text-muted-foreground max-h-[120px] min-h-[100px] w-full flex-1 resize-none border-0 border-none bg-transparent p-4 text-sm shadow-none outline-none focus:border-none focus:ring-0 focus:outline-none focus-visible:ring-0 sm:text-base"
             rows={1}
           />
@@ -220,7 +219,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
                 variant="outline"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted h-9 w-9 flex-shrink-0 p-0"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={disabled || !canAddFiles}
+                disabled={disabled || !canAddFiles || isProcessing}
                 title={canAddFiles ? "Attach images" : "Maximum 5 images allowed"}
               >
                 <Icon name="Image" />

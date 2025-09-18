@@ -23,6 +23,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const defaultOpen = cookieStore.get("sidebar.state")?.value === "true"
 
   const userData = {
+    id: user.id,
     name: user?.name ?? null,
     email: user?.email ?? null,
     image: user?.image ?? null

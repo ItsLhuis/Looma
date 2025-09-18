@@ -3,6 +3,7 @@
 import { createContext, useContext, type ReactNode } from "react"
 
 type User = {
+  id: string
   name: string | null
   email: string | null
   image: string | null

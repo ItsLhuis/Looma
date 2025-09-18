@@ -17,9 +17,10 @@ type ChatMessagesProps = {
   status: "ready" | "submitted" | "streaming" | "error"
   error?: string | null
   className?: string
+  onToolResult?: (toolCallId: string, toolName: string, output: string) => void
 }
 
-function ChatMessages({ messages, status, error, className }: ChatMessagesProps) {
+function ChatMessages({ messages, status, error, className, onToolResult }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -42,8 +43,13 @@ function ChatMessages({ messages, status, error, className }: ChatMessagesProps)
   return (
     <ScrollArea className={cn("flex-1", className)}>
       <div className="space-y-6">
-        {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
+        {messages.map((message, index) => (
+          <ChatMessage
+            key={message.id}
+            message={message}
+            onToolResult={onToolResult}
+            isLatestMessage={index === messages.length - 1}
+          />
         ))}
         {status === "submitted" && <ChatMessageLoading />}
         {status === "error" && error && <ChatMessageError error={error} />}

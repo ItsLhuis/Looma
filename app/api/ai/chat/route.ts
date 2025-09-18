@@ -2,6 +2,8 @@ import { ollama } from "ollama-ai-provider-v2"
 
 import { convertToModelMessages, generateText, stepCountIs, streamText, UIMessage } from "ai"
 
+import { createNoteToolSchema } from "@/features/tools/notes"
+
 export const maxDuration = 120
 
 const OLLAMA_CHAT_MODEL = process.env.OLLAMA_CHAT_MODEL || "qwen3:8b"
@@ -175,6 +177,13 @@ TOOL USAGE:
 - Don't ask for permission before using tools - just use them and let the confirmation system handle it
 - Use the current context information above for date/time references
 
+CONVERSATION FLOW AFTER TOOL RESULTS:
+- When a tool returns a result (NOTE_CREATED, NOTE_CANCELLED, etc.), ALWAYS provide a natural response
+- If a note was created successfully, acknowledge it and offer to help with anything else
+- If a note creation was cancelled, acknowledge it and ask if the user wants to modify anything or create something else
+- Continue the conversation naturally - don't just show the tool result without context
+- Always maintain conversational flow and be helpful
+
 EVENT CREATION RULES:
 - When users mention creating events, IMMEDIATELY use createEvent tool
 - ALWAYS provide title and startTime parameters (required)
@@ -247,6 +256,13 @@ Remember: You're not just responding to queries - you're actively helping users 
       messages: convertToModelMessages(processedMessages),
       maxOutputTokens: 1000,
       stopWhen: stepCountIs(5),
+      tools: {
+        createNote: {
+          description:
+            "Create a new note with title, content, priority, and other properties. This requires user confirmation before execution.",
+          inputSchema: createNoteToolSchema
+        }
+      },
       onStepFinish: ({ toolCalls, toolResults }) => {
         console.log(
           `Step finished: ${toolCalls?.length || 0} tool calls, ${toolResults?.length || 0} tool results`

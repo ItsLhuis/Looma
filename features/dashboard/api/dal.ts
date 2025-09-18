@@ -288,7 +288,6 @@ export async function getRecentActivity(filters?: DashboardFilters) {
   if (!user) throw new Error("UNAUTHORIZED")
 
   const [notesData, tasksData, eventsData] = await Promise.all([
-    // Recent notes (last 5)
     database
       .select({
         id: notes.id,
@@ -306,7 +305,6 @@ export async function getRecentActivity(filters?: DashboardFilters) {
       .orderBy(desc(notes.updatedAt))
       .limit(5),
 
-    // Recent tasks (last 5)
     database
       .select({
         id: tasks.id,
@@ -320,7 +318,6 @@ export async function getRecentActivity(filters?: DashboardFilters) {
       .orderBy(desc(tasks.updatedAt))
       .limit(5),
 
-    // Recent events (last 5)
     database
       .select({
         id: events.id,

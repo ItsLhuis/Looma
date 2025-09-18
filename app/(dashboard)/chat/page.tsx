@@ -10,7 +10,8 @@ import { Container, Navbar } from "@/components/layout"
 import { ChatInput, ChatMessages } from "@/features/ai/components"
 
 export default function ChatPage() {
-  const { messages, status, error, isTyping, sendMessage, clearMessages, stop } = useChat()
+  const { messages, status, error, isTyping, sendMessage, clearMessages, stop, addToolResult } =
+    useChat()
 
   return (
     <Fragment>
@@ -30,6 +31,13 @@ export default function ChatPage() {
           messages={messages}
           status={status}
           error={error ? "Something went wrong. Please try again." : null}
+          onToolResult={(toolCallId, toolName, output) => {
+            addToolResult({
+              toolCallId,
+              tool: toolName,
+              output
+            })
+          }}
         />
       </Container>
       <ChatInput onSendMessage={sendMessage} onStop={stop} status={status} disabled={isTyping} />

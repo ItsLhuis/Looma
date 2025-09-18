@@ -1,5 +1,7 @@
 "use client"
 
+import { getToolName, isToolUIPart } from "ai"
+
 import { useUser } from "@/contexts/UserProvider"
 
 import Image from "next/image"
@@ -18,16 +20,28 @@ import {
   Typography
 } from "@/components/ui"
 
+import { getToolsRequiringConfirmation } from "@/features/tools/notes"
+
+import {
+  NoteCancelledConfirmation,
+  NoteCreatedConfirmation,
+  NoteCreationConfirmation
+} from "@/features/tools/notes/components"
+
+import type { CreateNoteToolInput } from "@/features/tools/notes/schemas"
 import type { ChatMessage as ChatMessageType } from "../types"
 
 type ChatMessageProps = {
   message: ChatMessageType
+  onToolResult?: (toolCallId: string, toolName: string, output: string) => void
+  isLatestMessage?: boolean
 }
 
-function ChatMessage({ message }: ChatMessageProps) {
+function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMessageProps) {
   const user = useUser()
 
   const isUser = message.role === "user"
+  const toolsRequiringConfirmation = getToolsRequiringConfirmation()
 
   const getInitials = (name: string) =>
     name
@@ -107,6 +121,72 @@ function ChatMessage({ message }: ChatMessageProps) {
                   </div>
                 )
               }
+
+              if (isToolUIPart(part)) {
+                const toolName = getToolName(part)
+
+                if (
+                  toolsRequiringConfirmation.includes(toolName) &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  if (toolName === "createNote") {
+                    if (!isLatestMessage) {
+                      return (
+                        <NoteCancelledConfirmation
+                          key={part.toolCallId}
+                          noteData={part.input as CreateNoteToolInput}
+                        />
+                      )
+                    }
+
+                    return (
+                      <NoteCreationConfirmation
+                        key={part.toolCallId}
+                        toolCallId={part.toolCallId}
+                        input={part.input as CreateNoteToolInput}
+                        onApprove={(toolCallId: string, output: string) => {
+                          onToolResult?.(toolCallId, toolName, output)
+                        }}
+                        onReject={(toolCallId: string, output: string) => {
+                          onToolResult?.(toolCallId, toolName, output)
+                        }}
+                      />
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "createNote" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "NOTE_CREATED") {
+                      return (
+                        <NoteCreatedConfirmation key={part.toolCallId} noteData={outputData.data} />
+                      )
+                    }
+                    if (outputData.type === "NOTE_CANCELLED") {
+                      return (
+                        <NoteCancelledConfirmation
+                          key={part.toolCallId}
+                          noteData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch (error) {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+              }
+
               return null
             })}
           </div>

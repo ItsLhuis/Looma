@@ -89,14 +89,13 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
     [onChange]
   )
 
-  // Calculate date range based on time period
   const getDateRange = (period: string) => {
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
     switch (period) {
       case "allTime":
-        return undefined // No date filter for all time
+        return undefined
       case "today":
         return {
           start: today,
