@@ -208,7 +208,6 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message or drag images here"
-            disabled={disabled}
             className="text-foreground placeholder:text-muted-foreground max-h-[120px] min-h-[100px] w-full flex-1 resize-none border-0 border-none bg-transparent p-4 text-sm shadow-none outline-none focus:border-none focus:ring-0 focus:outline-none focus-visible:ring-0 sm:text-base"
             rows={1}
           />

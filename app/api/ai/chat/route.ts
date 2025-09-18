@@ -2,7 +2,7 @@ import { ollama } from "ollama-ai-provider-v2"
 
 import { convertToModelMessages, generateText, stepCountIs, streamText, UIMessage } from "ai"
 
-import { createNoteToolSchema } from "@/features/tools/notes"
+import { getTools } from "@/features/tools/registry"
 
 export const maxDuration = 120
 
@@ -256,13 +256,7 @@ Remember: You're not just responding to queries - you're actively helping users 
       messages: convertToModelMessages(processedMessages),
       maxOutputTokens: 1000,
       stopWhen: stepCountIs(5),
-      tools: {
-        createNote: {
-          description:
-            "Create a new note with title, content, priority, and other properties. This requires user confirmation before execution.",
-          inputSchema: createNoteToolSchema
-        }
-      },
+      tools: getTools(),
       onStepFinish: ({ toolCalls, toolResults }) => {
         console.log(
           `Step finished: ${toolCalls?.length || 0} tool calls, ${toolResults?.length || 0} tool results`

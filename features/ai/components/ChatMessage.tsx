@@ -20,15 +20,14 @@ import {
   Typography
 } from "@/components/ui"
 
-import { getToolsRequiringConfirmation } from "@/features/tools/notes"
-
 import {
   NoteCancelledConfirmation,
   NoteCreatedConfirmation,
   NoteCreationConfirmation
-} from "@/features/tools/notes/components"
+} from "@/features/notes/tools/components"
 
-import type { CreateNoteToolInput } from "@/features/tools/notes/schemas"
+import type { CreateNoteToolInput } from "@/features/notes/tools/schemas"
+
 import type { ChatMessage as ChatMessageType } from "../types"
 
 type ChatMessageProps = {
@@ -41,7 +40,6 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
   const user = useUser()
 
   const isUser = message.role === "user"
-  const toolsRequiringConfirmation = getToolsRequiringConfirmation()
 
   const getInitials = (name: string) =>
     name
@@ -125,35 +123,29 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
               if (isToolUIPart(part)) {
                 const toolName = getToolName(part)
 
-                if (
-                  toolsRequiringConfirmation.includes(toolName) &&
-                  part.state === "input-available" &&
-                  onToolResult
-                ) {
-                  if (toolName === "createNote") {
-                    if (!isLatestMessage) {
-                      return (
-                        <NoteCancelledConfirmation
-                          key={part.toolCallId}
-                          noteData={part.input as CreateNoteToolInput}
-                        />
-                      )
-                    }
-
+                if (toolName === "createNote" && part.state === "input-available" && onToolResult) {
+                  if (!isLatestMessage) {
                     return (
-                      <NoteCreationConfirmation
+                      <NoteCancelledConfirmation
                         key={part.toolCallId}
-                        toolCallId={part.toolCallId}
-                        input={part.input as CreateNoteToolInput}
-                        onApprove={(toolCallId: string, output: string) => {
-                          onToolResult?.(toolCallId, toolName, output)
-                        }}
-                        onReject={(toolCallId: string, output: string) => {
-                          onToolResult?.(toolCallId, toolName, output)
-                        }}
+                        noteData={part.input as CreateNoteToolInput}
                       />
                     )
                   }
+
+                  return (
+                    <NoteCreationConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as CreateNoteToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
                 }
 
                 if (
@@ -177,7 +169,7 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                         />
                       )
                     }
-                  } catch (error) {
+                  } catch {
                     return (
                       <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
                         <Typography variant="p">{part.output}</Typography>

@@ -17,7 +17,3 @@ export const APPROVAL = {
 } as const
 
 export type ApprovalStatus = (typeof APPROVAL)[keyof typeof APPROVAL]
-
-export function getToolsRequiringConfirmation(): string[] {
-  return ["createNote"]
-}

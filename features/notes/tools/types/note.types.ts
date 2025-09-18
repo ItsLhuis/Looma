@@ -1,6 +1,6 @@
-import type { CreateNoteToolInput, ApprovalStatus } from "../schemas/note.schema"
+import type { ApprovalStatus, CreateNoteToolInput } from "../schemas/note.schema"
 
-export interface NoteCreationToolCall {
+export type NoteCreationToolCall = {
   toolCallId: string
   toolName: "createNote"
   input: CreateNoteToolInput
@@ -8,13 +8,13 @@ export interface NoteCreationToolCall {
   output?: ApprovalStatus | string
 }
 
-export interface NoteCreationConfirmationData {
+export type NoteCreationConfirmationData = {
   toolCallId: string
   approved: boolean
   noteData: CreateNoteToolInput
 }
 
-export interface NoteCreationResult {
+export type NoteCreationResult = {
   success: boolean
   noteId?: string
   message: string
