@@ -1,0 +1,65 @@
+---
+alwaysApply: true
+description: Code quality and development standards
+---
+
+# Code Quality Standards
+
+## ESLint Configuration
+- Next.js core web vitals and TypeScript rules
+- Strict TypeScript checking enabled
+- No unused locals or parameters allowed
+- Proper import organization
+
+## Prettier Configuration
+- Tailwind CSS plugin for class sorting
+- Consistent formatting across all file types
+- Pre-commit hooks with lint-staged
+
+## Git Workflow
+- Husky pre-commit hooks
+- Lint-staged for staged files only
+- Clean working directory policy
+- Proper commit message conventions
+
+## TypeScript Best Practices
+- Strict mode enabled
+- Proper type definitions for all functions
+- Use interfaces for object shapes
+- Avoid `any` type usage
+- Proper generic usage
+
+## React Best Practices
+- Functional components with hooks
+- Proper dependency arrays in useEffect
+- Use useCallback for event handlers
+- Implement proper error boundaries
+- Cleanup side effects
+
+## Performance Guidelines
+- Use React.memo for expensive components
+- Implement proper loading states
+- Optimize bundle size
+- Use dynamic imports for code splitting
+- Implement proper caching strategies
+
+## Security Practices
+- Validate all user inputs
+- Use proper authentication checks
+- Sanitize data before database operations
+- Implement proper CORS policies
+- Use environment variables for secrets
+
+## Testing Considerations
+- Write testable code
+- Separate business logic from UI
+- Use proper mocking strategies
+- Test error scenarios
+- Maintain good test coverage
+
+## Documentation
+- Use JSDoc for complex functions
+- Document component props
+- Maintain README files
+- Document API endpoints
+- Keep architecture decisions documented

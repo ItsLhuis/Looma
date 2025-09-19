@@ -1,0 +1,295 @@
+---
+description: Guide for creating effective Cursor rules with examples and best practices
+---
+
+# Cursor Rules Creation Guide
+
+## Rule Structure Overview
+Every Cursor rule should follow this structure:
+1. **Frontmatter** - Metadata controlling when and how the rule applies
+2. **Title** - Clear, descriptive heading
+3. **Content** - Organized sections with examples and guidelines
+
+## Frontmatter Patterns
+
+### Always Applied Rules
+```yaml
+---
+alwaysApply: true
+---
+# Rule that applies to every request
+```
+
+### File-Specific Rules
+```yaml
+---
+globs: *.ts,*.tsx,app/api/**
+description: TypeScript and API development guidelines
+---
+# Rule for specific file types
+```
+
+### Manual Rules
+```yaml
+---
+description: Specific feature or pattern guidelines
+---
+# Rule that can be manually applied
+```
+
+## Rule Content Structure
+
+### 1. Clear Introduction
+Start with a brief explanation of what the rule covers and why it's important.
+
+### 2. Organized Sections
+Use consistent headings and structure:
+- **Patterns** - Common code patterns
+- **Examples** - Concrete code examples
+- **Guidelines** - Best practices and rules
+- **Anti-patterns** - What to avoid
+
+### 3. Code Examples
+Always include practical examples:
+
+```typescript
+// ✅ Good example
+export function useFeatureData() {
+  return useQuery({
+    queryKey: ['feature'],
+    queryFn: fetchFeatureData
+  })
+}
+
+// ❌ Bad example
+export function useFeatureData() {
+  // Don't do this
+}
+```
+
+## Rule Categories
+
+### 1. Architecture Rules
+- Project structure guidelines
+- Module organization
+- Dependency management
+
+### 2. Code Quality Rules
+- TypeScript best practices
+- React patterns
+- Performance guidelines
+
+### 3. Feature-Specific Rules
+- AI integration patterns
+- Database operations
+- API design
+
+### 4. Tool-Specific Rules
+- Testing patterns
+- Security practices
+- Deployment guidelines
+
+## Creating Rules from Code Examples
+
+### Step 1: Analyze Code Patterns
+Look for:
+- Repeated patterns across files
+- Common mistakes or inconsistencies
+- Best practices that should be standardized
+
+### Step 2: Extract Key Patterns
+Identify:
+- Function signatures
+- Component structures
+- Error handling approaches
+- State management patterns
+
+### Step 3: Write the Rule
+Structure the rule with:
+- Clear examples of the pattern
+- Explanation of why it's important
+- Guidelines for implementation
+- Common variations
+
+## Example Rule Creation Process
+
+### Input: Code Examples
+```typescript
+// Example 1: API route
+export async function GET(req: Request) {
+  const session = await getSession(req)
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // ... rest of implementation
+}
+
+// Example 2: Another API route
+export async function POST(req: Request) {
+  const session = await getSession(req)
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  // ... rest of implementation
+}
+```
+
+### Generated Rule
+```yaml
+---
+globs: app/api/**
+description: API route authentication and error handling patterns
+---
+
+# API Route Guidelines
+
+## Authentication Pattern
+Always check authentication at the start of API routes:
+
+```typescript
+export async function METHOD(req: Request) {
+  const session = await getSession(req)
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
+  // Route implementation
+}
+```
+
+## Error Handling
+Use consistent error responses with proper status codes.
+```
+
+## Rule Templates
+
+### Component Rule Template
+```yaml
+---
+globs: components/**,features/**/components/**
+description: React component development guidelines
+---
+
+# Component Guidelines
+
+## Component Structure
+```typescript
+interface ComponentProps {
+  // Props definition
+}
+
+export function Component({ prop1, prop2 }: ComponentProps) {
+  // Component implementation
+}
+```
+
+## Best Practices
+- Use TypeScript interfaces for props
+- Implement proper error boundaries
+- Follow naming conventions
+```
+
+### Hook Rule Template
+```yaml
+---
+globs: hooks/**,features/**/hooks/**
+description: Custom React hooks guidelines
+---
+
+# Custom Hooks Guidelines
+
+## Hook Structure
+```typescript
+export function useCustomHook(params: HookParams) {
+  // Hook implementation
+  return { data, loading, error }
+}
+```
+
+## Naming Convention
+- Always start with 'use'
+- Use descriptive names
+- Return consistent object structure
+```
+
+## Rule Quality Checklist
+
+### ✅ Good Rule Characteristics
+- [ ] Clear, descriptive title
+- [ ] Proper frontmatter configuration
+- [ ] Practical code examples
+- [ ] Explains the "why" not just the "what"
+- [ ] Includes both positive and negative examples
+- [ ] Covers edge cases and variations
+- [ ] Uses proper file references with `[filename.ext](mdc:filename.ext)`
+
+### ❌ Avoid These
+- Vague or generic content
+- Missing code examples
+- Inconsistent formatting
+- Rules that are too broad or too narrow
+- Outdated patterns or practices
+
+## Rule Maintenance
+
+### Regular Updates
+- Review rules quarterly
+- Update examples with new patterns
+- Remove outdated practices
+- Add new patterns as they emerge
+
+### Version Control
+- Track rule changes in git
+- Document breaking changes
+- Keep rules in sync with codebase evolution
+
+## Example: Complete Rule Creation
+
+### Input Context
+"I want to create a rule for form handling patterns. Here are some examples of forms in the codebase..."
+
+### Generated Rule
+```yaml
+---
+globs: features/**/components/**,app/**/page.tsx
+description: Form handling patterns and validation guidelines
+---
+
+# Form Handling Guidelines
+
+## Form Structure Pattern
+```typescript
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const formSchema = z.object({
+  // Schema definition
+})
+
+export function FormComponent() {
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {}
+  })
+  
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    // Handle submission
+  }
+  
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Form fields */}
+    </form>
+  )
+}
+```
+
+## Validation Patterns
+- Use Zod schemas for validation
+- Implement client-side and server-side validation
+- Provide clear error messages
+- Handle loading and error states
+```
+
+This approach ensures consistent, high-quality rules that actually help developers write better code.

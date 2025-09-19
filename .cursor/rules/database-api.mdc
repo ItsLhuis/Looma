@@ -1,0 +1,60 @@
+---
+globs: database/**,api/**,features/*/api/**
+description: Database and API development guidelines
+---
+
+# Database & API Guidelines
+
+## Database Schema (Drizzle ORM)
+- All tables use `text("id").primaryKey()` with UUID generation
+- Include `createdAt` and `updatedAt` timestamps on all entities
+- Use proper foreign key relationships with cascade delete
+- Add appropriate indexes for query performance
+- Use `integer` with `mode: "timestamp"` for date fields
+
+## API Route Structure
+- Follow RESTful conventions in `app/api/`
+- Use proper HTTP methods (GET, POST, PUT, DELETE)
+- Implement proper error handling and status codes
+- Use TypeScript for request/response types
+
+## Data Access Layer (DAL)
+- Create separate DAL files for each feature
+- Use React Query for client-side data fetching
+- Implement proper query key patterns for caching
+- Use optimistic updates for better UX
+
+## Query Patterns
+```typescript
+// Query key factory
+export const entityKeys = {
+  all: [{ scope: "entity" }] as const,
+  lists: () => [{ ...entityKeys.all[0], entity: "list" }] as const,
+  list: (params: ListParams) => [{ ...entityKeys.lists()[0], params }] as const,
+  details: () => [{ ...entityKeys.all[0], entity: "detail" }] as const,
+  detail: (id: string) => [{ ...entityKeys.details()[0], id }] as const,
+}
+
+// Query hook
+export function useListEntity(params: ListParams) {
+  return useQuery<EntityResponse>({
+    queryKey: entityKeys.list(params),
+    queryFn: async () => {
+      const res = await axios.get<EntityResponse>(url, { withCredentials: true })
+      return res.data
+    }
+  })
+}
+```
+
+## Validation
+- Use Zod schemas for API validation
+- Validate both request and response data
+- Provide clear error messages for validation failures
+- Use `drizzle-zod` for database schema validation
+
+## Error Handling
+- Implement consistent error response format
+- Use proper HTTP status codes
+- Log errors appropriately
+- Return user-friendly error messages

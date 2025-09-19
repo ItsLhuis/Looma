@@ -1,0 +1,63 @@
+---
+globs: features/ai/**,app/api/ai/**
+description: AI features and chat functionality guidelines
+---
+
+# AI Features Guidelines
+
+## Chat System Architecture
+- Uses OpenRouter AI SDK with streaming responses
+- Tool calling for note creation and task management
+- Message state management with proper typing
+- Real-time UI updates during streaming
+
+## Chat Components
+- `ChatMessages` - Main message container with auto-scroll
+- `ChatMessage` - Individual message rendering
+- `ChatMessageLoading` - Loading state indicator
+- `ChatMessageError` - Error state display
+- `ChatInput` - Input handling with file upload
+
+## Message Types
+```typescript
+type ChatMessage = {
+  id: string
+  role: "user" | "assistant"
+  parts: MessagePart[]
+}
+
+type MessagePart = 
+  | { type: "text"; text: string }
+  | { type: "file"; url: string; filename?: string; mediaType?: string }
+  | ToolUIPart
+```
+
+## Tool Integration
+- Custom tools for note creation and task management
+- Tool UI components for user confirmation
+- Proper state management for tool calls
+- Error handling for tool failures
+
+## AI Provider Configuration
+- OpenRouter integration for multiple models
+- Proper API key management
+- Rate limiting and error handling
+- Model selection and configuration
+
+## Streaming Implementation
+- Real-time message updates
+- Proper cleanup on component unmount
+- Error state management during streaming
+- Optimistic UI updates
+
+## File Handling
+- Image upload and display
+- Proper MIME type validation
+- Dialog for image preview
+- Unoptimized images for data URLs
+
+## State Management
+- Message history persistence
+- Tool call state tracking
+- Loading and error states
+- User context integration

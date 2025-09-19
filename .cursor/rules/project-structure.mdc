@@ -1,0 +1,42 @@
+---
+alwaysApply: true
+description: Project structure and architecture guidelines for Looma
+---
+
+# Looma Project Structure
+
+## Architecture Overview
+Looma is a Next.js 15 application with App Router, featuring a modular feature-based architecture with AI capabilities, task management, notes, calendar, and memory systems.
+
+## Key Directories
+- `app/` - Next.js App Router pages and API routes
+- `features/` - Feature-based modules (ai, tasks, notes, calendar, memories, dashboard)
+- `components/` - Shared UI components and layouts
+- `database/` - Drizzle ORM schema and database utilities
+- `lib/` - Shared utilities and configurations
+- `contexts/` - React context providers
+
+## Feature Module Structure
+Each feature in `features/` follows this pattern:
+- `api/` - Data access layer (queries, mutations, types, DAL)
+- `components/` - Feature-specific UI components
+- `hooks/` - Custom React hooks
+- `schemas/` - Zod validation schemas
+- `types/` - TypeScript type definitions
+- `tools/` - AI tools and utilities (where applicable)
+
+## Database Schema
+- Uses Drizzle ORM with SQLite
+- Schema defined in [database/schema.ts](mdc:database/schema.ts)
+- All tables include `createdAt` and `updatedAt` timestamps
+- Foreign keys use cascade delete for data integrity
+
+## Authentication
+- Better Auth integration
+- Google OAuth provider
+- Session management with SQLite storage
+
+## AI Integration
+- OpenRouter AI SDK for chat functionality
+- Custom AI tools for note creation and task management
+- Streaming responses with tool calling support

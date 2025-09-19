@@ -1,0 +1,65 @@
+---
+globs: *.ts,*.tsx
+description: TypeScript and React development guidelines
+---
+
+# TypeScript & React Guidelines
+
+## TypeScript Configuration
+- Strict mode enabled with `noUnusedLocals` and `noUnusedParameters`
+- Path aliases: `@/*` maps to project root
+- Target: ES2017 with modern module resolution
+
+## React Patterns
+- Use functional components with hooks
+- Prefer `"use client"` directive for client components
+- Use proper TypeScript interfaces for props
+- Implement proper error boundaries and loading states
+
+## Component Structure
+```typescript
+// Component props interface
+type ComponentProps = {
+  // Required props first
+  requiredProp: string
+  // Optional props with defaults
+  optionalProp?: boolean
+  // Event handlers
+  onAction?: (value: string) => void
+  // Styling
+  className?: string
+}
+
+// Component implementation
+function Component({ requiredProp, optionalProp = false, onAction, className }: ComponentProps) {
+  // Component logic
+  return <div className={cn("base-classes", className)}>...</div>
+}
+
+export { Component }
+```
+
+## Import Organization
+1. External libraries
+2. Internal utilities and contexts
+3. UI components
+4. Feature-specific imports
+5. Type imports (with `type` keyword)
+
+## State Management
+- Use React Query for server state
+- Use React hooks for local state
+- Context providers for global state (UserProvider, ThemeContext)
+- Custom hooks for complex state logic
+
+## Error Handling
+- Use proper TypeScript error types
+- Implement loading and error states in components
+- Use try-catch for async operations
+- Provide meaningful error messages to users
+
+## Performance
+- Use React.memo for expensive components
+- Implement proper dependency arrays in useEffect
+- Use useCallback for event handlers passed to children
+- Lazy load components when appropriate

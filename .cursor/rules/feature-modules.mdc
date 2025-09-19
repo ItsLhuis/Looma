@@ -1,0 +1,88 @@
+---
+globs: features/**
+description: Feature module development guidelines
+---
+
+# Feature Module Guidelines
+
+## Module Structure
+Each feature module follows a consistent structure:
+- `api/` - Data access layer and API integration
+- `components/` - Feature-specific UI components
+- `hooks/` - Custom React hooks
+- `schemas/` - Zod validation schemas
+- `types/` - TypeScript type definitions
+- `tools/` - AI tools and utilities (where applicable)
+
+## Tasks Feature
+- Kanban board with drag-and-drop
+- Task hierarchy with subtasks
+- Priority and status management
+- Due date tracking and filtering
+- Position-based ordering
+
+## Notes Feature
+- Rich text editing capabilities
+- Markdown rendering
+- AI-powered note creation
+- Search and filtering
+- Priority and favorite system
+
+## Calendar Feature
+- Event management
+- Date/time picker integration
+- All-day event support
+- Event filtering and search
+- Integration with tasks and notes
+
+## Memories Feature
+- Vector embeddings for semantic search
+- Importance-based categorization
+- Active/inactive memory states
+- AI-powered memory retrieval
+
+## Dashboard Feature
+- Overview statistics and metrics
+- Recent activity feed
+- Today's focus items
+- Weekly overview charts
+- Quick action buttons
+
+## API Integration Patterns
+```typescript
+// Query hooks with proper typing
+export function useListFeature(params: ListParams) {
+  return useQuery<FeatureResponse>({
+    queryKey: featureKeys.list(params),
+    queryFn: async () => {
+      const res = await axios.get<FeatureResponse>(url, { withCredentials: true })
+      return res.data
+    }
+  })
+}
+
+// Mutation hooks with optimistic updates
+export function useCreateFeature() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: createFeature,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: featureKeys.all })
+    }
+  })
+}
+```
+
+## Component Patterns
+- Compound components for complex UI
+- Proper prop interfaces with TypeScript
+- Loading and error states
+- Responsive design considerations
+- Accessibility compliance
+
+## State Management
+- React Query for server state
+- Local state for UI interactions
+- Context providers for feature-wide state
+- Custom hooks for complex logic

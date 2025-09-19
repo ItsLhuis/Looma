@@ -1,0 +1,74 @@
+---
+globs: app/**,next.config.ts,middleware.ts
+description: Next.js specific development guidelines
+---
+
+# Next.js Development Guidelines
+
+## App Router Structure
+- Use App Router (not Pages Router)
+- Route groups for organization: `(auth)`, `(dashboard)`
+- Proper layout hierarchy with nested layouts
+- Dynamic routes with `[id]` segments
+
+## Page Components
+```typescript
+// Page component structure
+export default function Page() {
+  return (
+    <div>
+      {/* Page content */}
+    </div>
+  )
+}
+
+// With metadata
+export const metadata: Metadata = {
+  title: "Page Title",
+  description: "Page description"
+}
+```
+
+## API Routes
+- Use proper HTTP methods
+- Implement error handling
+- Return consistent response format
+- Use proper status codes
+- Handle authentication
+
+## Middleware
+- Authentication checks in [middleware.ts](mdc:middleware.ts)
+- Route protection
+- Redirect logic
+- Request/response modification
+
+## Server vs Client Components
+- Default to Server Components
+- Use `"use client"` only when necessary
+- Keep client components small
+- Pass data from server to client components
+
+## Data Fetching
+- Use React Query for client-side data
+- Server-side data fetching in Server Components
+- Proper caching strategies
+- Error handling and loading states
+
+## Configuration
+- Next.js config in [next.config.ts](mdc:next.config.ts)
+- Turbopack enabled for development
+- React Strict Mode enabled
+- Proper TypeScript configuration
+
+## Environment Variables
+- Use `.env.local` for local development
+- Proper environment variable validation
+- Type-safe environment variables
+- Different configs for different environments
+
+## Performance
+- Image optimization with Next.js Image
+- Font optimization
+- Bundle analysis
+- Proper code splitting
+- Static generation where possible

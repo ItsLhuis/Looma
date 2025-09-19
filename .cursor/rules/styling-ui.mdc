@@ -1,0 +1,62 @@
+---
+globs: *.css,components/**,app/globals.css
+description: Styling and UI component guidelines
+---
+
+# Styling & UI Guidelines
+
+## Design System
+- Uses Tailwind CSS v4 with custom design tokens
+- Shadcn/ui components with "new-york" style
+- Custom color palette with OKLCH color space
+- Dark mode support with CSS custom properties
+
+## Component Library
+- All UI components in `components/ui/`
+- Use Radix UI primitives as base
+- Implement proper accessibility features
+- Follow compound component patterns
+
+## Styling Patterns
+```typescript
+// Use cn utility for conditional classes
+import { cn } from "@/lib/utils"
+
+<div className={cn("base-classes", conditionalClass, className)} />
+
+// Use CSS custom properties for theming
+<div style={{ "--custom-property": value }} />
+
+// Use Tailwind responsive prefixes
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" />
+```
+
+## Color System
+- Primary: Purple/violet theme
+- Semantic colors: success, warning, error, info
+- Muted colors for secondary content
+- Proper contrast ratios for accessibility
+
+## Typography
+- Custom letter-spacing: `--tracking-normal`
+- Typography component with variants
+- Proper heading hierarchy
+- Responsive text sizing
+
+## Layout Components
+- Container component for consistent spacing
+- Responsive grid systems
+- Proper spacing scale
+- Mobile-first responsive design
+
+## Animation
+- CSS custom properties for animations
+- Fade in/out transitions
+- Shine effects for special elements
+- Smooth scrolling and interactions
+
+## Accessibility
+- Proper ARIA labels and roles
+- Keyboard navigation support
+- Focus management
+- Screen reader compatibility
