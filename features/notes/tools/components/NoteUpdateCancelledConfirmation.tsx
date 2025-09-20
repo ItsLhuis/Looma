@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils"
 
 import { Badge, Card, CardContent, CardHeader, Icon, Separator, Typography } from "@/components/ui"
 
-import type { CreateNoteToolInput } from "../schemas/note.schema"
+import type { UpdateNoteToolInput } from "../schemas/note.schema"
 
-type NoteCancelledConfirmationProps = {
-  noteData: CreateNoteToolInput
+type NoteUpdateCancelledConfirmationProps = {
+  noteData: UpdateNoteToolInput
 }
 
-function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps) {
+function NoteUpdateCancelledConfirmation({ noteData }: NoteUpdateCancelledConfirmationProps) {
   const getPriorityClasses = (priority: string) => {
     switch (priority) {
       case "urgent":
@@ -29,17 +29,22 @@ function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps)
   return (
     <Card
       className={cn("flex flex-col", "border-error/20 bg-error/5")}
-      aria-label={`Note Creation Cancelled: ${noteData.title}`}
+      aria-label={`Note Update Cancelled: ${noteData.title || noteData.id}`}
     >
       <CardHeader className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Icon name="X" className="text-error h-5 w-5" />
-          <Typography variant="h5" className="line-clamp-2 leading-tight">
-            Note Creation Cancelled
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Icon name="X" className="text-error h-5 w-5" />
+            <Typography variant="h5" className="line-clamp-2 leading-tight">
+              Note Update Cancelled
+            </Typography>
+          </div>
+          <Typography affects={["muted", "small"]}>
+            This note was not updated. You can ask me to update it again or modify the details.
           </Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
-          {noteData.priority !== "none" && (
+          {noteData.priority && noteData.priority !== "none" && (
             <Badge className={cn(getPriorityClasses(noteData.priority), "shrink-0 capitalize")}>
               {noteData.priority}
             </Badge>
@@ -60,7 +65,7 @@ function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps)
       <Separator className="bg-error/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
-          {noteData.title}
+          {noteData.title || "No title provided"}
         </Typography>
         {noteData.summary && (
           <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">
@@ -76,14 +81,9 @@ function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps)
             No content
           </Typography>
         )}
-        <div className="bg-error/10 border-error/20 rounded-md border p-3">
-          <Typography affects={["muted", "small"]} className="text-center">
-            This note was not created. You can ask me to create it again or modify the details.
-          </Typography>
-        </div>
       </CardContent>
     </Card>
   )
 }
 
-export { NoteCancelledConfirmation }
+export { NoteUpdateCancelledConfirmation }

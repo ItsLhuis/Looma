@@ -59,25 +59,23 @@ function NoteCreatedConfirmation({ noteData }: NoteCreatedConfirmationProps) {
       </CardHeader>
       <Separator className="bg-success/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
-        <div className="space-y-2">
-          <Typography variant="h6" className="line-clamp-2 leading-tight">
-            {noteData.title}
+        <Typography variant="h6" className="line-clamp-2 leading-tight">
+          {noteData.title}
+        </Typography>
+        {noteData.summary && (
+          <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">
+            {noteData.summary?.trim()}
           </Typography>
-          {noteData.summary && (
-            <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">
-              {noteData.summary?.trim()}
-            </Typography>
-          )}
-          {noteData.content ? (
-            <Typography affects={["muted", "small"]} className="line-clamp-4">
-              {noteData.content?.trim()}
-            </Typography>
-          ) : (
-            <Typography className="italic" affects={["muted", "small"]}>
-              No content
-            </Typography>
-          )}
-        </div>
+        )}
+        {noteData.content ? (
+          <Typography affects={["muted", "small"]} className="line-clamp-4">
+            {noteData.content?.trim()}
+          </Typography>
+        ) : (
+          <Typography className="italic" affects={["muted", "small"]}>
+            No content
+          </Typography>
+        )}
       </CardContent>
     </Card>
   )

@@ -17,13 +17,21 @@ import {
 type DeleteNoteDialogProps = {
   noteId: string
   trigger: React.ReactNode
-  onDeleted?: () => void
 }
 
-function DeleteNoteDialog({ noteId, trigger, onDeleted }: DeleteNoteDialogProps) {
+function DeleteNoteDialog({ noteId, trigger }: DeleteNoteDialogProps) {
   const [open, setOpen] = useState(false)
 
   const deleteMutation = useDeleteNote(noteId)
+
+  const handleDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync()
+      setOpen(false)
+    } catch (error) {
+      console.error("Failed to delete note:", error)
+    }
+  }
 
   return (
     <Dialog
@@ -43,19 +51,11 @@ function DeleteNoteDialog({ noteId, trigger, onDeleted }: DeleteNoteDialogProps)
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
-            disabled={deleteMutation.isPending}
+            isLoading={deleteMutation.isPending}
           >
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            isLoading={deleteMutation.isPending}
-            onClick={async () => {
-              await deleteMutation.mutateAsync()
-              setOpen(false)
-              onDeleted?.()
-            }}
-          >
+          <Button variant="destructive" isLoading={deleteMutation.isPending} onClick={handleDelete}>
             Delete
           </Button>
         </DialogFooter>

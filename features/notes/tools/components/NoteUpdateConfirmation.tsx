@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 
-import { useCreateNote } from "@/features/notes/api/mutations"
+import { useUpdateNote } from "@/features/notes/api/mutations"
 
 import {
   Badge,
@@ -16,27 +16,27 @@ import {
   Typography
 } from "@/components/ui"
 
-import type { CreateNoteToolInput } from "../schemas/note.schema"
+import type { UpdateNoteToolInput } from "../schemas/note.schema"
 
-type NoteCreationConfirmationProps = {
+type NoteUpdateConfirmationProps = {
   toolCallId: string
-  input: CreateNoteToolInput
+  input: UpdateNoteToolInput
   onApprove: (toolCallId: string, output: string) => void
   onReject: (toolCallId: string, output: string) => void
 }
 
-function NoteCreationConfirmation({
+function NoteUpdateConfirmation({
   toolCallId,
   input,
   onApprove,
   onReject
-}: NoteCreationConfirmationProps) {
-  const createNoteMutation = useCreateNote()
+}: NoteUpdateConfirmationProps) {
+  const updateNoteMutation = useUpdateNote(input.id)
 
   const handleApprove = async () => {
     try {
-      const createdNote = await createNoteMutation.mutateAsync({
-        title: input.title,
+      const updatedNote = await updateNoteMutation.mutateAsync({
+        title: input.title || "",
         content: input.content,
         summary: input.summary,
         priority: input.priority,
@@ -45,24 +45,24 @@ function NoteCreationConfirmation({
       })
 
       const result = {
-        type: "NOTE_CREATED",
+        type: "NOTE_UPDATED",
         data: {
-          id: createdNote.data.id,
-          title: createdNote.data.title,
-          content: createdNote.data.content,
-          summary: createdNote.data.summary,
-          priority: createdNote.data.priority,
-          isFavorite: createdNote.data.isFavorite,
-          isArchived: createdNote.data.isArchived
+          id: updatedNote.data.id,
+          title: updatedNote.data.title,
+          content: updatedNote.data.content,
+          summary: updatedNote.data.summary,
+          priority: updatedNote.data.priority,
+          isFavorite: updatedNote.data.isFavorite,
+          isArchived: updatedNote.data.isArchived
         },
-        message: `Note "${createdNote.data.title}" has been successfully created!`
+        message: `Note "${updatedNote.data.title}" has been successfully updated!`
       }
 
       onApprove(toolCallId, JSON.stringify(result))
     } catch (error) {
       const errorResult = {
         type: "ERROR",
-        message: `Failed to create note: ${error instanceof Error ? error.message : "Unknown error"}`
+        message: `Failed to update note: ${error instanceof Error ? error.message : "Unknown error"}`
       }
       onApprove(toolCallId, JSON.stringify(errorResult))
     }
@@ -70,8 +70,9 @@ function NoteCreationConfirmation({
 
   const handleReject = async () => {
     const result = {
-      type: "NOTE_CANCELLED",
+      type: "NOTE_UPDATE_CANCELLED",
       data: {
+        id: input.id,
         title: input.title,
         content: input.content,
         summary: input.summary,
@@ -79,7 +80,7 @@ function NoteCreationConfirmation({
         isFavorite: input.isFavorite,
         isArchived: input.isArchived
       },
-      message: "Note creation was cancelled by user."
+      message: "Note update was cancelled by user."
     }
 
     onReject(toolCallId, JSON.stringify(result))
@@ -101,16 +102,16 @@ function NoteCreationConfirmation({
   }
 
   return (
-    <Card aria-label={`Create Note: ${input.title}`}>
+    <Card aria-label={`Update Note: ${input.title || input.id}`}>
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <Typography variant="h5" className="line-clamp-2 leading-tight">
-            {input.title}
+            {input.title || "No title provided"}
           </Typography>
-          <Typography affects={["muted", "small"]}>Review the details before creating</Typography>
+          <Typography affects={["muted", "small"]}>Review the changes before updating</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
-          {input.priority !== "none" && (
+          {input.priority && input.priority !== "none" && (
             <Badge className={cn(getPriorityClasses(input.priority), "shrink-0 capitalize")}>
               {input.priority}
             </Badge>
@@ -131,7 +132,7 @@ function NoteCreationConfirmation({
       <Separator />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
-          {input.title}
+          {input.title || "No title provided"}
         </Typography>
         {input.summary && (
           <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">
@@ -153,22 +154,22 @@ function NoteCreationConfirmation({
           type="button"
           variant="outline"
           onClick={handleReject}
-          disabled={createNoteMutation.isPending}
-          isLoading={createNoteMutation.isPending}
+          disabled={updateNoteMutation.isPending}
+          isLoading={updateNoteMutation.isPending}
         >
           Cancel
         </Button>
         <Button
           type="button"
           onClick={handleApprove}
-          disabled={createNoteMutation.isPending}
-          isLoading={createNoteMutation.isPending}
+          disabled={updateNoteMutation.isPending}
+          isLoading={updateNoteMutation.isPending}
         >
-          Create
+          Update
         </Button>
       </CardFooter>
     </Card>
   )
 }
 
-export { NoteCreationConfirmation }
+export { NoteUpdateConfirmation }
