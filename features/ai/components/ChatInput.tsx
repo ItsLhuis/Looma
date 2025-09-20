@@ -8,7 +8,7 @@ import { useDropzone } from "react-dropzone"
 
 import Image from "next/image"
 
-import { Button, Icon } from "@/components/ui"
+import { Button, Dialog, DialogContent, DialogTrigger, Icon } from "@/components/ui"
 
 type FileWithPreview = {
   id: string
@@ -57,16 +57,31 @@ const FilePreviewCard = ({
     <div className="group bg-muted border-border relative h-[125px] w-[125px] flex-shrink-0 overflow-hidden rounded-lg border p-3">
       <div className="flex h-full w-full items-start gap-3 overflow-hidden">
         {isImage && file.preview ? (
-          <div className="bg-muted relative h-full w-full overflow-hidden rounded-md">
-            <Image
-              src={file.preview}
-              alt={file.file.name}
-              fill
-              className="object-cover"
-              sizes="125px"
-              unoptimized={file.preview.startsWith("blob:")}
-            />
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="bg-muted relative h-full w-full cursor-pointer overflow-hidden rounded-md transition-opacity hover:opacity-80">
+                <Image
+                  src={file.preview}
+                  alt={file.file.name}
+                  fill
+                  className="object-cover"
+                  sizes="125px"
+                  unoptimized={file.preview.startsWith("blob:")}
+                />
+              </div>
+            </DialogTrigger>
+            <DialogContent showCloseButton={false} className="border-none! bg-transparent!">
+              <div className="relative aspect-video w-full">
+                <Image
+                  src={file.preview}
+                  alt={file.file.name}
+                  fill
+                  className="object-contain"
+                  unoptimized={file.preview.startsWith("blob:")}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         ) : (
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="group to-background/80 absolute inset-0 flex items-end justify-start overflow-hidden bg-gradient-to-b from-transparent p-2">
@@ -91,6 +106,7 @@ const FilePreviewCard = ({
         variant="outline"
         className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
         onClick={() => onRemove(file.id)}
+        tooltip="Remove file"
       >
         <Icon name="X" />
       </Button>
@@ -191,7 +207,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
   const canAddFiles = selectedFiles.length < 5
 
   return (
-    <div className="bg-background border-t p-6">
+    <div className="bg-background border-t p-4 sm:p-6 lg:p-8">
       <div {...getRootProps()} className="relative w-full">
         {(isDragging || isDragActive) && (
           <div className="bg-primary/10 border-primary pointer-events-none absolute inset-0 z-50 flex flex-col items-center justify-center rounded-xl border-2 border-dashed">
@@ -219,14 +235,20 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
                 className="text-muted-foreground hover:text-foreground hover:bg-muted h-9 w-9 flex-shrink-0 p-0"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={disabled || !canAddFiles || isProcessing}
-                title={canAddFiles ? "Attach images" : "Maximum 5 images allowed"}
+                tooltip={canAddFiles ? "Attach images" : "Maximum 5 images allowed"}
               >
                 <Icon name="Image" />
               </Button>
             </div>
             <div className="flex items-center gap-2">
               {isProcessing ? (
-                <Button type="button" variant="outline" size="icon" onClick={onStop}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={onStop}
+                  tooltip="Stop generation"
+                >
                   <Icon name="Square" />
                 </Button>
               ) : (
@@ -240,7 +262,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
                   )}
                   onClick={handleSubmit}
                   disabled={!canSend}
-                  title="Send message"
+                  tooltip="Send message"
                 >
                   {isProcessing ? (
                     <Icon name="Loader2" className="h-4 w-4 animate-spin" />

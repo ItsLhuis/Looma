@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { isToolUIPart } from "ai"
 
 import { cn } from "@/lib/utils"
 
-import { ScrollArea, Typography } from "@/components/ui"
+import { Typography } from "@/components/ui"
 
 import { ChatMessage } from "./ChatMessage"
 import { ChatMessageError } from "./ChatMessageError"
@@ -21,12 +21,6 @@ type ChatMessagesProps = {
 }
 
 function ChatMessages({ messages, status, error, className, onToolResult }: ChatMessagesProps) {
-  const bottomRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, status])
-
   if (messages.length === 0) {
     return (
       <div className="flex h-full items-center justify-center py-6">
@@ -40,22 +34,23 @@ function ChatMessages({ messages, status, error, className, onToolResult }: Chat
     )
   }
 
+  const lastMessage = messages[messages.length - 1]
+  const hasToolCalls =
+    lastMessage?.role === "assistant" && lastMessage.parts.some((part) => isToolUIPart(part))
+
   return (
-    <ScrollArea className={cn("flex-1", className)}>
-      <div className="space-y-6">
-        {messages.map((message, index) => (
-          <ChatMessage
-            key={message.id}
-            message={message}
-            onToolResult={onToolResult}
-            isLatestMessage={index === messages.length - 1}
-          />
-        ))}
-        {status === "submitted" && <ChatMessageLoading />}
-        {status === "error" && error && <ChatMessageError error={error} />}
-        <div ref={bottomRef} />
-      </div>
-    </ScrollArea>
+    <div className={cn("space-y-6", className)}>
+      {messages.map((message, index) => (
+        <ChatMessage
+          key={message.id}
+          message={message}
+          onToolResult={onToolResult}
+          isLatestMessage={index === messages.length - 1}
+        />
+      ))}
+      {status === "submitted" && <ChatMessageLoading showHeader={!hasToolCalls} />}
+      {status === "error" && error && <ChatMessageError error={error} />}
+    </div>
   )
 }
 

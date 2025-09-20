@@ -1,10 +1,10 @@
 "use client"
 
-import { Fragment } from "react"
+import { Fragment, useEffect } from "react"
 
-import { useChat } from "@/features/ai/hooks"
+import { useAutoScroll, useChat } from "@/features/ai/hooks"
 
-import { Button, Icon } from "@/components/ui"
+import { Button, Fade, Icon } from "@/components/ui"
 
 import { Container, Navbar } from "@/components/layout"
 import { ChatInput, ChatMessages } from "@/features/ai/components"
@@ -12,6 +12,45 @@ import { ChatInput, ChatMessages } from "@/features/ai/components"
 export default function ChatPage() {
   const { messages, status, error, isTyping, sendMessage, clearMessages, stop, addToolResult } =
     useChat()
+
+  const {
+    scrollRef,
+    scrollToBottom,
+    scrollToBottomIfNeeded,
+    setShouldAutoScroll,
+    isAtBottom,
+    shouldAutoScroll
+  } = useAutoScroll({
+    threshold: 100,
+    behavior: "smooth",
+    enabled: true
+  })
+
+  useEffect(() => {
+    scrollToBottomIfNeeded()
+  }, [messages, status, scrollToBottomIfNeeded])
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.role === "user") {
+        setShouldAutoScroll(true)
+        setTimeout(() => {
+          scrollToBottom()
+        }, 50)
+      }
+    }
+  }, [messages, setShouldAutoScroll, scrollToBottom])
+
+  useEffect(() => {
+    if (status === "streaming" && shouldAutoScroll && isAtBottom) {
+      const interval = setInterval(() => {
+        scrollToBottomIfNeeded()
+      }, 100)
+
+      return () => clearInterval(interval)
+    }
+  }, [status, shouldAutoScroll, isAtBottom, scrollToBottomIfNeeded])
 
   return (
     <Fragment>
@@ -26,7 +65,7 @@ export default function ChatPage() {
           Clear Messages
         </Button>
       </Navbar>
-      <Container>
+      <Container ref={scrollRef} className="relative flex flex-1 flex-col">
         <ChatMessages
           messages={messages}
           status={status}
@@ -39,6 +78,20 @@ export default function ChatPage() {
             })
           }}
         />
+        <Fade
+          show={!shouldAutoScroll && !isAtBottom && messages.length > 0}
+          className="absolute right-6 bottom-6"
+        >
+          <Button
+            onClick={() => {
+              setShouldAutoScroll(true)
+              scrollToBottom()
+            }}
+            size="icon"
+          >
+            <Icon name="ArrowDown" />
+          </Button>
+        </Fade>
       </Container>
       <ChatInput onSendMessage={sendMessage} onStop={stop} status={status} disabled={isTyping} />
     </Fragment>

@@ -23,10 +23,20 @@ import {
 import {
   NoteCancelledConfirmation,
   NoteCreatedConfirmation,
-  NoteCreationConfirmation
+  NoteCreationConfirmation,
+  NoteUpdateConfirmation,
+  NoteUpdatedConfirmation,
+  NoteUpdateCancelledConfirmation,
+  NoteDeleteConfirmation,
+  NoteDeletedConfirmation,
+  NoteDeleteCancelledConfirmation
 } from "@/features/notes/tools/components"
 
-import type { CreateNoteToolInput } from "@/features/notes/tools/schemas"
+import type {
+  CreateNoteToolInput,
+  UpdateNoteToolInput,
+  DeleteNoteToolInput
+} from "@/features/notes/tools/schemas"
 
 import type { ChatMessage as ChatMessageType } from "../types"
 
@@ -86,7 +96,7 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                         />
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl p-12">
+                    <DialogContent showCloseButton={false} className="border-none! bg-transparent!">
                       <div className="relative aspect-video w-full">
                         <Image
                           src={part.url}
@@ -148,6 +158,56 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   )
                 }
 
+                if (toolName === "updateNote" && part.state === "input-available" && onToolResult) {
+                  if (!isLatestMessage) {
+                    return (
+                      <NoteUpdateCancelledConfirmation
+                        key={part.toolCallId}
+                        noteData={part.input as UpdateNoteToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <NoteUpdateConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as UpdateNoteToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (toolName === "deleteNote" && part.state === "input-available" && onToolResult) {
+                  if (!isLatestMessage) {
+                    return (
+                      <NoteDeleteCancelledConfirmation
+                        key={part.toolCallId}
+                        noteData={part.input as DeleteNoteToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <NoteDeleteConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as DeleteNoteToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
                 if (
                   toolName === "createNote" &&
                   part.state === "output-available" &&
@@ -164,6 +224,66 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                     if (outputData.type === "NOTE_CANCELLED") {
                       return (
                         <NoteCancelledConfirmation
+                          key={part.toolCallId}
+                          noteData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "updateNote" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "NOTE_UPDATED") {
+                      return (
+                        <NoteUpdatedConfirmation key={part.toolCallId} noteData={outputData.data} />
+                      )
+                    }
+                    if (outputData.type === "NOTE_UPDATE_CANCELLED") {
+                      return (
+                        <NoteUpdateCancelledConfirmation
+                          key={part.toolCallId}
+                          noteData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "deleteNote" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "NOTE_DELETED") {
+                      return (
+                        <NoteDeletedConfirmation key={part.toolCallId} noteData={outputData.data} />
+                      )
+                    }
+                    if (outputData.type === "NOTE_DELETE_CANCELLED") {
+                      return (
+                        <NoteDeleteCancelledConfirmation
                           key={part.toolCallId}
                           noteData={outputData.data}
                         />
