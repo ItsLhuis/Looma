@@ -51,7 +51,7 @@ function LogoutDialog({ open, onOpenChange }: LogoutDialogProps) {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
+              <Button variant="outline" onClick={() => onOpenChange(false)} isLoading={isLoading}>
                 Cancel
               </Button>
               <Button variant="destructive" onClick={handleClick} isLoading={isLoading}>

@@ -1,27 +1,56 @@
+"use client"
+
+import React, { useMemo, type JSX } from "react"
+
+import { cn } from "@/lib/utils"
+
+import { motion } from "motion/react"
+
 type ShinyTextProps = {
-  text: string
-  disabled?: boolean
-  speed?: number
+  children: string
+  as?: React.ElementType
   className?: string
+  duration?: number
+  spread?: number
 }
 
-function ShinyText({ text, disabled = false, speed = 5, className = "" }: ShinyTextProps) {
-  const animationDuration = `${speed}s`
+export function ShinyText({
+  children,
+  as: Component = "p",
+  className,
+  duration = 2,
+  spread = 2
+}: ShinyTextProps) {
+  const MotionComponent = motion.create(Component as keyof JSX.IntrinsicElements)
+
+  const dynamicSpread = useMemo(() => {
+    return children.length * spread
+  }, [children, spread])
 
   return (
-    <div
-      className={`inline-block bg-clip-text text-[#b5b5b5a4] ${disabled ? "" : "animate-shine"} ${className}`}
-      style={{
-        backgroundImage:
-          "linear-gradient(120deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 60%)",
-        backgroundSize: "200% 100%",
-        WebkitBackgroundClip: "text",
-        animationDuration: animationDuration
+    <MotionComponent
+      className={cn(
+        "relative inline-block bg-[length:250%_100%,auto] bg-clip-text",
+        "text-transparent [--base-color:#a1a1aa] [--base-gradient-color:#000]",
+        "[background-repeat:no-repeat,padding-box] [--bg:linear-gradient(90deg,#0000_calc(50%-var(--spread)),var(--base-gradient-color),#0000_calc(50%+var(--spread)))]",
+        "dark:[--base-color:#71717a] dark:[--base-gradient-color:#ffffff] dark:[--bg:linear-gradient(90deg,#0000_calc(50%-var(--spread)),var(--base-gradient-color),#0000_calc(50%+var(--spread)))]",
+        className
+      )}
+      initial={{ backgroundPosition: "100% center" }}
+      animate={{ backgroundPosition: "0% center" }}
+      transition={{
+        repeat: Infinity,
+        duration,
+        ease: "linear"
       }}
+      style={
+        {
+          "--spread": `${dynamicSpread}px`,
+          backgroundImage: `var(--bg), linear-gradient(var(--base-color), var(--base-color))`
+        } as React.CSSProperties
+      }
     >
-      {text}
-    </div>
+      {children}
+    </MotionComponent>
   )
 }
-
-export { ShinyText }
