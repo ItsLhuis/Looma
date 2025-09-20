@@ -12,8 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  Spinner
+  DialogTrigger
 } from "@/components/ui"
 
 export type DeleteTaskDialogProps = {
@@ -46,18 +45,11 @@ function DeleteTaskDialog({ taskId, trigger }: DeleteTaskDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={deleteTask.isPending}>
+          <Button variant="outline" onClick={() => setOpen(false)} isLoading={deleteTask.isPending}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDelete} disabled={deleteTask.isPending}>
-            {deleteTask.isPending ? (
-              <>
-                <Spinner className="mr-2 h-4 w-4" />
-                Deleting...
-              </>
-            ) : (
-              "Delete"
-            )}
+          <Button variant="destructive" onClick={handleDelete} isLoading={deleteTask.isPending}>
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>

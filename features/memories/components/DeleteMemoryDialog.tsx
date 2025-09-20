@@ -17,13 +17,21 @@ import {
 type DeleteMemoryDialogProps = {
   memoryId: string
   trigger: React.ReactNode
-  onDeleted?: () => void
 }
 
-function DeleteMemoryDialog({ memoryId, trigger, onDeleted }: DeleteMemoryDialogProps) {
+function DeleteMemoryDialog({ memoryId, trigger }: DeleteMemoryDialogProps) {
   const [open, setOpen] = useState(false)
 
   const deleteMutation = useDeleteMemory(memoryId)
+
+  const handleDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync()
+      setOpen(false)
+    } catch (error) {
+      console.error("Failed to delete memory:", error)
+    }
+  }
 
   return (
     <Dialog
@@ -43,19 +51,11 @@ function DeleteMemoryDialog({ memoryId, trigger, onDeleted }: DeleteMemoryDialog
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
-            disabled={deleteMutation.isPending}
+            isLoading={deleteMutation.isPending}
           >
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            isLoading={deleteMutation.isPending}
-            onClick={async () => {
-              await deleteMutation.mutateAsync()
-              setOpen(false)
-              onDeleted?.()
-            }}
-          >
+          <Button variant="destructive" isLoading={deleteMutation.isPending} onClick={handleDelete}>
             Delete
           </Button>
         </DialogFooter>
