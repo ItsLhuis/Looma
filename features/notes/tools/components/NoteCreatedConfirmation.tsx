@@ -32,11 +32,14 @@ function NoteCreatedConfirmation({ noteData }: NoteCreatedConfirmationProps) {
       aria-label={`Note Created: ${noteData.title}`}
     >
       <CardHeader className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Icon name="Check" className="text-success h-5 w-5" />
-          <Typography variant="h5" className="line-clamp-2 leading-tight">
-            Note Created Successfully
-          </Typography>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Icon name="Check" className="text-success h-5 w-5" />
+            <Typography variant="h5" className="line-clamp-2 leading-tight">
+              Note Created Successfully
+            </Typography>
+          </div>
+          <Typography affects={["muted", "small"]}>Note has been successfully created</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
           {noteData.priority !== "none" && (

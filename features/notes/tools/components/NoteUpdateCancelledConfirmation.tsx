@@ -65,7 +65,7 @@ function NoteUpdateCancelledConfirmation({ noteData }: NoteUpdateCancelledConfir
       <Separator className="bg-error/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
-          {noteData.title || "No title provided"}
+          {noteData.title}
         </Typography>
         {noteData.summary && (
           <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">
@@ -81,6 +81,11 @@ function NoteUpdateCancelledConfirmation({ noteData }: NoteUpdateCancelledConfir
             No content
           </Typography>
         )}
+        <div className="bg-error/10 border-error/20 rounded-md border p-3">
+          <Typography affects={["muted", "small"]} className="text-center">
+            This note was not updated. You can ask me to update it again if needed.
+          </Typography>
+        </div>
       </CardContent>
     </Card>
   )

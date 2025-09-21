@@ -1,6 +1,6 @@
 export * from "./NoteCreationConfirmation"
 export * from "./NoteCreatedConfirmation"
-export * from "./NoteCancelledConfirmation"
+export * from "./NoteCreationCancelledConfirmation"
 export * from "./NoteUpdateConfirmation"
 export * from "./NoteUpdatedConfirmation"
 export * from "./NoteUpdateCancelledConfirmation"

@@ -188,7 +188,7 @@ function Sidebar() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className={cn("h-auto w-full p-3", !isExpanded && !isMobile && "my-3 p-0")}
+              className={cn("h-auto w-full p-3", !isExpanded && !isMobile && "my-3 size-8 p-0")}
             >
               <UserAvatar className={isMobile ? "" : !isExpanded ? "mx-auto" : ""} />
               {isMobile ? (

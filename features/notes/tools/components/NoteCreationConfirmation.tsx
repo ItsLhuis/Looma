@@ -104,9 +104,12 @@ function NoteCreationConfirmation({
     <Card aria-label={`Create Note: ${input.title}`}>
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <Typography variant="h5" className="line-clamp-2 leading-tight">
-            {input.title}
-          </Typography>
+          <div className="flex items-center gap-2">
+            <Icon name="Plus" className="h-5 w-5" />
+            <Typography variant="h5" className="line-clamp-2 leading-tight">
+              Create Note
+            </Typography>
+          </div>
           <Typography affects={["muted", "small"]}>Review the details before creating</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">

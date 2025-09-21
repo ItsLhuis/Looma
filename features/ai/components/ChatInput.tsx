@@ -227,7 +227,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
             className="text-foreground placeholder:text-muted-foreground max-h-[120px] min-h-[100px] w-full flex-1 resize-none border-0 border-none bg-transparent p-4 text-sm shadow-none outline-none focus:border-none focus:ring-0 focus:outline-none focus-visible:ring-0 sm:text-base"
             rows={1}
           />
-          <div className="flex w-full items-center justify-between gap-2 px-3 pb-1.5">
+          <div className="flex w-full items-center justify-between gap-2 border-t p-3">
             <div className="flex items-center gap-2">
               <Button
                 size="icon"
@@ -274,7 +274,7 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
             </div>
           </div>
           {selectedFiles.length > 0 && (
-            <div className="border-border bg-muted/30 w-full border-t p-3">
+            <div className="border-border w-full border-t p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-muted-foreground text-xs">
                   {selectedFiles.length}/5 images

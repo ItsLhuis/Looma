@@ -21,7 +21,7 @@ import {
 } from "@/components/ui"
 
 import {
-  NoteCancelledConfirmation,
+  NoteCreationCancelledConfirmation,
   NoteCreatedConfirmation,
   NoteCreationConfirmation,
   NoteUpdateConfirmation,
@@ -136,7 +136,7 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                 if (toolName === "createNote" && part.state === "input-available" && onToolResult) {
                   if (!isLatestMessage) {
                     return (
-                      <NoteCancelledConfirmation
+                      <NoteCreationCancelledConfirmation
                         key={part.toolCallId}
                         noteData={part.input as CreateNoteToolInput}
                       />
@@ -223,7 +223,7 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                     }
                     if (outputData.type === "NOTE_CANCELLED") {
                       return (
-                        <NoteCancelledConfirmation
+                        <NoteCreationCancelledConfirmation
                           key={part.toolCallId}
                           noteData={outputData.data}
                         />

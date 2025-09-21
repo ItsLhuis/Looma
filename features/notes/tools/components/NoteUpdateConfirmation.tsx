@@ -36,7 +36,7 @@ function NoteUpdateConfirmation({
   const handleApprove = async () => {
     try {
       const updatedNote = await updateNoteMutation.mutateAsync({
-        title: input.title || "",
+        title: input.title,
         content: input.content,
         summary: input.summary,
         priority: input.priority,
@@ -102,12 +102,15 @@ function NoteUpdateConfirmation({
   }
 
   return (
-    <Card aria-label={`Update Note: ${input.title || input.id}`}>
+    <Card aria-label={`Update Note: ${input.title}`}>
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <Typography variant="h5" className="line-clamp-2 leading-tight">
-            {input.title || "No title provided"}
-          </Typography>
+          <div className="flex items-center gap-2">
+            <Icon name="Pencil" className="h-5 w-5" />
+            <Typography variant="h5" className="line-clamp-2 leading-tight">
+              Update Note
+            </Typography>
+          </div>
           <Typography affects={["muted", "small"]}>Review the changes before updating</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
@@ -132,7 +135,7 @@ function NoteUpdateConfirmation({
       <Separator />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
-          {input.title || "No title provided"}
+          {input.title}
         </Typography>
         {input.summary && (
           <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">

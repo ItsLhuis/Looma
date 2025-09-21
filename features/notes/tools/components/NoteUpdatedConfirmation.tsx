@@ -39,9 +39,7 @@ function NoteUpdatedConfirmation({ noteData }: NoteUpdatedConfirmationProps) {
               Note Updated Successfully
             </Typography>
           </div>
-          <Typography affects={["muted", "small"]}>
-            Updated at {new Date().toLocaleString()}
-          </Typography>
+          <Typography affects={["muted", "small"]}>Note has been successfully updated</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
           {noteData.priority && noteData.priority !== "none" && (
@@ -65,7 +63,7 @@ function NoteUpdatedConfirmation({ noteData }: NoteUpdatedConfirmationProps) {
       <Separator className="bg-success/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
-          {noteData.title || "No title provided"}
+          {noteData.title}
         </Typography>
         {noteData.summary && (
           <Typography variant="blockquote" affects={["muted", "small"]} className="line-clamp-2">

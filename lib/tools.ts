@@ -6,26 +6,7 @@ export function generateToolDescriptions() {
   const toolDescriptions = Object.entries(tools)
     .map(([name, tool]) => {
       const description = tool.description || "No description available"
-      const schema = tool.inputSchema
-
-      let parameters = ""
-      if (schema && typeof schema === "object" && "shape" in schema) {
-        const shape = (schema as { shape: Record<string, unknown> }).shape
-        const paramList = Object.entries(shape)
-          .map(([key, value]: [string, unknown]) => {
-            const val = value as { isOptional?: () => boolean; _def?: { typeName?: string } }
-            const isOptional = val.isOptional?.() || false
-            const type = val._def?.typeName || "unknown"
-            return `${key}${isOptional ? "?" : ""} (${type})`
-          })
-          .join(", ")
-
-        if (paramList) {
-          parameters = `\n  Parameters: ${paramList}`
-        }
-      }
-
-      return `- **${name}**: ${description}${parameters}`
+      return `- **${name}**: ${description}`
     })
     .join("\n")
 
