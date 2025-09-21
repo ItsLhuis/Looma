@@ -9,6 +9,32 @@ export const createNoteToolSchema = z.object({
   isArchived: z.boolean().default(false)
 })
 
+export const updateNoteToolSchema = z.object({
+  id: z.string().min(1, "ID is required"),
+  title: z
+    .string()
+    .min(1, "Title is REQUIRED - always include the title field when updating")
+    .max(255, "Title must be less than 255 characters"),
+  content: z.string().optional(),
+  summary: z.string().optional(),
+  priority: z.enum(["none", "low", "medium", "high", "urgent"]).optional(),
+  isFavorite: z.boolean().optional(),
+  isArchived: z.boolean().optional()
+})
+
+export const deleteNoteToolSchema = z.object({
+  id: z.string().min(1, "ID is required"),
+  title: z
+    .string()
+    .min(1, "Title is REQUIRED - always include the title field when deleting")
+    .max(255, "Title must be less than 255 characters"),
+  content: z.string().optional(),
+  summary: z.string().optional(),
+  priority: z.enum(["none", "low", "medium", "high", "urgent"]).optional(),
+  isFavorite: z.boolean().optional(),
+  isArchived: z.boolean().optional()
+})
+
 export const listNotesToolSchema = z.object({
   limit: z.number().min(1).max(100).default(20).optional(),
   offset: z.number().min(0).default(0).optional(),
@@ -107,24 +133,6 @@ export const getNotesCountByPriorityToolSchema = z.object({
 export const getNotesCountByDateToolSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional()
-})
-
-export const updateNoteToolSchema = z.object({
-  id: z.string().min(1, "Note ID is required"),
-  title: z
-    .string()
-    .min(1, "Title is required")
-    .max(255, "Title must be less than 255 characters")
-    .optional(),
-  content: z.string().optional(),
-  summary: z.string().optional(),
-  priority: z.enum(["none", "low", "medium", "high", "urgent"]).optional(),
-  isFavorite: z.boolean().optional(),
-  isArchived: z.boolean().optional()
-})
-
-export const deleteNoteToolSchema = z.object({
-  id: z.string().min(1, "Note ID is required")
 })
 
 export type CreateNoteToolInput = z.infer<typeof createNoteToolSchema>

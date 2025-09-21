@@ -6,11 +6,11 @@ import { Badge, Card, CardContent, CardHeader, Icon, Separator, Typography } fro
 
 import type { CreateNoteToolInput } from "../schemas/note.schema"
 
-type NoteCancelledConfirmationProps = {
+type NoteCreationCancelledConfirmationProps = {
   noteData: CreateNoteToolInput
 }
 
-function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps) {
+function NoteCreationCancelledConfirmation({ noteData }: NoteCreationCancelledConfirmationProps) {
   const getPriorityClasses = (priority: string) => {
     switch (priority) {
       case "urgent":
@@ -78,7 +78,7 @@ function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps)
         )}
         <div className="bg-error/10 border-error/20 rounded-md border p-3">
           <Typography affects={["muted", "small"]} className="text-center">
-            This note was not created. You can ask me to create it again or modify the details.
+            This note was not created. You can ask me to create it again if needed.
           </Typography>
         </div>
       </CardContent>
@@ -86,4 +86,4 @@ function NoteCancelledConfirmation({ noteData }: NoteCancelledConfirmationProps)
   )
 }
 
-export { NoteCancelledConfirmation }
+export { NoteCreationCancelledConfirmation }
