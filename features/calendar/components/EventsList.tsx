@@ -103,18 +103,6 @@ function EventsList({ initialParams, onCreateDialogClose }: EventsListProps) {
     )
   }
 
-  if (data && data.data.length === 0) {
-    return (
-      <div className="space-y-4">
-        {headerContent}
-        {filtersContent}
-        <div className="flex h-full items-center justify-center py-6">
-          <Typography affects={["muted", "small"]}>No events found</Typography>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-4">
       {headerContent}
