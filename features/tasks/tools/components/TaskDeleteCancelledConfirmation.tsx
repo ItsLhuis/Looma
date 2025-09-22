@@ -7,12 +7,12 @@ import { formatDateForDisplay } from "@/lib/date"
 import { Badge, Card, CardContent, CardHeader, Icon, Separator, Typography } from "@/components/ui"
 
 import {
+  getActionStatusClasses,
+  getActionStatusColor,
+  getActionStatusIcon,
   getPriorityClasses,
   getStatusClasses,
-  getStatusLabel,
-  getActionStatusClasses,
-  getActionStatusIcon,
-  getActionStatusColor
+  getStatusLabel
 } from "@/features/tasks/utils/status.utils"
 
 import type { DeleteTaskToolInput } from "../schemas/task.schema"
@@ -76,7 +76,7 @@ function TaskDeleteCancelledConfirmation({ taskData }: TaskDeleteCancelledConfir
           )}
         </div>
       </CardHeader>
-      <Separator />
+      <Separator className="bg-error/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
           {taskData.title}

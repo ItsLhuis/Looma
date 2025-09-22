@@ -31,7 +31,7 @@ function NoteDeleteCancelledConfirmation({ noteData }: NoteDeleteCancelledConfir
               className={cn("h-5 w-5", getActionStatusColor("cancelled"))}
             />
             <Typography variant="h5" className="line-clamp-2 leading-tight">
-              Note Delete Cancelled
+              Note Deletion Cancelled
             </Typography>
           </div>
           <Typography affects={["muted", "small"]}>Note deletion was cancelled by user</Typography>

@@ -135,6 +135,7 @@ function EventUpdateConfirmation({
           </div>
         )}
       </CardContent>
+      <Separator />
       <CardFooter className="flex justify-end gap-2">
         <Button
           type="button"

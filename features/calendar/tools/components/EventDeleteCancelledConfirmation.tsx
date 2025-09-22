@@ -42,7 +42,7 @@ function EventDeleteCancelledConfirmation({ eventData }: EventDeleteCancelledCon
               className={cn("h-5 w-5", getActionStatusColor("cancelled"))}
             />
             <Typography variant="h5" className="line-clamp-2 leading-tight">
-              Event Delete Cancelled
+              Event Deletion Cancelled
             </Typography>
           </div>
           <Typography affects={["muted", "small"]}>Event deletion was cancelled by user</Typography>
@@ -56,7 +56,7 @@ function EventDeleteCancelledConfirmation({ eventData }: EventDeleteCancelledCon
           )}
         </div>
       </CardHeader>
-      <Separator />
+      <Separator className="bg-error/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
           {eventData.title}

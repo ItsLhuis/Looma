@@ -86,12 +86,12 @@ function EventDeleteConfirmation({
   }
 
   return (
-    <Card aria-label={`Delete Event: ${input.title}`} className="border-destructive">
+    <Card aria-label={`Delete Event: ${input.title}`}>
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Icon name="Trash2" className="text-destructive h-5 w-5" />
-            <Typography variant="h5" className="text-destructive line-clamp-2 leading-tight">
+            <Icon name="Trash" className="h-5 w-5" />
+            <Typography variant="h5" className="line-clamp-2 leading-tight">
               Delete Event
             </Typography>
           </div>
@@ -117,13 +117,13 @@ function EventDeleteConfirmation({
             {formatEventTime(input.startTime, input.endTime, input.isAllDay)}
           </Typography>
         </div>
-        <div className="bg-destructive/10 rounded-md p-3">
-          <Typography affects={["small"]} className="text-destructive">
-            <Icon name="AlertTriangle" className="mr-1 inline h-4 w-4" />
-            This event will be permanently deleted and cannot be recovered.
+        <div className="bg-destructive/10 border-destructive/20 rounded-md border p-3">
+          <Typography affects={["muted", "small"]} className="text-center">
+            Are you sure you want to delete this event? This action cannot be undone.
           </Typography>
         </div>
       </CardContent>
+      <Separator />
       <CardFooter className="flex justify-end gap-2">
         <Button
           type="button"

@@ -106,7 +106,7 @@ function NoteUpdateConfirmation({
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Icon name="Pencil" className="h-5 w-5" />
+            <Icon name="Edit" className="h-5 w-5" />
             <Typography variant="h5" className="line-clamp-2 leading-tight">
               Update Note
             </Typography>
@@ -152,6 +152,7 @@ function NoteUpdateConfirmation({
           </Typography>
         )}
       </CardContent>
+      <Separator />
       <CardFooter className="flex justify-end gap-2">
         <Button
           type="button"

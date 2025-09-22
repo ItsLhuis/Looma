@@ -169,6 +169,7 @@ function TaskDeleteConfirmation({
           </Typography>
         </div>
       </CardContent>
+      <Separator />
       <CardFooter className="flex items-end justify-end gap-2">
         <Button
           type="button"

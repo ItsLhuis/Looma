@@ -58,7 +58,7 @@ function EventCreationCancelledConfirmation({
           )}
         </div>
       </CardHeader>
-      <Separator />
+      <Separator className="bg-error/20" />
       <CardContent className="flex h-full flex-col gap-6 wrap-break-word">
         <Typography variant="h6" className="line-clamp-2 leading-tight">
           {eventData.title}

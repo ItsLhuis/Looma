@@ -80,18 +80,16 @@ function MemoryDeletionConfirmation({
   }
 
   return (
-    <Card aria-label={`Delete Memory: ${input.title}`} className="border-destructive">
+    <Card aria-label={`Delete Memory: ${input.title}`}>
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Icon name="Trash2" className="text-destructive h-5 w-5" />
-            <Typography variant="h5" className="text-destructive line-clamp-2 leading-tight">
+            <Icon name="Trash" className="h-5 w-5" />
+            <Typography variant="h5" className="line-clamp-2 leading-tight">
               Delete Memory
             </Typography>
           </div>
-          <Typography affects={["muted", "small"]} className="text-destructive/80">
-            This action cannot be undone
-          </Typography>
+          <Typography affects={["muted", "small"]}>This action cannot be undone</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
           <Badge
@@ -131,15 +129,13 @@ function MemoryDeletionConfirmation({
             Will be deleted: {formatDateForDisplay(new Date())}
           </Typography>
         </div>
-        <div className="bg-destructive/10 rounded-md p-3">
-          <div className="flex items-start gap-2">
-            <Icon name="AlertTriangle" className="text-destructive mt-0.5 h-4 w-4" />
-            <Typography affects={["small"]} className="text-destructive">
-              Warning: This memory will be permanently deleted and cannot be recovered.
-            </Typography>
-          </div>
+        <div className="bg-destructive/10 border-destructive/20 rounded-md border p-3">
+          <Typography affects={["muted", "small"]} className="text-center">
+            Are you sure you want to delete this memory? This action cannot be undone.
+          </Typography>
         </div>
       </CardContent>
+      <Separator />
       <CardFooter className="flex items-end justify-end gap-2">
         <Button
           type="button"
