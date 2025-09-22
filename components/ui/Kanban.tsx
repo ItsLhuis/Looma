@@ -46,21 +46,6 @@ export type HierarchicalKanbanCardType = KanbanCardType & {
   onFocusParent?: (parentId: string) => void
 }
 
-export type ResponsiveKanbanConfig = {
-  breakpoints: {
-    mobile: number
-    tablet: number
-    desktop: number
-  }
-  columnsPerBreakpoint: {
-    mobile: number
-    tablet: number
-    desktop: number
-  }
-  enableHorizontalScroll: boolean
-  snapToColumns: boolean
-}
-
 export type KanbanColumnConfig = {
   id: KanbanColumnType
   title: string
@@ -75,7 +60,6 @@ type KanbanProps = {
   className?: string
   showDeleteZone?: boolean
   hierarchical?: boolean
-  responsiveConfig?: Partial<ResponsiveKanbanConfig>
   onHierarchicalMove?: (params: {
     cardId: string
     newColumn: string
@@ -243,7 +227,7 @@ function KanbanBoard({
   return (
     <div
       ref={boardRef}
-      className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3"
+      className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(460px,1fr))] gap-3"
     >
       {columns.map((columnConfig) => (
         <KanbanColumn
@@ -477,7 +461,7 @@ function KanbanColumn({
           onDragOver={isAtLimit ? undefined : handleDragOver}
           onDragLeave={handleDragLeave}
           className={cn(
-            "min-h-full w-full transition-colors",
+            "min-h-20 w-full transition-colors",
             isAtLimit
               ? "cursor-not-allowed"
               : active
