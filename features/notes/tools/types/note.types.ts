@@ -1,3 +1,5 @@
+import type { Note } from "@/features/notes/types"
+
 import type {
   ApprovalStatus,
   CreateNoteToolInput,
@@ -65,17 +67,7 @@ export type NoteToolResult = {
 }
 
 export type NoteListResult = {
-  notes: Array<{
-    id: string
-    title: string
-    content: string | null
-    summary: string | null
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    isFavorite: boolean
-    isArchived: boolean
-    createdAt: Date
-    updatedAt: Date
-  }>
+  notes: Note[]
   total: number
   limit: number
   offset: number
@@ -89,17 +81,7 @@ export type NoteListResult = {
 }
 
 export type NoteSearchResult = {
-  notes: Array<{
-    id: string
-    title: string
-    content: string | null
-    summary: string | null
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    isFavorite: boolean
-    isArchived: boolean
-    createdAt: Date
-    updatedAt: Date
-  }>
+  notes: Note[]
   query: string
   count: number
 }

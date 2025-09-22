@@ -1,3 +1,5 @@
+import type { Task } from "@/features/tasks/types"
+
 import type {
   ApprovalStatus,
   CreateTaskToolInput,
@@ -135,20 +137,7 @@ export type TaskToolResult = {
 }
 
 export type TaskListResult = {
-  tasks: Array<{
-    id: string
-    title: string
-    description: string | null
-    status: "pending" | "inProgress" | "completed" | "cancelled" | "onHold"
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    dueDate: Date | null
-    estimatedDuration: number | null
-    position: number
-    parentTaskId: string | null
-    createdAt: Date
-    updatedAt: Date
-    completedAt: Date | null
-  }>
+  tasks: Task[]
   total: number
   limit: number
   offset: number
@@ -163,67 +152,15 @@ export type TaskListResult = {
 }
 
 export type TaskSearchResult = {
-  tasks: Array<{
-    id: string
-    title: string
-    description: string | null
-    status: "pending" | "inProgress" | "completed" | "cancelled" | "onHold"
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    dueDate: Date | null
-    estimatedDuration: number | null
-    position: number
-    parentTaskId: string | null
-    createdAt: Date
-    updatedAt: Date
-    completedAt: Date | null
-  }>
+  tasks: Task[]
   query: string
   count: number
 }
 
 export type TaskHierarchyResult = {
-  task: {
-    id: string
-    title: string
-    description: string | null
-    status: "pending" | "inProgress" | "completed" | "cancelled" | "onHold"
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    dueDate: Date | null
-    estimatedDuration: number | null
-    position: number
-    parentTaskId: string | null
-    createdAt: Date
-    updatedAt: Date
-    completedAt: Date | null
-  }
-  subtasks: Array<{
-    id: string
-    title: string
-    description: string | null
-    status: "pending" | "inProgress" | "completed" | "cancelled" | "onHold"
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    dueDate: Date | null
-    estimatedDuration: number | null
-    position: number
-    parentTaskId: string | null
-    createdAt: Date
-    updatedAt: Date
-    completedAt: Date | null
-  }>
+  task: Task
+  subtasks: Task[]
   hasSubtasks: boolean
   isSubtask: boolean
-  parentTask?: {
-    id: string
-    title: string
-    description: string | null
-    status: "pending" | "inProgress" | "completed" | "cancelled" | "onHold"
-    priority: "none" | "low" | "medium" | "high" | "urgent"
-    dueDate: Date | null
-    estimatedDuration: number | null
-    position: number
-    parentTaskId: string | null
-    createdAt: Date
-    updatedAt: Date
-    completedAt: Date | null
-  } | null
+  parentTask?: Task | null
 }
