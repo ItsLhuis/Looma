@@ -225,6 +225,23 @@ function EventDialog({
   })
 
   const isAllDay = form.watch("isAllDay")
+  const [initialValues, setInitialValues] = React.useState<EventFormValues | null>(null)
+
+  const currentValues = form.watch()
+
+  const isFormModified = React.useMemo(() => {
+    if (mode !== "edit" || !initialValues) return false
+
+    return (
+      currentValues.title !== initialValues.title ||
+      currentValues.description !== initialValues.description ||
+      currentValues.isAllDay !== initialValues.isAllDay ||
+      currentValues.startDate !== initialValues.startDate ||
+      currentValues.startTime !== initialValues.startTime ||
+      currentValues.endDate !== initialValues.endDate ||
+      currentValues.endTime !== initialValues.endTime
+    )
+  }, [mode, initialValues, currentValues])
 
   React.useEffect(() => {
     if (open) {
@@ -240,7 +257,7 @@ function EventDialog({
             })
           : st
 
-        form.reset({
+        const editValues = {
           title: event.title,
           description: event.description || "",
           isAllDay: Boolean(event.isAllDay),
@@ -248,10 +265,13 @@ function EventDialog({
           startTime: st,
           endDate: ed,
           endTime: et
-        })
+        }
+
+        form.reset(editValues)
+        setInitialValues(editValues)
       } else {
         const dateStr = format(defaultDate, "yyyy-MM-dd")
-        form.reset({
+        const createValues = {
           title: "",
           description: "",
           isAllDay: false,
@@ -259,7 +279,10 @@ function EventDialog({
           startTime: "09:00",
           endDate: dateStr,
           endTime: "10:00"
-        })
+        }
+
+        form.reset(createValues)
+        setInitialValues(null)
       }
     }
   }, [open, mode, event, defaultDate, form])
@@ -497,7 +520,9 @@ function EventDialog({
               </Button>
               <Button
                 type="submit"
-                disabled={!form.formState.isValid || isLoading}
+                disabled={
+                  !form.formState.isValid || isLoading || (mode === "edit" && !isFormModified)
+                }
                 isLoading={isLoading}
               >
                 {mode === "create" ? "Create" : "Save"}
