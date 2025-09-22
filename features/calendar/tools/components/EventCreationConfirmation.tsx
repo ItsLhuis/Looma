@@ -130,7 +130,7 @@ function EventCreationConfirmation({
           </Typography>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-end gap-2">
+      <CardFooter className="flex items-end justify-end gap-2">
         <Button
           type="button"
           variant="outline"

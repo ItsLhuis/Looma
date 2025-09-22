@@ -56,6 +56,18 @@ import {
   EventUpdatedConfirmation
 } from "@/features/calendar/tools/components"
 
+import {
+  MemoryCreatedConfirmation,
+  MemoryCreationCancelledConfirmation,
+  MemoryCreationConfirmation,
+  MemoryDeletedConfirmation,
+  MemoryDeletionCancelledConfirmation,
+  MemoryDeletionConfirmation,
+  MemoryUpdateCancelledConfirmation,
+  MemoryUpdateConfirmation,
+  MemoryUpdatedConfirmation
+} from "@/features/memories/tools/components"
+
 import type {
   CreateNoteToolInput,
   DeleteNoteToolInput,
@@ -73,6 +85,12 @@ import type {
   DeleteEventToolInput,
   UpdateEventToolInput
 } from "@/features/calendar/tools/schemas"
+
+import type {
+  CreateMemoryToolInput,
+  DeleteMemoryToolInput,
+  UpdateMemoryToolInput
+} from "@/features/memories/tools/schemas"
 
 import type { ChatMessage as ChatMessageType } from "../types"
 
@@ -416,6 +434,93 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                 }
 
                 if (
+                  toolName === "createMemory" &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  if (!isLatestMessage) {
+                    return (
+                      <MemoryCreationCancelledConfirmation
+                        key={part.toolCallId}
+                        memoryData={part.input as CreateMemoryToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <MemoryCreationConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as CreateMemoryToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (
+                  toolName === "updateMemory" &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  if (!isLatestMessage) {
+                    return (
+                      <MemoryUpdateCancelledConfirmation
+                        key={part.toolCallId}
+                        memoryData={part.input as UpdateMemoryToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <MemoryUpdateConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as UpdateMemoryToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (
+                  toolName === "deleteMemory" &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  if (!isLatestMessage) {
+                    return (
+                      <MemoryDeletionCancelledConfirmation
+                        key={part.toolCallId}
+                        memoryData={part.input as DeleteMemoryToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <MemoryDeletionConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as DeleteMemoryToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (
                   toolName === "createNote" &&
                   part.state === "output-available" &&
                   part.output &&
@@ -682,6 +787,105 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                         <EventDeleteCancelledConfirmation
                           key={part.toolCallId}
                           eventData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "createMemory" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "MEMORY_CREATED") {
+                      return (
+                        <MemoryCreatedConfirmation
+                          key={part.toolCallId}
+                          memoryData={outputData.data}
+                        />
+                      )
+                    }
+                    if (outputData.type === "MEMORY_CREATION_CANCELLED") {
+                      return (
+                        <MemoryCreationCancelledConfirmation
+                          key={part.toolCallId}
+                          memoryData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "updateMemory" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "MEMORY_UPDATED") {
+                      return (
+                        <MemoryUpdatedConfirmation
+                          key={part.toolCallId}
+                          memoryData={outputData.data}
+                        />
+                      )
+                    }
+                    if (outputData.type === "MEMORY_UPDATE_CANCELLED") {
+                      return (
+                        <MemoryUpdateCancelledConfirmation
+                          key={part.toolCallId}
+                          memoryData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "deleteMemory" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "MEMORY_DELETED") {
+                      return (
+                        <MemoryDeletedConfirmation
+                          key={part.toolCallId}
+                          memoryData={outputData.data}
+                        />
+                      )
+                    }
+                    if (outputData.type === "MEMORY_DELETION_CANCELLED") {
+                      return (
+                        <MemoryDeletionCancelledConfirmation
+                          key={part.toolCallId}
+                          memoryData={outputData.data}
                         />
                       )
                     }
