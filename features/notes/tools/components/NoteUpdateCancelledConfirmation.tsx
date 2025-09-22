@@ -4,6 +4,13 @@ import { cn } from "@/lib/utils"
 
 import { Badge, Card, CardContent, CardHeader, Icon, Separator, Typography } from "@/components/ui"
 
+import {
+  getActionStatusClasses,
+  getActionStatusColor,
+  getActionStatusIcon,
+  getPriorityClasses
+} from "@/features/notes/utils/status.utils"
+
 import type { UpdateNoteToolInput } from "../schemas/note.schema"
 
 type NoteUpdateCancelledConfirmationProps = {
@@ -11,37 +18,23 @@ type NoteUpdateCancelledConfirmationProps = {
 }
 
 function NoteUpdateCancelledConfirmation({ noteData }: NoteUpdateCancelledConfirmationProps) {
-  const getPriorityClasses = (priority: string) => {
-    switch (priority) {
-      case "urgent":
-        return "bg-error text-error-foreground border border-error"
-      case "high":
-        return "bg-warning text-warning-foreground border border-warning"
-      case "medium":
-        return "bg-info text-info-foreground border border-info"
-      case "low":
-        return "bg-success text-success-foreground border border-success"
-      default:
-        return "bg-muted text-muted-foreground border border-muted"
-    }
-  }
-
   return (
     <Card
-      className={cn("flex flex-col", "border-error/20 bg-error/5")}
+      className={cn("flex flex-col", getActionStatusClasses("cancelled"))}
       aria-label={`Note Update Cancelled: ${noteData.title || noteData.id}`}
     >
       <CardHeader className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Icon name="X" className="text-error h-5 w-5" />
+            <Icon
+              name={getActionStatusIcon("cancelled")}
+              className={cn("h-5 w-5", getActionStatusColor("cancelled"))}
+            />
             <Typography variant="h5" className="line-clamp-2 leading-tight">
               Note Update Cancelled
             </Typography>
           </div>
-          <Typography affects={["muted", "small"]}>
-            This note was not updated. You can ask me to update it again or modify the details.
-          </Typography>
+          <Typography affects={["muted", "small"]}>Note update was cancelled by user</Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
           {noteData.priority && noteData.priority !== "none" && (

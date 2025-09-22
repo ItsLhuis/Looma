@@ -16,6 +16,8 @@ import {
   Typography
 } from "@/components/ui"
 
+import { getPriorityClasses } from "@/features/notes/utils/status.utils"
+
 import type { CreateNoteToolInput } from "../schemas/note.schema"
 
 type NoteCreationConfirmationProps = {
@@ -85,21 +87,6 @@ function NoteCreationConfirmation({
     onReject(toolCallId, JSON.stringify(result))
   }
 
-  const getPriorityClasses = (priority: string) => {
-    switch (priority) {
-      case "urgent":
-        return "bg-error text-error-foreground border border-error"
-      case "high":
-        return "bg-warning text-warning-foreground border border-warning"
-      case "medium":
-        return "bg-info text-info-foreground border border-info"
-      case "low":
-        return "bg-success text-success-foreground border border-success"
-      default:
-        return "bg-muted text-muted-foreground border border-muted"
-    }
-  }
-
   return (
     <Card aria-label={`Create Note: ${input.title}`}>
       <CardHeader className="flex items-start justify-between gap-3">
@@ -151,7 +138,7 @@ function NoteCreationConfirmation({
           </Typography>
         )}
       </CardContent>
-      <CardFooter className="flex justify-end gap-2">
+      <CardFooter className="flex items-end justify-end gap-2">
         <Button
           type="button"
           variant="outline"
