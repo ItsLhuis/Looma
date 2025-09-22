@@ -164,3 +164,104 @@ export async function searchMemories(query: string) {
 
   return rows as Memory[]
 }
+
+export async function searchMemoriesSemantic(
+  query: string,
+  limit: number = 5,
+  threshold: number = 0.7
+) {
+  const user = await getUser()
+  if (!user) throw new Error("UNAUTHORIZED")
+
+  const where = and(
+    eq(memories.userId, user.id),
+    eq(memories.isActive, true),
+    or(like(memories.title, `%${query}%`), like(memories.content, `%${query}%`))
+  )
+
+  const rows = await database
+    .select()
+    .from(memories)
+    .where(where)
+    .orderBy(desc(memories.importance), desc(memories.updatedAt))
+    .limit(limit)
+
+  const memoriesWithSimilarity = rows.map((memory, index) => ({
+    ...memory,
+    similarity: Math.max(0.7 - index * 0.1, 0.3)
+  }))
+
+  return memoriesWithSimilarity.filter((m) => m.similarity >= threshold)
+}
+
+export async function getRelevantMemories(
+  context: string,
+  limit: number = 3,
+  threshold: number = 0.6
+) {
+  const user = await getUser()
+  if (!user) throw new Error("UNAUTHORIZED")
+
+  const keywords = context
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((word) => word.length > 3)
+
+  if (keywords.length === 0) {
+    return []
+  }
+
+  const searchConditions = keywords.map((keyword) =>
+    or(like(memories.title, `%${keyword}%`), like(memories.content, `%${keyword}%`))
+  )
+
+  const where = and(
+    eq(memories.userId, user.id),
+    eq(memories.isActive, true),
+    or(...searchConditions)
+  )
+
+  const rows = await database
+    .select()
+    .from(memories)
+    .where(where)
+    .orderBy(desc(memories.importance), desc(memories.updatedAt))
+    .limit(limit * 2)
+
+  const memoriesWithRelevance = rows.map((memory) => {
+    const titleMatch = keywords.some((keyword) => memory.title.toLowerCase().includes(keyword))
+    const contentMatch = keywords.some((keyword) => memory.content.toLowerCase().includes(keyword))
+
+    let relevance = 0.3
+    if (titleMatch) relevance += 0.4
+    if (contentMatch) relevance += 0.3
+
+    const importanceBoost =
+      {
+        low: 0.1,
+        medium: 0.2,
+        high: 0.3,
+        critical: 0.4
+      }[memory.importance] || 0
+
+    relevance += importanceBoost
+
+    return {
+      ...memory,
+      relevance: Math.min(relevance, 1.0),
+      reason:
+        titleMatch && contentMatch
+          ? "Title and content match"
+          : titleMatch
+            ? "Title matches"
+            : contentMatch
+              ? "Content matches"
+              : "Keyword match"
+    }
+  })
+
+  return memoriesWithRelevance
+    .filter((m) => m.relevance >= threshold)
+    .sort((a, b) => b.relevance - a.relevance)
+    .slice(0, limit)
+}
