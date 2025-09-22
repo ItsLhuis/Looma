@@ -4,11 +4,16 @@ import { useEffect, useMemo } from "react"
 
 import { debounce } from "lodash"
 
-import { parseAsBoolean, parseAsStringEnum, useQueryState } from "nuqs"
+import { cn } from "@/lib/utils"
+
+import { formatDateForDisplay } from "@/lib/date"
+
+import { parseAsBoolean, parseAsString, parseAsStringEnum, useQueryState } from "nuqs"
 
 import {
   Badge,
   Button,
+  Calendar,
   Card,
   CardContent,
   CardHeader,
@@ -81,6 +86,27 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
     parseAsBoolean.withDefault(false).withOptions({ clearOnDefault: true })
   )
 
+  const [customStartDateStr, setCustomStartDateStr] = useQueryState(
+    "customStartDate",
+    parseAsString.withDefault("").withOptions({ clearOnDefault: true })
+  )
+
+  const [customEndDateStr, setCustomEndDateStr] = useQueryState(
+    "customEndDate",
+    parseAsString.withDefault("").withOptions({ clearOnDefault: true })
+  )
+
+  const customStartDate = customStartDateStr ? new Date(customStartDateStr) : undefined
+  const customEndDate = customEndDateStr ? new Date(customEndDateStr) : undefined
+
+  const setCustomStartDate = (date: Date | undefined) => {
+    setCustomStartDateStr(date ? date.toISOString() : "")
+  }
+
+  const setCustomEndDate = (date: Date | undefined) => {
+    setCustomEndDateStr(date ? date.toISOString() : "")
+  }
+
   const debouncedOnChange = useMemo(
     () =>
       debounce((filters: EventFilters) => {
@@ -120,27 +146,36 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
 
   useEffect(() => {
     const dateRange = getDateRange(timePeriod)
+    const customDateRange =
+      timePeriod === "custom" && customStartDate && customEndDate
+        ? { start: customStartDate, end: customEndDate }
+        : undefined
+
     const filters: EventFilters = {
       ...(search && { search }),
       ...(eventType !== "all" && { isAllDay: eventType === "allDay" }),
       ...(dateRange && { dateRange }),
-      ...(defaultFilters.dateRange &&
-        timePeriod === "custom" && { dateRange: defaultFilters.dateRange })
+      ...(customDateRange && { dateRange: customDateRange })
     }
 
     debouncedOnChange(filters)
     return () => debouncedOnChange.cancel()
-  }, [search, eventType, timePeriod, debouncedOnChange, defaultFilters.dateRange])
+  }, [search, eventType, timePeriod, customStartDate, customEndDate, debouncedOnChange])
 
   const clearAllFilters = () => {
     setSearch("")
     setEventType("all")
     setTimePeriod("allTime")
+    setCustomStartDate(undefined)
+    setCustomEndDate(undefined)
   }
 
-  const activeFiltersCount = [search, eventType !== "all", timePeriod !== "allTime"].filter(
-    Boolean
-  ).length
+  const activeFiltersCount = [
+    search,
+    eventType !== "all",
+    timePeriod !== "allTime",
+    timePeriod === "custom" && customStartDate && customEndDate
+  ].filter(Boolean).length
 
   return (
     <div className="space-y-4">
@@ -235,6 +270,80 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
                       </SelectContent>
                     </Select>
                   </div>
+                  {timePeriod === "custom" && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">
+                        <Typography affects="small">Custom Date Range</Typography>
+                      </Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "hover:text-foreground w-full pl-3",
+                                !customStartDate && "text-muted-foreground"
+                              )}
+                            >
+                              {customStartDate ? (
+                                formatDateForDisplay(customStartDate)
+                              ) : (
+                                <span>Start date</span>
+                              )}
+                              <Icon name="Calendar" className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={customStartDate}
+                              onSelect={(date) => {
+                                setCustomStartDate(date)
+                                if (date && customEndDate && date > customEndDate) {
+                                  setCustomEndDate(undefined)
+                                }
+                              }}
+                              disabled={(date) =>
+                                date > new Date() || (customEndDate ? date > customEndDate : false)
+                              }
+                              autoFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "hover:text-foreground w-full pl-3",
+                                !customEndDate && "text-muted-foreground"
+                              )}
+                              disabled={!customStartDate}
+                            >
+                              {customEndDate ? (
+                                formatDateForDisplay(customEndDate)
+                              ) : (
+                                <span>End date</span>
+                              )}
+                              <Icon name="Calendar" className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={customEndDate}
+                              onSelect={setCustomEndDate}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                (customStartDate ? date < customStartDate : false)
+                              }
+                              autoFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </PopoverContent>
@@ -300,11 +409,19 @@ function EventsFilters({ defaultFilters = {}, onChange }: EventsFiltersParamsPro
                 className="group hover:bg-muted flex items-center gap-1.5 pr-1 transition-colors"
               >
                 <Icon name="Calendar" className="h-3 w-3" />
-                <Typography affects="small">{timePeriodLabels[timePeriod]}</Typography>
+                <Typography affects="small">
+                  {timePeriod === "custom" && customStartDate && customEndDate
+                    ? `${formatDateForDisplay(customStartDate, { month: "short", day: "numeric" })} - ${formatDateForDisplay(customEndDate, { month: "short", day: "numeric" })}`
+                    : timePeriodLabels[timePeriod]}
+                </Typography>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setTimePeriod("allTime")}
+                  onClick={() => {
+                    setTimePeriod("allTime")
+                    setCustomStartDate(undefined)
+                    setCustomEndDate(undefined)
+                  }}
                   className="hover:bg-destructive hover:text-destructive-foreground h-4 w-4 p-0 opacity-60 group-hover:opacity-100"
                   title="Remove time period filter"
                 >
