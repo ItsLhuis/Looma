@@ -44,6 +44,18 @@ import {
   TaskDeleteCancelledConfirmation
 } from "@/features/tasks/tools/components"
 
+import {
+  EventCreationCancelledConfirmation,
+  EventCreatedConfirmation,
+  EventCreationConfirmation,
+  EventUpdateConfirmation,
+  EventUpdatedConfirmation,
+  EventUpdateCancelledConfirmation,
+  EventDeleteConfirmation,
+  EventDeletedConfirmation,
+  EventDeleteCancelledConfirmation
+} from "@/features/calendar/tools/components"
+
 import type {
   CreateNoteToolInput,
   UpdateNoteToolInput,
@@ -55,6 +67,12 @@ import type {
   UpdateTaskToolInput,
   DeleteTaskToolInput
 } from "@/features/tasks/tools/schemas"
+
+import type {
+  CreateEventToolInput,
+  UpdateEventToolInput,
+  DeleteEventToolInput
+} from "@/features/calendar/tools/schemas"
 
 import type { ChatMessage as ChatMessageType } from "../types"
 
@@ -302,6 +320,103 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   )
                 }
 
+                // Event tool handling
+                if (
+                  toolName === "createEvent" &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  if (!isLatestMessage) {
+                    return (
+                      <EventCreationCancelledConfirmation
+                        key={part.toolCallId}
+                        eventData={part.input as CreateEventToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <EventCreationConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as CreateEventToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (
+                  toolName === "updateEvent" &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  if (!isLatestMessage) {
+                    return (
+                      <EventUpdateCancelledConfirmation
+                        key={part.toolCallId}
+                        eventData={part.input as UpdateEventToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <EventUpdateConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as UpdateEventToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (
+                  toolName === "deleteEvent" &&
+                  part.state === "input-available" &&
+                  onToolResult
+                ) {
+                  const eventInput = part.input as DeleteEventToolInput
+                  const eventData = {
+                    id: eventInput.id,
+                    title: eventInput.title,
+                    startTime: eventInput.startTime || new Date().toISOString(),
+                    endTime: eventInput.endTime,
+                    isAllDay: eventInput.isAllDay || false
+                  }
+
+                  if (!isLatestMessage) {
+                    return (
+                      <EventDeleteCancelledConfirmation
+                        key={part.toolCallId}
+                        eventData={eventData}
+                      />
+                    )
+                  }
+
+                  return (
+                    <EventDeleteConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={eventData}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
                 if (
                   toolName === "createNote" &&
                   part.state === "output-available" &&
@@ -471,6 +586,106 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                         <TaskDeleteCancelledConfirmation
                           key={part.toolCallId}
                           taskData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                // Event result handling
+                if (
+                  toolName === "createEvent" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "EVENT_CREATED") {
+                      return (
+                        <EventCreatedConfirmation
+                          key={part.toolCallId}
+                          eventData={outputData.data}
+                        />
+                      )
+                    }
+                    if (outputData.type === "EVENT_CREATION_CANCELLED") {
+                      return (
+                        <EventCreationCancelledConfirmation
+                          key={part.toolCallId}
+                          eventData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "updateEvent" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "EVENT_UPDATED") {
+                      return (
+                        <EventUpdatedConfirmation
+                          key={part.toolCallId}
+                          eventData={outputData.data}
+                        />
+                      )
+                    }
+                    if (outputData.type === "EVENT_UPDATE_CANCELLED") {
+                      return (
+                        <EventUpdateCancelledConfirmation
+                          key={part.toolCallId}
+                          eventData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "deleteEvent" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "EVENT_DELETED") {
+                      return (
+                        <EventDeletedConfirmation
+                          key={part.toolCallId}
+                          eventData={outputData.data}
+                        />
+                      )
+                    }
+                    if (outputData.type === "EVENT_DELETE_CANCELLED") {
+                      return (
+                        <EventDeleteCancelledConfirmation
+                          key={part.toolCallId}
+                          eventData={outputData.data}
                         />
                       )
                     }

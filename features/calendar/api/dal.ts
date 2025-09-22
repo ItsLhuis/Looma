@@ -160,3 +160,17 @@ export async function getEventsByDateRange(startDate: Date, endDate: Date) {
 
   return rows as Event[]
 }
+
+export async function searchEvents(query: string) {
+  const user = await getUser()
+  if (!user) throw new Error("UNAUTHORIZED")
+
+  const where = and(
+    eq(events.userId, user.id),
+    or(like(events.title, `%${query}%`), like(events.description, `%${query}%`))
+  )
+
+  const rows = await database.select().from(events).where(where).orderBy(desc(events.updatedAt))
+
+  return rows as Event[]
+}

@@ -1,9 +1,11 @@
+import { eventTools } from "@/features/calendar/tools"
 import { noteTools } from "@/features/notes/tools"
 import { taskTools } from "@/features/tasks/tools"
 
 export const tools = {
   ...noteTools,
-  ...taskTools
+  ...taskTools,
+  ...eventTools
 }
 
 export function getTools() {
