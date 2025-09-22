@@ -45,6 +45,25 @@ export function formatDateForDisplay(utcDate: Date, timezone?: string): string {
   return utcDate.toLocaleString()
 }
 
+export function formatTimeForDisplay(
+  utcDate: Date,
+  timezone?: string,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    ...options
+  }
+
+  if (timezone) {
+    return utcDate.toLocaleString(undefined, { ...defaultOptions, timeZone: timezone })
+  }
+
+  return utcDate.toLocaleString(undefined, defaultOptions)
+}
+
 export function createUTCDate(
   year: number,
   month: number,
