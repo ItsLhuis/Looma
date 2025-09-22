@@ -8,48 +8,22 @@ export function toUTCDate(dateString: string): Date {
   return date
 }
 
-export function toLocalDate(utcDate: Date, timezone?: string): Date {
-  if (timezone) {
-    const formatter = new Intl.DateTimeFormat(undefined, {
-      timeZone: timezone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    })
-
-    const parts = formatter.formatToParts(utcDate)
-    const year = parts.find((p) => p.type === "year")?.value
-    const month = parts.find((p) => p.type === "month")?.value
-    const day = parts.find((p) => p.type === "day")?.value
-    const hour = parts.find((p) => p.type === "hour")?.value
-    const minute = parts.find((p) => p.type === "minute")?.value
-    const second = parts.find((p) => p.type === "second")?.value
-
-    if (year && month && day && hour && minute && second) {
-      return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`)
-    }
-  }
-
-  return new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000)
+export function toLocalDate(utcDate: Date): Date {
+  return new Date(utcDate.getTime())
 }
 
-export function formatDateForDisplay(utcDate: Date, timezone?: string): string {
-  if (timezone) {
-    return utcDate.toLocaleString(undefined, { timeZone: timezone })
+export function formatDateForDisplay(utcDate: Date, options?: Intl.DateTimeFormatOptions): string {
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    ...options
   }
 
-  return utcDate.toLocaleString()
+  return utcDate.toLocaleDateString(undefined, defaultOptions)
 }
 
-export function formatTimeForDisplay(
-  utcDate: Date,
-  timezone?: string,
-  options?: Intl.DateTimeFormatOptions
-): string {
+export function formatTimeForDisplay(utcDate: Date, options?: Intl.DateTimeFormatOptions): string {
   const defaultOptions: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
@@ -57,8 +31,21 @@ export function formatTimeForDisplay(
     ...options
   }
 
-  if (timezone) {
-    return utcDate.toLocaleString(undefined, { ...defaultOptions, timeZone: timezone })
+  return utcDate.toLocaleTimeString(undefined, defaultOptions)
+}
+
+export function formatDateTimeForDisplay(
+  utcDate: Date,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    ...options
   }
 
   return utcDate.toLocaleString(undefined, defaultOptions)
@@ -76,7 +63,7 @@ export function createUTCDate(
 }
 
 export function getCurrentUTCDate(): Date {
-  return new Date(new Date().toISOString())
+  return new Date()
 }
 
 export function parseRelativeDate(relativeDate: string, baseDate: Date = new Date()): Date {
@@ -116,4 +103,30 @@ export function parseRelativeDate(relativeDate: string, baseDate: Date = new Dat
   }
 
   return utcBase
+}
+
+export function fromDatabaseDate(timestamp: string | Date): Date {
+  return new Date(timestamp)
+}
+
+export function toDatabaseDate(date: Date): string {
+  return date.toISOString()
+}
+
+export function formatEventTimeRange(
+  startTime: Date,
+  endTime?: Date | null,
+  isAllDay?: boolean
+): string {
+  if (isAllDay) {
+    return formatDateForDisplay(startTime)
+  }
+
+  if (endTime) {
+    const startFormatted = formatTimeForDisplay(startTime)
+    const endFormatted = formatTimeForDisplay(endTime)
+    return `${formatDateForDisplay(startTime)} at ${startFormatted} - ${endFormatted}`
+  }
+
+  return `${formatDateForDisplay(startTime)} at ${formatTimeForDisplay(startTime)}`
 }

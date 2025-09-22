@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-import { formatTimeForDisplay, toUTCDate } from "@/lib/date"
+import { formatTimeForDisplay } from "@/lib/date"
 
 import Link from "next/link"
 
@@ -87,7 +87,7 @@ export function TodaysFocus({ data, isLoading }: TodaysFocusProps) {
   if (!data) return null
 
   const formatTime = (date: Date | string | number) => {
-    const dateObj = toUTCDate(date.toString())
+    const dateObj = new Date(date)
 
     if (isNaN(dateObj.getTime())) {
       return "Invalid time"

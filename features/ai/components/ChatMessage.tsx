@@ -21,57 +21,57 @@ import {
 } from "@/components/ui"
 
 import {
-  NoteCreationCancelledConfirmation,
   NoteCreatedConfirmation,
+  NoteCreationCancelledConfirmation,
   NoteCreationConfirmation,
-  NoteUpdateConfirmation,
-  NoteUpdatedConfirmation,
-  NoteUpdateCancelledConfirmation,
+  NoteDeleteCancelledConfirmation,
   NoteDeleteConfirmation,
   NoteDeletedConfirmation,
-  NoteDeleteCancelledConfirmation
+  NoteUpdateCancelledConfirmation,
+  NoteUpdateConfirmation,
+  NoteUpdatedConfirmation
 } from "@/features/notes/tools/components"
 
 import {
-  TaskCreationCancelledConfirmation,
   TaskCreatedConfirmation,
+  TaskCreationCancelledConfirmation,
   TaskCreationConfirmation,
-  TaskUpdateConfirmation,
-  TaskUpdatedConfirmation,
-  TaskUpdateCancelledConfirmation,
+  TaskDeleteCancelledConfirmation,
   TaskDeleteConfirmation,
   TaskDeletedConfirmation,
-  TaskDeleteCancelledConfirmation
+  TaskUpdateCancelledConfirmation,
+  TaskUpdateConfirmation,
+  TaskUpdatedConfirmation
 } from "@/features/tasks/tools/components"
 
 import {
-  EventCreationCancelledConfirmation,
   EventCreatedConfirmation,
+  EventCreationCancelledConfirmation,
   EventCreationConfirmation,
-  EventUpdateConfirmation,
-  EventUpdatedConfirmation,
-  EventUpdateCancelledConfirmation,
+  EventDeleteCancelledConfirmation,
   EventDeleteConfirmation,
   EventDeletedConfirmation,
-  EventDeleteCancelledConfirmation
+  EventUpdateCancelledConfirmation,
+  EventUpdateConfirmation,
+  EventUpdatedConfirmation
 } from "@/features/calendar/tools/components"
 
 import type {
   CreateNoteToolInput,
-  UpdateNoteToolInput,
-  DeleteNoteToolInput
+  DeleteNoteToolInput,
+  UpdateNoteToolInput
 } from "@/features/notes/tools/schemas"
 
 import type {
   CreateTaskToolInput,
-  UpdateTaskToolInput,
-  DeleteTaskToolInput
+  DeleteTaskToolInput,
+  UpdateTaskToolInput
 } from "@/features/tasks/tools/schemas"
 
 import type {
   CreateEventToolInput,
-  UpdateEventToolInput,
-  DeleteEventToolInput
+  DeleteEventToolInput,
+  UpdateEventToolInput
 } from "@/features/calendar/tools/schemas"
 
 import type { ChatMessage as ChatMessageType } from "../types"
@@ -244,7 +244,6 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   )
                 }
 
-                // Task tool handling
                 if (toolName === "createTask" && part.state === "input-available" && onToolResult) {
                   if (!isLatestMessage) {
                     return (
@@ -320,7 +319,6 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   )
                 }
 
-                // Event tool handling
                 if (
                   toolName === "createEvent" &&
                   part.state === "input-available" &&
@@ -507,7 +505,6 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   }
                 }
 
-                // Task result handling
                 if (
                   toolName === "createTask" &&
                   part.state === "output-available" &&
@@ -598,7 +595,6 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   }
                 }
 
-                // Event result handling
                 if (
                   toolName === "createEvent" &&
                   part.state === "output-available" &&

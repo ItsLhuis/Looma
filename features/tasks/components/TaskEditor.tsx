@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 
-import { formatDateForDisplay, toUTCDate } from "@/lib/date"
+import { formatDateForDisplay } from "@/lib/date"
 
 import {
   createInsertTaskSchema,
@@ -45,7 +45,7 @@ import { useCreateTask, useGetTask, useListTasks, useUpdateTask } from "@/featur
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types"
 
 function formatDate(date: Date) {
-  return formatDateForDisplay(toUTCDate(date.toISOString()))
+  return formatDateForDisplay(date)
 }
 
 export type TaskEditorProps = {

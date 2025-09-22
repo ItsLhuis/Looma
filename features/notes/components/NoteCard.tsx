@@ -4,7 +4,7 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
-import { formatDateForDisplay, toUTCDate } from "@/lib/date"
+import { formatDateForDisplay } from "@/lib/date"
 
 import {
   Badge,
@@ -50,7 +50,7 @@ function NoteCard({ note, className }: NoteCardProps) {
             {note.title}
           </Typography>
           <Typography affects={["muted", "small"]}>
-            Updated at {formatDateForDisplay(toUTCDate(note.updatedAt.toString()))}
+            Updated at {formatDateForDisplay(new Date(note.updatedAt))}
           </Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">

@@ -2,7 +2,7 @@
 
 import { useUpdateEvent } from "@/features/calendar/api/mutations"
 
-import { formatDateForDisplay, formatTimeForDisplay } from "@/lib/date"
+import { formatEventTimeRange } from "@/lib/date"
 
 import {
   Badge,
@@ -89,18 +89,7 @@ function EventUpdateConfirmation({
     try {
       const start = new Date(startTime)
       const end = endTime ? new Date(endTime) : null
-
-      if (isAllDay) {
-        return formatDateForDisplay(start)
-      }
-
-      if (end) {
-        const startFormatted = formatTimeForDisplay(start)
-        const endFormatted = formatTimeForDisplay(end)
-        return `${formatDateForDisplay(start)} at ${startFormatted} - ${endFormatted}`
-      }
-
-      return `${formatDateForDisplay(start)} at ${formatTimeForDisplay(start)}`
+      return formatEventTimeRange(start, end, isAllDay)
     } catch {
       return startTime
     }

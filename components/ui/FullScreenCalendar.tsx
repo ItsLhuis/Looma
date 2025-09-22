@@ -23,7 +23,7 @@ import {
 
 import { cn } from "@/lib/utils"
 
-import { formatDateForDisplay, formatTimeForDisplay, toUTCDate } from "@/lib/date"
+import { formatDateForDisplay, formatTimeForDisplay } from "@/lib/date"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -101,7 +101,7 @@ const colStartClasses = [
   "col-start-7"
 ]
 
-const formatDate = (date: Date): string => formatDateForDisplay(toUTCDate(date.toISOString()))
+const formatDate = (date: Date): string => formatDateForDisplay(date)
 
 const combineDateTime = (dateStr: string, timeStr: string): Date => {
   const [y, m, d] = dateStr.split("-").map((n) => Number.parseInt(n))
@@ -135,17 +135,13 @@ const getEventDisplayInfo = (event: CalendarEvent, day: Date) => {
   const isEndDay = event.endTime ? isSameDay(event.endTime, day) : isStartDay
 
   let displayTitle = event.title
-  let displayTime = event.isAllDay
-    ? "All day"
-    : formatTimeForDisplay(toUTCDate(event.startTime.toISOString()))
+  let displayTime = event.isAllDay ? "All day" : formatTimeForDisplay(event.startTime)
 
   if (isEndDay && !isStartDay) {
     displayTitle = `${event.title} (End)`
-    displayTime = event.isAllDay
-      ? "All day"
-      : formatTimeForDisplay(toUTCDate(event.endTime!.toISOString()))
+    displayTime = event.isAllDay ? "All day" : formatTimeForDisplay(event.endTime!)
   } else if (isStartDay && isEndDay && event.endTime && !event.isAllDay) {
-    displayTime = `${formatTimeForDisplay(toUTCDate(event.startTime.toISOString()))} - ${formatTimeForDisplay(toUTCDate(event.endTime.toISOString()))}`
+    displayTime = `${formatTimeForDisplay(event.startTime)} - ${formatTimeForDisplay(event.endTime)}`
   }
 
   return {
@@ -247,12 +243,12 @@ function EventDialog({
     if (open) {
       if (mode === "edit" && event) {
         const sd = format(event.startTime, "yyyy-MM-dd")
-        const st = formatTimeForDisplay(toUTCDate(event.startTime.toISOString()), undefined, {
+        const st = formatTimeForDisplay(event.startTime, {
           hour12: false
         })
         const ed = event.endTime ? format(event.endTime, "yyyy-MM-dd") : sd
         const et = event.endTime
-          ? formatTimeForDisplay(toUTCDate(event.endTime.toISOString()), undefined, {
+          ? formatTimeForDisplay(event.endTime, {
               hour12: false
             })
           : st

@@ -2,8 +2,6 @@
 
 import { useMemo, useState } from "react"
 
-import { toLocalDate } from "@/lib/date"
-
 import { FullScreenCalendar, Skeleton } from "@/components/ui"
 
 import {
@@ -50,8 +48,8 @@ function CalendarManager({
       id: event.id,
       title: event.title,
       description: event.description,
-      startTime: toLocalDate(new Date(event.startTime)),
-      endTime: event.endTime ? toLocalDate(new Date(event.endTime)) : null,
+      startTime: new Date(event.startTime),
+      endTime: event.endTime ? new Date(event.endTime) : null,
       isAllDay: event.isAllDay
     }))
   }, [eventsData])

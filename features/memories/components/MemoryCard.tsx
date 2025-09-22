@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 
-import { formatDateForDisplay, toUTCDate } from "@/lib/date"
+import { formatDateForDisplay } from "@/lib/date"
 
 import Link from "next/link"
 
@@ -50,7 +50,7 @@ function MemoryCard({ memory, className }: MemoryCardProps) {
             {memory.title}
           </Typography>
           <Typography affects={["muted", "small"]}>
-            Updated at {formatDateForDisplay(toUTCDate(memory.updatedAt.toString()))}
+            Updated at {formatDateForDisplay(new Date(memory.updatedAt))}
           </Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
