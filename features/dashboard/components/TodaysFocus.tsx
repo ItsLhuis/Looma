@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils"
 
+import { formatTimeForDisplay, toUTCDate } from "@/lib/date"
+
 import Link from "next/link"
 
 import {
@@ -85,17 +87,13 @@ export function TodaysFocus({ data, isLoading }: TodaysFocusProps) {
   if (!data) return null
 
   const formatTime = (date: Date | string | number) => {
-    const dateObj = new Date(date)
+    const dateObj = toUTCDate(date.toString())
 
     if (isNaN(dateObj.getTime())) {
       return "Invalid time"
     }
 
-    return new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true
-    }).format(dateObj)
+    return formatTimeForDisplay(dateObj)
   }
 
   const getPriorityClasses = (priority: string) => {
