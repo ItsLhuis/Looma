@@ -19,22 +19,9 @@ import {
 } from "@/components/ui"
 import { DeleteNoteDialog } from "./DeleteNoteDialog"
 
-import type { Note, NotePriority } from "@/features/notes/types"
+import { getPriorityClasses } from "@/features/notes/utils/status.utils"
 
-const getPriorityClasses = (priority: NotePriority) => {
-  switch (priority) {
-    case "urgent":
-      return "bg-error text-error-foreground border border-error"
-    case "high":
-      return "bg-warning text-warning-foreground border border-warning"
-    case "medium":
-      return "bg-info text-info-foreground border border-info"
-    case "low":
-      return "bg-success text-success-foreground border border-success"
-    default:
-      return "bg-muted text-muted-foreground border border-muted"
-  }
-}
+import type { Note } from "@/features/notes/types"
 
 export type NoteCardProps = {
   note: Note
