@@ -32,11 +32,29 @@ import {
   NoteDeleteCancelledConfirmation
 } from "@/features/notes/tools/components"
 
+import {
+  TaskCreationCancelledConfirmation,
+  TaskCreatedConfirmation,
+  TaskCreationConfirmation,
+  TaskUpdateConfirmation,
+  TaskUpdatedConfirmation,
+  TaskUpdateCancelledConfirmation,
+  TaskDeleteConfirmation,
+  TaskDeletedConfirmation,
+  TaskDeleteCancelledConfirmation
+} from "@/features/tasks/tools/components"
+
 import type {
   CreateNoteToolInput,
   UpdateNoteToolInput,
   DeleteNoteToolInput
 } from "@/features/notes/tools/schemas"
+
+import type {
+  CreateTaskToolInput,
+  UpdateTaskToolInput,
+  DeleteTaskToolInput
+} from "@/features/tasks/tools/schemas"
 
 import type { ChatMessage as ChatMessageType } from "../types"
 
@@ -208,6 +226,82 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                   )
                 }
 
+                // Task tool handling
+                if (toolName === "createTask" && part.state === "input-available" && onToolResult) {
+                  if (!isLatestMessage) {
+                    return (
+                      <TaskCreationCancelledConfirmation
+                        key={part.toolCallId}
+                        taskData={part.input as CreateTaskToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <TaskCreationConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as CreateTaskToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (toolName === "updateTask" && part.state === "input-available" && onToolResult) {
+                  if (!isLatestMessage) {
+                    return (
+                      <TaskUpdateCancelledConfirmation
+                        key={part.toolCallId}
+                        taskData={part.input as UpdateTaskToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <TaskUpdateConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as UpdateTaskToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
+                if (toolName === "deleteTask" && part.state === "input-available" && onToolResult) {
+                  if (!isLatestMessage) {
+                    return (
+                      <TaskDeleteCancelledConfirmation
+                        key={part.toolCallId}
+                        taskData={part.input as DeleteTaskToolInput}
+                      />
+                    )
+                  }
+
+                  return (
+                    <TaskDeleteConfirmation
+                      key={part.toolCallId}
+                      toolCallId={part.toolCallId}
+                      input={part.input as DeleteTaskToolInput}
+                      onApprove={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                      onReject={(toolCallId, output) => {
+                        onToolResult?.(toolCallId, toolName, output)
+                      }}
+                    />
+                  )
+                }
+
                 if (
                   toolName === "createNote" &&
                   part.state === "output-available" &&
@@ -286,6 +380,97 @@ function ChatMessage({ message, onToolResult, isLatestMessage = false }: ChatMes
                         <NoteDeleteCancelledConfirmation
                           key={part.toolCallId}
                           noteData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                // Task result handling
+                if (
+                  toolName === "createTask" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "TASK_CREATED") {
+                      return (
+                        <TaskCreatedConfirmation key={part.toolCallId} taskData={outputData.data} />
+                      )
+                    }
+                    if (outputData.type === "TASK_CREATION_CANCELLED") {
+                      return (
+                        <TaskCreationCancelledConfirmation
+                          key={part.toolCallId}
+                          taskData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "updateTask" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "TASK_UPDATED") {
+                      return (
+                        <TaskUpdatedConfirmation key={part.toolCallId} taskData={outputData.data} />
+                      )
+                    }
+                    if (outputData.type === "TASK_UPDATE_CANCELLED") {
+                      return (
+                        <TaskUpdateCancelledConfirmation
+                          key={part.toolCallId}
+                          taskData={outputData.data}
+                        />
+                      )
+                    }
+                  } catch {
+                    return (
+                      <div key={part.toolCallId} className="bg-muted rounded-lg p-4">
+                        <Typography variant="p">{part.output}</Typography>
+                      </div>
+                    )
+                  }
+                }
+
+                if (
+                  toolName === "deleteTask" &&
+                  part.state === "output-available" &&
+                  part.output &&
+                  typeof part.output === "string"
+                ) {
+                  try {
+                    const outputData = JSON.parse(part.output)
+                    if (outputData.type === "TASK_DELETED") {
+                      return (
+                        <TaskDeletedConfirmation key={part.toolCallId} taskData={outputData.data} />
+                      )
+                    }
+                    if (outputData.type === "TASK_DELETE_CANCELLED") {
+                      return (
+                        <TaskDeleteCancelledConfirmation
+                          key={part.toolCallId}
+                          taskData={outputData.data}
                         />
                       )
                     }
