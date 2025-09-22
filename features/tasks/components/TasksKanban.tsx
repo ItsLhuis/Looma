@@ -185,7 +185,7 @@ function TasksKanban({ initialParams }: TasksKanbanProps) {
       <div className="space-y-4">
         {headerContent}
         {actionsContent}
-        <div className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3">
+        <div className="grid h-full w-full grid-cols-[repeat(auto-fit,minmax(460px,1fr))] gap-3">
           <Skeleton className="h-[500px]" />
           <Skeleton className="h-[500px]" />
           <Skeleton className="h-[500px]" />
