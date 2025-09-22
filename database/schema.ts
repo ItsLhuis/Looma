@@ -147,7 +147,7 @@ export const tasks = sqliteTable(
     estimatedDuration: integer("estimated_duration"),
     position: integer("position").default(0).notNull(),
     parentTaskId: text("parent_task_id", { length: 36 }).references((): any => tasks.id, {
-      onDelete: "set null"
+      onDelete: "cascade"
     }),
     completedAt: integer("completed_at", { mode: "timestamp" }),
     createdAt: integer("created_at", { mode: "timestamp" })

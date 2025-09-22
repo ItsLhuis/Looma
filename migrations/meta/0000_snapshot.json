@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e471a798-4f84-49c0-a538-08e481d2428b",
+  "id": "d9dd8d6e-5ea4-4f33-8954-38d0510aab8d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -691,7 +691,7 @@
           "tableTo": "tasks",
           "columnsFrom": ["parent_task_id"],
           "columnsTo": ["id"],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
