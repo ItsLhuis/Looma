@@ -1,6 +1,8 @@
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types"
 
-export const getPriorityClasses = (priority: TaskPriority) => {
+export type ActionStatus = "success" | "pending" | "cancelled"
+
+export const getPriorityClasses = (priority: TaskPriority): string => {
   switch (priority) {
     case "urgent":
       return "bg-error text-error-foreground border border-error"
@@ -15,7 +17,7 @@ export const getPriorityClasses = (priority: TaskPriority) => {
   }
 }
 
-export const getStatusClasses = (status: TaskStatus) => {
+export const getStatusClasses = (status: TaskStatus): string => {
   switch (status) {
     case "completed":
       return "bg-success text-success-foreground border border-success"
@@ -30,7 +32,7 @@ export const getStatusClasses = (status: TaskStatus) => {
   }
 }
 
-export const getStatusLabel = (status: TaskStatus) => {
+export const getStatusLabel = (status: TaskStatus): string => {
   switch (status) {
     case "pending":
       return "Pending"
@@ -47,7 +49,7 @@ export const getStatusLabel = (status: TaskStatus) => {
   }
 }
 
-export const getActionStatusClasses = (actionType: "success" | "pending" | "cancelled") => {
+export const getActionStatusClasses = (actionType: ActionStatus): string => {
   switch (actionType) {
     case "success":
       return "border-success/20 bg-success/5"
@@ -60,7 +62,7 @@ export const getActionStatusClasses = (actionType: "success" | "pending" | "canc
   }
 }
 
-export const getActionStatusIcon = (actionType: "success" | "pending" | "cancelled") => {
+export const getActionStatusIcon = (actionType: ActionStatus): "Check" | "Clock" | "X" => {
   switch (actionType) {
     case "success":
       return "Check"
@@ -73,7 +75,7 @@ export const getActionStatusIcon = (actionType: "success" | "pending" | "cancell
   }
 }
 
-export const getActionStatusColor = (actionType: "success" | "pending" | "cancelled") => {
+export const getActionStatusColor = (actionType: ActionStatus): string => {
   switch (actionType) {
     case "success":
       return "text-success"
