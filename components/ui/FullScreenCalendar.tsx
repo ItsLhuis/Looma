@@ -559,7 +559,7 @@ function EventButton({
       )}
       onClick={onClick}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-1">
+      <div className="mx-1 flex min-w-0 flex-1 flex-col gap-1 truncate">
         <Typography affects={["bold", "small"]} className={variant === "full" ? "truncate" : ""}>
           {displayInfo.displayTitle}
         </Typography>
@@ -726,7 +726,7 @@ function FullScreenCalendar({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden w-full items-center -space-x-px rounded-lg md:flex rtl:space-x-reverse">
+          <div className="flex w-full items-center -space-x-px rounded-lg rtl:space-x-reverse">
             <Button
               onClick={previousMonth}
               className="rounded-none bg-transparent first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
@@ -738,7 +738,7 @@ function FullScreenCalendar({
             </Button>
             <Button
               onClick={goToToday}
-              className="w-full rounded-none bg-transparent first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 md:w-auto"
+              className="flex-1 rounded-none bg-transparent first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 md:w-auto"
               variant="outline"
             >
               <Typography>Today</Typography>
@@ -785,7 +785,7 @@ function FullScreenCalendar({
                     !isToday(day) &&
                     !isSameMonth(day, firstDayCurrentMonth) &&
                     "bg-accent/50 text-muted-foreground",
-                  "hover:bg-muted relative flex cursor-pointer flex-col rounded-none border-r border-b last:border-r-0 focus:z-10 [&:nth-child(7n)]:border-r-0 [&:nth-last-child(-n+7)]:border-b-0",
+                  "hover:bg-muted relative flex cursor-pointer flex-col rounded-none border-r border-b transition-colors last:border-r-0 focus:z-10 [&:nth-child(7n)]:border-r-0 [&:nth-last-child(-n+7)]:border-b-0",
                   !isEqual(day, selectedDay) && "hover:bg-accent/75"
                 )}
               >
@@ -882,79 +882,88 @@ function FullScreenCalendar({
           </div>
           <div className="isolate grid w-full grid-cols-7 grid-rows-5 lg:hidden">
             {days.map((day, dayIdx) => (
-              <Button
+              <div
+                key={dayIdx}
                 onClick={() => handleDaySelect(day)}
                 onDoubleClick={() => openCreateDialog(day)}
-                key={dayIdx}
-                variant="ghost"
                 className={cn(
-                  isEqual(day, selectedDay) && "text-primary-foreground",
-                  !isEqual(day, selectedDay) &&
-                    !isToday(day) &&
-                    isSameMonth(day, firstDayCurrentMonth) &&
-                    "text-foreground",
+                  dayIdx === 0 && colStartClasses[getDay(day)],
                   !isEqual(day, selectedDay) &&
                     !isToday(day) &&
                     !isSameMonth(day, firstDayCurrentMonth) &&
-                    "text-muted-foreground",
-                  (isEqual(day, selectedDay) || isToday(day)) && "font-semibold",
-                  "hover:bg-muted flex h-14 flex-col rounded-none border-r border-b px-3 py-2 last:border-r-0 focus:z-10 [&:nth-child(7n)]:border-r-0 [&:nth-last-child(-n+7)]:border-b-0"
+                    "bg-accent/50 text-muted-foreground",
+                  "hover:bg-muted relative flex cursor-pointer flex-col rounded-none border-r border-b transition-colors last:border-r-0 focus:z-10 [&:nth-child(7n)]:border-r-0 [&:nth-last-child(-n+7)]:border-b-0",
+                  !isEqual(day, selectedDay) && "hover:bg-accent/75"
                 )}
               >
-                <div
-                  className={cn(
-                    "ml-auto flex size-6 items-center justify-center rounded-full",
-                    isToday(day) && "border-primary border-2",
-                    isEqual(day, selectedDay) &&
-                      isToday(day) &&
-                      "bg-primary text-primary-foreground",
-                    isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      "bg-primary text-primary-foreground"
-                  )}
-                >
-                  <Typography affects={["small", "bold"]}>{format(day, "d")}</Typography>
-                </div>
-                {getEventsForDayMemo(day).length > 0 && (
-                  <div className="mt-auto flex justify-center">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="text-muted-foreground hover:bg-accent/50 h-6 px-2 text-xs"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Typography affects={["small", "muted"]}>
-                            {getEventsForDayMemo(day).length} event
-                            {getEventsForDayMemo(day).length !== 1 ? "s" : ""}
-                          </Typography>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent align="start" className="w-80 p-0">
-                        <div className="p-3">
-                          <Typography variant="h6" affects={["bold"]} className="mb-3">
-                            Events for {format(day, "MMM d")}
-                          </Typography>
-                          <div className="space-y-2">
-                            {getEventsForDayMemo(day).map((event) => (
-                              <EventButton
-                                key={event.id}
-                                event={event}
-                                day={day}
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  openEditDialog(event)
-                                }}
-                                variant="compact"
-                              />
-                            ))}
+                <header className="flex items-center justify-between p-2.5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      isEqual(day, selectedDay) && "text-primary-foreground",
+                      !isEqual(day, selectedDay) &&
+                        !isToday(day) &&
+                        isSameMonth(day, firstDayCurrentMonth) &&
+                        "text-foreground",
+                      !isEqual(day, selectedDay) &&
+                        !isToday(day) &&
+                        !isSameMonth(day, firstDayCurrentMonth) &&
+                        "text-muted-foreground",
+                      isEqual(day, selectedDay) && isToday(day) && "bg-primary border-none",
+                      isEqual(day, selectedDay) &&
+                        !isToday(day) &&
+                        "bg-primary text-primary-foreground",
+                      (isEqual(day, selectedDay) || isToday(day)) && "font-semibold",
+                      "flex h-7 w-7 items-center justify-center rounded-full text-xs hover:border",
+                      isToday(day) && "border-primary border-2"
+                    )}
+                  >
+                    <Typography affects={["small", "bold"]}>{format(day, "d")}</Typography>
+                  </Button>
+                </header>
+                <div className="flex-1 p-2.5">
+                  {getEventsForDayMemo(day).length > 0 && (
+                    <div className="mt-auto flex justify-center">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="text-muted-foreground hover:bg-accent/50 h-6 px-2 text-xs"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Typography affects={["small", "muted"]}>
+                              {getEventsForDayMemo(day).length} event
+                              {getEventsForDayMemo(day).length !== 1 ? "s" : ""}
+                            </Typography>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="w-80 p-0">
+                          <div className="p-3">
+                            <Typography variant="h6" affects={["bold"]} className="mb-3">
+                              Events for {format(day, "MMM d")}
+                            </Typography>
+                            <div className="space-y-2">
+                              {getEventsForDayMemo(day).map((event) => (
+                                <EventButton
+                                  key={event.id}
+                                  event={event}
+                                  day={day}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    openEditDialog(event)
+                                  }}
+                                  variant="compact"
+                                />
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                )}
-              </Button>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
+                </div>
+              </div>
             ))}
           </div>
         </div>
