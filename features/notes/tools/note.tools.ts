@@ -34,6 +34,8 @@ import {
   type SearchNotesToolInput
 } from "./schemas/note.schema"
 
+import type { NoteStats, NoteListResult, NoteSearchResult } from "./types/note.types"
+
 export const createNoteTool = tool({
   description:
     "Create a new note. Use when user wants to create/save new information. REQUIRED: title (string). OPTIONAL: content, summary, priority (none/low/medium/high/urgent), favorite status, archive status. Supports rich text content and requires user confirmation before execution.",
@@ -63,8 +65,9 @@ export const listNotesTool = tool({
       total: result.total,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
+      filters: input.filters
+    } as NoteListResult
   }
 })
 
@@ -91,7 +94,7 @@ export const searchNotesTool = tool({
       notes,
       query: input.query,
       count: notes.length
-    }
+    } as NoteSearchResult
   }
 })
 
@@ -106,31 +109,51 @@ export const getNotesStatsTool = tool({
       filters: input.filters
     })
 
-    const [allNotes, favoriteNotes, archivedNotes, urgentNotes, highPriorityNotes] =
-      await Promise.all([
-        getNotes({ limit: 1, offset: 0 }),
-        getNotes({ limit: 1, offset: 0, filters: { isFavorite: true } }),
-        getNotes({ limit: 1, offset: 0, filters: { isArchived: true } }),
-        getNotes({ limit: 1, offset: 0, filters: { priority: "urgent" } }),
-        getNotes({ limit: 1, offset: 0, filters: { priority: "high" } })
-      ])
+    const [
+      favoriteNotes,
+      archivedNotes,
+      urgentNotes,
+      highPriorityNotes,
+      mediumPriorityNotes,
+      lowPriorityNotes,
+      recentNotes
+    ] = await Promise.all([
+      getNotes({ limit: 1, offset: 0, filters: { isFavorite: true } }),
+      getNotes({ limit: 1, offset: 0, filters: { isArchived: true } }),
+      getNotes({ limit: 1, offset: 0, filters: { priority: "urgent" } }),
+      getNotes({ limit: 1, offset: 0, filters: { priority: "high" } }),
+      getNotes({ limit: 1, offset: 0, filters: { priority: "medium" } }),
+      getNotes({ limit: 1, offset: 0, filters: { priority: "low" } }),
+      getNotes({ limit: 1, offset: 0 })
+    ])
 
-    const notesData = await getNotes({
-      limit: 20,
-      offset: 0,
-      orderBy: { column: "updatedAt", direction: "desc" }
-    })
+    const sampleNotes = await getNotes({ limit: 20, offset: 0 })
+    const averageLength =
+      sampleNotes.data.length > 0
+        ? sampleNotes.data.reduce((sum, note) => sum + (note.content?.length || 0), 0) /
+          sampleNotes.data.length
+        : 0
 
     return {
       total: result.total,
-      allNotes: allNotes.total,
-      favoriteNotes: favoriteNotes.total,
-      archivedNotes: archivedNotes.total,
-      urgentNotes: urgentNotes.total,
-      highPriorityNotes: highPriorityNotes.total,
-      activeNotes: allNotes.total - archivedNotes.total,
-      notes: notesData.data
-    }
+      byPriority: {
+        none:
+          result.total -
+          urgentNotes.total -
+          highPriorityNotes.total -
+          mediumPriorityNotes.total -
+          lowPriorityNotes.total,
+        low: lowPriorityNotes.total,
+        medium: mediumPriorityNotes.total,
+        high: highPriorityNotes.total,
+        urgent: urgentNotes.total
+      },
+      favorites: favoriteNotes.total,
+      archived: archivedNotes.total,
+      recent: recentNotes.total,
+      averageLength: Math.round(averageLength),
+      filters: input.filters
+    } as NoteStats
   }
 })
 
@@ -150,8 +173,9 @@ export const getFavoriteNotesTool = tool({
       total: result.total,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
+      filters: { isFavorite: true }
+    } as NoteListResult
   }
 })
 
@@ -171,8 +195,9 @@ export const getArchivedNotesTool = tool({
       total: result.total,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
+      filters: { isArchived: true }
+    } as NoteListResult
   }
 })
 
@@ -190,11 +215,11 @@ export const getNotesByPriorityTool = tool({
     return {
       notes: result.data,
       total: result.total,
-      priority: input.priority,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
+      filters: { priority: input.priority }
+    } as NoteListResult
   }
 })
 
@@ -213,9 +238,8 @@ export const getOldestNotesTool = tool({
       total: result.total,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
-      order: "oldest first"
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
+    } as NoteListResult
   }
 })
 
@@ -234,9 +258,8 @@ export const getNewestNotesTool = tool({
       total: result.total,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
-      order: "newest first"
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
+    } as NoteListResult
   }
 })
 
@@ -253,12 +276,11 @@ export const getNotesByDateRangeTool = tool({
     return {
       notes: result.data,
       total: result.total,
-      startDate: input.startDate,
-      endDate: input.endDate,
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
+      filters: { startDate: input.startDate, endDate: input.endDate }
+    } as NoteListResult
   }
 })
 
@@ -279,12 +301,11 @@ export const getRecentNotesTool = tool({
     return {
       notes: result.data,
       total: result.total,
-      days: days,
-      cutoffDate: cutoffDate.toISOString(),
       limit: input.limit || 20,
       offset: input.offset || 0,
-      hasMore: (input.offset || 0) + (input.limit || 20) < result.total
-    }
+      hasMore: (input.offset || 0) + (input.limit || 20) < result.total,
+      filters: { days, cutoffDate: cutoffDate.toISOString() }
+    } as NoteListResult
   }
 })
 

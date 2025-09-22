@@ -10,7 +10,7 @@ export const createNoteToolSchema = z.object({
 })
 
 export const updateNoteToolSchema = z.object({
-  id: z.string().min(1, "ID is required"),
+  id: z.uuid("Invalid note ID format"),
   title: z
     .string()
     .min(1, "Title is REQUIRED - always include the title field when updating")
@@ -23,7 +23,7 @@ export const updateNoteToolSchema = z.object({
 })
 
 export const deleteNoteToolSchema = z.object({
-  id: z.string().min(1, "ID is required"),
+  id: z.uuid("Invalid note ID format"),
   title: z
     .string()
     .min(1, "Title is REQUIRED - always include the title field when deleting")
@@ -60,7 +60,7 @@ export const listNotesToolSchema = z.object({
 })
 
 export const getNoteByIdToolSchema = z.object({
-  id: z.string().min(1, "Note ID is required")
+  id: z.uuid("Invalid note ID format")
 })
 
 export const searchNotesToolSchema = z.object({
