@@ -4,7 +4,9 @@ import { useEffect } from "react"
 
 import { useRouter } from "next/navigation"
 
-import { useForm } from "react-hook-form"
+import { cn } from "@/lib/utils"
+
+import { formatDateForDisplay, toUTCDate } from "@/lib/date"
 
 import {
   createInsertTaskSchema,
@@ -12,8 +14,8 @@ import {
   type InsertTaskType,
   type UpdateTaskType
 } from "@/features/tasks/schemas"
-
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 
 import {
   Button,
@@ -40,12 +42,10 @@ import {
 
 import { useCreateTask, useGetTask, useListTasks, useUpdateTask } from "@/features/tasks/api"
 
-import { cn } from "@/lib/utils"
-
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types"
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString()
+  return formatDateForDisplay(toUTCDate(date.toISOString()))
 }
 
 export type TaskEditorProps = {

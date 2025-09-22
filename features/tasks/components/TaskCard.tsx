@@ -4,6 +4,8 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
+import { formatDateForDisplay, toUTCDate } from "@/lib/date"
+
 import {
   Badge,
   Button,
@@ -27,7 +29,8 @@ import type { Task } from "@/features/tasks/types"
 
 const isOverdue = (dueDate: Date | null) => {
   if (!dueDate) return false
-  return new Date() > dueDate
+  const now = new Date()
+  return now > dueDate
 }
 
 const isDueSoon = (dueDate: Date | null) => {
@@ -44,7 +47,7 @@ export type TaskCardProps = {
 }
 
 function TaskCard({ task, className }: TaskCardProps) {
-  const dueDate = task.dueDate ? new Date(task.dueDate) : null
+  const dueDate = task.dueDate ? toUTCDate(task.dueDate.toString()) : null
   const isOverdueTask = isOverdue(dueDate)
   const isDueSoonTask = isDueSoon(dueDate)
 
@@ -56,7 +59,7 @@ function TaskCard({ task, className }: TaskCardProps) {
             {task.title}
           </Typography>
           <Typography affects={["muted", "small"]}>
-            Updated at {new Date(task.updatedAt).toLocaleString()}
+            Updated at {formatDateForDisplay(toUTCDate(task.updatedAt.toString()))}
           </Typography>
         </div>
         <div className="flex max-w-full shrink-0 flex-col flex-wrap items-end gap-1.5 overflow-hidden">
@@ -80,7 +83,7 @@ function TaskCard({ task, className }: TaskCardProps) {
               )}
             >
               <Icon name="Calendar" className="mr-1 h-3 w-3" />
-              {dueDate.toLocaleDateString()}
+              {formatDateForDisplay(dueDate)}
             </Badge>
           )}
           {task.parentTaskId && (
@@ -112,7 +115,7 @@ function TaskCard({ task, className }: TaskCardProps) {
           <div className="flex items-center gap-2">
             <Icon name="CheckCircle" className="text-success h-4 w-4" />
             <Typography affects={["muted", "small"]}>
-              Completed at {new Date(task.completedAt).toLocaleString()}
+              Completed at {formatDateForDisplay(toUTCDate(task.completedAt.toString()))}
             </Typography>
           </div>
         )}
