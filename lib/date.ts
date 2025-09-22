@@ -10,7 +10,7 @@ export function toUTCDate(dateString: string): Date {
 
 export function toLocalDate(utcDate: Date, timezone?: string): Date {
   if (timezone) {
-    const formatter = new Intl.DateTimeFormat("en-CA", {
+    const formatter = new Intl.DateTimeFormat(undefined, {
       timeZone: timezone,
       year: "numeric",
       month: "2-digit",
@@ -39,10 +39,10 @@ export function toLocalDate(utcDate: Date, timezone?: string): Date {
 
 export function formatDateForDisplay(utcDate: Date, timezone?: string): string {
   if (timezone) {
-    return utcDate.toLocaleString("pt-PT", { timeZone: timezone })
+    return utcDate.toLocaleString(undefined, { timeZone: timezone })
   }
 
-  return utcDate.toLocaleString("pt-PT")
+  return utcDate.toLocaleString()
 }
 
 export function createUTCDate(

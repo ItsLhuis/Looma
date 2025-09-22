@@ -582,7 +582,7 @@ function KanbanCard({
         dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
         style={{ marginLeft: `${indentPx}px` }}
       >
-        {depth > 0 && <Icon name="Link2" />}
+        {depth > 0 && <Icon name="GitBranch" />}
         <Card
           draggable="true"
           onDragStart={(e) =>
@@ -642,7 +642,7 @@ function KanbanCard({
                     onClick={onFocusParent ? () => onFocusParent(parentTaskId) : undefined}
                     className="hover:bg-secondary/80 cursor-pointer transition-colors"
                   >
-                    <Icon name="Link" className="mr-1 h-3 w-3" />
+                    <Icon name="GitBranch" className="mr-1 h-3 w-3" />
                     <Typography variant="span" affects="small">
                       {parentTaskTitle}
                     </Typography>
