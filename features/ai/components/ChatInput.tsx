@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import { useSpeechToText } from "@/hooks/useSpeechToText"
+
 import { cn } from "@/lib/utils"
 
 import { useDropzone } from "react-dropzone"
@@ -122,6 +124,15 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const {
+    isRecording,
+    isTranscribing,
+    error: speechError,
+    startRecording,
+    stopRecording,
+    result
+  } = useSpeechToText()
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const imageFiles = acceptedFiles.filter((file) => file.type.startsWith("image/"))
 
@@ -202,6 +213,12 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
     }
   }, [status])
 
+  useEffect(() => {
+    if (result) {
+      setInput((prev) => prev + (prev ? " " : "") + result)
+    }
+  }, [result])
+
   const isProcessing = status === "submitted" || status === "streaming"
   const canSend = status === "ready" && (input.trim().length > 0 || selectedFiles.length > 0)
   const canAddFiles = selectedFiles.length < 5
@@ -241,6 +258,26 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
               </Button>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant={isRecording ? "destructive" : "outline"}
+                className="text-muted-foreground hover:text-foreground hover:bg-muted h-9 w-9 flex-shrink-0 p-0"
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={disabled || isProcessing || isTranscribing}
+                tooltip={
+                  isRecording
+                    ? "Stop recording"
+                    : isTranscribing
+                      ? "Transcribing..."
+                      : "Start voice recording"
+                }
+              >
+                {isTranscribing ? (
+                  <Icon name="Loader2" className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Icon name={isRecording ? "Square" : "Mic"} />
+                )}
+              </Button>
               {isProcessing ? (
                 <Button
                   type="button"
@@ -273,6 +310,14 @@ function ChatInput({ onSendMessage, onStop, status, disabled = false }: ChatInpu
               )}
             </div>
           </div>
+          {speechError && (
+            <div className="border-border w-full border-t p-3">
+              <div className="text-destructive flex items-center gap-2 text-xs">
+                <Icon name="AlertCircle" className="h-4 w-4" />
+                {speechError}
+              </div>
+            </div>
+          )}
           {selectedFiles.length > 0 && (
             <div className="border-border w-full border-t p-3">
               <div className="mb-2 flex items-center justify-between">
