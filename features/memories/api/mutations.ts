@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { memoriesKeys } from "./queries"
 import { dashboardKeys } from "@/features/dashboard/api/queries"
 
+import { toast } from "sonner"
+
 import type {
   CreateMemoryRequest,
   CreateMemoryResponse,
@@ -22,9 +24,15 @@ export function useCreateMemory() {
       const res = await axios.post<CreateMemoryResponse>(base, input, { withCredentials: true })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: memoriesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Memory created successfully`, {
+        description: `"${data.data.title}" has been successfully created!`
+      })
+    },
+    onError: () => {
+      toast.error("Memory creation failed")
     }
   })
 }
@@ -43,6 +51,12 @@ export function useUpdateMemory(id: string) {
       queryClient.invalidateQueries({ queryKey: memoriesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(memoriesKeys.detail(id), data)
+      toast.success(`Memory updated successfully`, {
+        description: `"${data.data.title}" has been successfully updated!`
+      })
+    },
+    onError: () => {
+      toast.error("Memory update failed")
     }
   })
 }
@@ -56,10 +70,16 @@ export function useDeleteMemory(id: string) {
       })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: memoriesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: memoriesKeys.details() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Memory deleted successfully`, {
+        description: `"${data.data.title}" has been successfully deleted!`
+      })
+    },
+    onError: () => {
+      toast.error("Memory deletion failed")
     }
   })
 }

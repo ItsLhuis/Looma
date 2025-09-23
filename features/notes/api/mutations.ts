@@ -2,8 +2,10 @@ import axios from "axios"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { notesKeys } from "./queries"
 import { dashboardKeys } from "@/features/dashboard/api/queries"
+import { notesKeys } from "./queries"
+
+import { toast } from "sonner"
 
 import type {
   CreateNoteRequest,
@@ -22,9 +24,15 @@ export function useCreateNote() {
       const res = await axios.post<CreateNoteResponse>(base, input, { withCredentials: true })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: notesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Note created successfully`, {
+        description: `"${data.data.title}" has been successfully created!`
+      })
+    },
+    onError: () => {
+      toast.error("Note creation failed")
     }
   })
 }
@@ -43,6 +51,12 @@ export function useUpdateNote(id: string) {
       queryClient.invalidateQueries({ queryKey: notesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(notesKeys.detail(id), data)
+      toast.success(`Note updated successfully`, {
+        description: `"${data.data.title}" has been successfully updated!`
+      })
+    },
+    onError: () => {
+      toast.error("Note update failed")
     }
   })
 }
@@ -54,10 +68,16 @@ export function useDeleteNote(id: string) {
       const res = await axios.delete<DeleteNoteResponse>(`${base}/${id}`, { withCredentials: true })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: notesKeys.lists() })
       queryClient.invalidateQueries({ queryKey: notesKeys.details() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Note deleted successfully`, {
+        description: `"${data.data.title}" has been successfully deleted!`
+      })
+    },
+    onError: () => {
+      toast.error("Note deletion failed")
     }
   })
 }

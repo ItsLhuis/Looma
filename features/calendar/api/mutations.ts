@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { eventsKeys } from "./queries"
 import { dashboardKeys } from "@/features/dashboard/api/queries"
 
+import { toast } from "sonner"
+
 import type {
   CreateEventRequest,
   CreateEventResponse,
@@ -22,9 +24,15 @@ export function useCreateEvent() {
       const res = await axios.post<CreateEventResponse>(base, input, { withCredentials: true })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Event created successfully`, {
+        description: `"${data.data.title}" has been successfully created!`
+      })
+    },
+    onError: () => {
+      toast.error("Event creation failed")
     }
   })
 }
@@ -43,6 +51,12 @@ export function useUpdateEvent(id: string) {
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(eventsKeys.detail(id), data)
+      toast.success(`Event updated successfully`, {
+        description: `"${data.data.title}" has been successfully updated!`
+      })
+    },
+    onError: () => {
+      toast.error("Event update failed")
     }
   })
 }
@@ -56,10 +70,16 @@ export function useDeleteEvent(id: string) {
       })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() })
       queryClient.invalidateQueries({ queryKey: eventsKeys.details() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Event deleted successfully`, {
+        description: `"${data.data.title}" has been successfully deleted!`
+      })
+    },
+    onError: () => {
+      toast.error("Event deletion failed")
     }
   })
 }

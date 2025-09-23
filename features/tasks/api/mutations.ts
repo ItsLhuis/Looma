@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { tasksKeys } from "./queries"
 import { dashboardKeys } from "@/features/dashboard/api/queries"
 
+import { toast } from "sonner"
+
 import type {
   CreateTaskRequest,
   CreateTaskResponse,
@@ -26,9 +28,15 @@ export function useCreateTask() {
       const res = await axios.post<CreateTaskResponse>(base, input, { withCredentials: true })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Task created successfully`, {
+        description: `"${data.data.title}" has been successfully created!`
+      })
+    },
+    onError: () => {
+      toast.error("Task creation failed")
     }
   })
 }
@@ -47,6 +55,12 @@ export function useUpdateTask(id: string) {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(tasksKeys.detail(id), data)
+      toast.success(`Task updated successfully`, {
+        description: `"${data.data.title}" has been successfully updated!`
+      })
+    },
+    onError: () => {
+      toast.error("Task update failed")
     }
   })
 }
@@ -65,6 +79,12 @@ export function useUpdateTaskStatus(id: string) {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.setQueryData(tasksKeys.detail(id), data)
+      toast.success(`Task status updated successfully`, {
+        description: `"${data.data.title}" status has been successfully updated!`
+      })
+    },
+    onError: () => {
+      toast.error("Task status update failed")
     }
   })
 }
@@ -85,6 +105,10 @@ export function useReorderTask() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success("Tasks reordered successfully")
+    },
+    onError: () => {
+      toast.error("Task reordering failed")
     }
   })
 }
@@ -96,10 +120,16 @@ export function useDeleteTask(id: string) {
       const res = await axios.delete<DeleteTaskResponse>(`${base}/${id}`, { withCredentials: true })
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: tasksKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tasksKeys.details() })
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
+      toast.success(`Task deleted successfully`, {
+        description: `"${data.data.title}" has been successfully deleted!`
+      })
+    },
+    onError: () => {
+      toast.error("Task deletion failed")
     }
   })
 }
