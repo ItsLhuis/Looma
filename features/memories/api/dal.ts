@@ -173,46 +173,15 @@ export async function searchMemoriesSemantic(
   const user = await getUser()
   if (!user) throw new Error("UNAUTHORIZED")
 
-  const where = and(
-    eq(memories.userId, user.id),
-    eq(memories.isActive, true),
-    or(like(memories.title, `%${query}%`), like(memories.content, `%${query}%`))
-  )
+  const normalizedQuery = query.toLowerCase().trim()
+  const queryWords = normalizedQuery.split(/\s+/).filter((word) => word.length > 2)
 
-  const rows = await database
-    .select()
-    .from(memories)
-    .where(where)
-    .orderBy(desc(memories.importance), desc(memories.updatedAt))
-    .limit(limit)
-
-  const memoriesWithSimilarity = rows.map((memory, index) => ({
-    ...memory,
-    similarity: Math.max(0.7 - index * 0.1, 0.3)
-  }))
-
-  return memoriesWithSimilarity.filter((m) => m.similarity >= threshold)
-}
-
-export async function getRelevantMemories(
-  context: string,
-  limit: number = 3,
-  threshold: number = 0.6
-) {
-  const user = await getUser()
-  if (!user) throw new Error("UNAUTHORIZED")
-
-  const keywords = context
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((word) => word.length > 3)
-
-  if (keywords.length === 0) {
+  if (queryWords.length === 0) {
     return []
   }
 
-  const searchConditions = keywords.map((keyword) =>
-    or(like(memories.title, `%${keyword}%`), like(memories.content, `%${keyword}%`))
+  const searchConditions = queryWords.map((word) =>
+    or(like(memories.title, `%${word}%`), like(memories.content, `%${word}%`))
   )
 
   const where = and(
@@ -228,13 +197,114 @@ export async function getRelevantMemories(
     .orderBy(desc(memories.importance), desc(memories.updatedAt))
     .limit(limit * 2)
 
-  const memoriesWithRelevance = rows.map((memory) => {
-    const titleMatch = keywords.some((keyword) => memory.title.toLowerCase().includes(keyword))
-    const contentMatch = keywords.some((keyword) => memory.content.toLowerCase().includes(keyword))
+  const memoriesWithSimilarity = rows.map((memory) => {
+    const titleLower = memory.title.toLowerCase()
+    const contentLower = memory.content.toLowerCase()
 
-    let relevance = 0.3
-    if (titleMatch) relevance += 0.4
-    if (contentMatch) relevance += 0.3
+    let score = 0
+    let matchCount = 0
+
+    queryWords.forEach((word) => {
+      if (titleLower.includes(word)) {
+        score += 0.4
+        matchCount++
+      }
+      if (contentLower.includes(word)) {
+        score += 0.2
+        matchCount++
+      }
+    })
+
+    const normalizedScore = matchCount > 0 ? Math.min(score / queryWords.length, 1.0) : 0
+
+    const importanceBoost =
+      {
+        low: 0.1,
+        medium: 0.2,
+        high: 0.3,
+        critical: 0.4
+      }[memory.importance] || 0
+
+    const finalScore = Math.min(normalizedScore + importanceBoost, 1.0)
+
+    return {
+      ...memory,
+      similarity: finalScore,
+      matchCount
+    }
+  })
+
+  return memoriesWithSimilarity
+    .filter((m) => m.similarity >= threshold)
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, limit)
+}
+
+export async function getRelevantMemories(
+  context: string,
+  limit: number = 3,
+  threshold: number = 0.6
+) {
+  const user = await getUser()
+  if (!user) throw new Error("UNAUTHORIZED")
+
+  const normalizedContext = context.toLowerCase().trim()
+  const words = normalizedContext.split(/\s+/).filter((word) => word.length > 2)
+
+  const phrases: string[] = []
+  for (let i = 0; i < words.length - 1; i++) {
+    phrases.push(`${words[i]} ${words[i + 1]}`)
+  }
+
+  if (words.length === 0) {
+    return []
+  }
+
+  const wordConditions = words.map((word) =>
+    or(like(memories.title, `%${word}%`), like(memories.content, `%${word}%`))
+  )
+
+  const phraseConditions = phrases.map((phrase) =>
+    or(like(memories.title, `%${phrase}%`), like(memories.content, `%${phrase}%`))
+  )
+
+  const where = and(
+    eq(memories.userId, user.id),
+    eq(memories.isActive, true),
+    or(...wordConditions, ...phraseConditions)
+  )
+
+  const rows = await database
+    .select()
+    .from(memories)
+    .where(where)
+    .orderBy(desc(memories.importance), desc(memories.updatedAt))
+    .limit(limit * 3)
+
+  const memoriesWithRelevance = rows.map((memory) => {
+    const titleLower = memory.title.toLowerCase()
+    const contentLower = memory.content.toLowerCase()
+
+    let relevance = 0
+    const matchReasons: string[] = []
+
+    const wordMatches = words.filter(
+      (word) => titleLower.includes(word) || contentLower.includes(word)
+    )
+
+    if (wordMatches.length > 0) {
+      relevance += (wordMatches.length / words.length) * 0.4
+      matchReasons.push(`${wordMatches.length} word matches`)
+    }
+
+    const phraseMatches = phrases.filter(
+      (phrase) => titleLower.includes(phrase) || contentLower.includes(phrase)
+    )
+
+    if (phraseMatches.length > 0) {
+      relevance += (phraseMatches.length / phrases.length) * 0.5
+      matchReasons.push(`${phraseMatches.length} phrase matches`)
+    }
 
     const importanceBoost =
       {
@@ -246,17 +316,14 @@ export async function getRelevantMemories(
 
     relevance += importanceBoost
 
+    const daysSinceUpdate = (Date.now() - memory.updatedAt.getTime()) / (1000 * 60 * 60 * 24)
+    const recencyBoost = Math.max(0, 0.1 - (daysSinceUpdate / 30) * 0.05)
+    relevance += recencyBoost
+
     return {
       ...memory,
       relevance: Math.min(relevance, 1.0),
-      reason:
-        titleMatch && contentMatch
-          ? "Title and content match"
-          : titleMatch
-            ? "Title matches"
-            : contentMatch
-              ? "Content matches"
-              : "Keyword match"
+      reason: matchReasons.join(", ") || "Context match"
     }
   })
 
