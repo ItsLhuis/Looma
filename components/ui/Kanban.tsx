@@ -461,7 +461,7 @@ function KanbanColumn({
           onDragOver={isAtLimit ? undefined : handleDragOver}
           onDragLeave={handleDragLeave}
           className={cn(
-            "min-h-20 w-full transition-colors",
+            "h-full min-h-20 w-full transition-colors",
             isAtLimit
               ? "cursor-not-allowed"
               : active
@@ -659,7 +659,7 @@ function KanbanCard({
                     variant="span"
                     affects="small"
                     className={cn(
-                      "rounded-full px-2.5 py-1 font-medium whitespace-nowrap",
+                      "rounded-full px-2.5 py-1 font-medium whitespace-nowrap capitalize",
                       priorityColors[priority]
                     )}
                   >
