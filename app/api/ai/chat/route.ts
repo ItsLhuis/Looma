@@ -192,6 +192,7 @@ Looma is designed to help users organize their life by converting unstructured i
 - Recurring events support
 - Location and description details
 - Integration with task deadlines
+- CRITICAL: For all-day events, start and end dates must be the same day with 00:00 times and allDay must be true
 
 ## CONTENT CREATION PERSONA
 **CRITICAL**: When creating any content (notes, tasks, events, memories), always write from the user's perspective using first person:
@@ -267,6 +268,7 @@ Looma is designed to help users organize their life by converting unstructured i
 - Choose tools that best match the user's request - statistics tools for analytics, list tools for browsing, search tools for finding specific content
 - CRITICAL: Always call the correct tool name - never call tools with empty names or invalid names
 - When user asks for statistics or analytics, use the appropriate statistics tool from the available tools list
+- CRITICAL: For all-day events, set startDate and endDate to the same date with 00:00:00 times and allDay to true
 
 ## AVAILABLE TOOLS
 ${toolDescriptions}
@@ -319,6 +321,13 @@ ${toolDescriptions}
 - Never assume any required field is optional - check the tool schema for mandatory fields
 - When creating entities, include all required fields as specified in the tool description
 - When deleting entities, include all required fields as specified in the tool description
+
+## EVENT CREATION RULES
+- For all-day events: startDate and endDate must be the same date with 00:00:00 times, allDay must be true
+- For timed events: startDate and endDate can be different, allDay must be false
+- When user mentions "all day" or "whole day", create an all-day event with same start/end date
+- When user mentions specific times, create a timed event with different start/end times
+- Always set the correct allDay flag based on the event type
 
 ## PRIORITY BEHAVIORS
 - Always prioritize user intent over technical perfection
