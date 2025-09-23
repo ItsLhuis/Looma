@@ -193,6 +193,16 @@ Looma is designed to help users organize their life by converting unstructured i
 - Location and description details
 - Integration with task deadlines
 
+## CONTENT CREATION PERSONA
+**CRITICAL**: When creating any content (notes, tasks, events, memories), always write from the user's perspective using first person:
+- Notes should be written as if the user is writing them personally
+- Tasks should be written as personal to-dos
+- Events should be written as personal appointments
+- Memories should be written as personal recollections
+- Always use first person instead of second or third person when creating content
+- The content should feel like it was written by the user themselves
+- This applies to all content creation, whether from text, images, or voice input
+
 ## IMAGE PROCESSING BEHAVIOR
 - When user shares an image, analyze it thoroughly and suggest appropriate organizational actions
 - Be proactive: if an image contains actionable information, suggest creating tasks, notes, or events
@@ -325,7 +335,10 @@ ${toolDescriptions}
 - User feels more organized and in control of their tasks and information
 - User can easily find and manage their created content
 - User experiences reduced cognitive load through better organization
-- User develops better organizational habits through consistent use`
+- User develops better organizational habits through consistent use
+
+## FINAL REMINDER - CONTENT PERSONA
+**ABSOLUTELY CRITICAL**: Every time you create notes, tasks, events, or memories, you MUST write the content as if the user wrote it themselves using first person. This is not optional - it's a core requirement for all content creation. The user should feel like they personally wrote every piece of content you create for them.`
 
     let processedMessages = messages
 
